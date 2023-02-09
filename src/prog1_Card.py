@@ -82,7 +82,9 @@
 #   + BCAT: ("Beard Cat", description)
 #
 # Methods:
-#   + __str__(): returns the name and description of the card
+#   + name(): macro that returns the name of the card
+#   + description(): macro that returns the description of the card
+#   + __str__(): returns the name and description of the card as a string
 #                in an easily printable format
 ####################################################################################
 
@@ -95,7 +97,11 @@ class Card(Enum):
     Extends the Enum class.
     Contains all of the cards' names and descriptions in a tuple (name, description).
     """
-    
+
+    ############################################################
+    # Enums (name, description)
+    ############################################################
+
     EK = ("Exploding Kitten", "\tYou must show this card immediately.\n"
           + "\tUnless you have a Defuse Card, you're dead.\n"
           + "\tDiscard all of your cards, including the Exploding Kitten.")
@@ -144,6 +150,29 @@ class Card(Enum):
     
     BCAT = ("Beard Cat", "\tBeard Cats are powerless on their own, but if you collect any 2 matching Beard Cat cards,\n"
             + "\tyou can play them as a pair to steal a random card from any player.")
+    
+    ############################################################
+    # Methods
+    ############################################################
+    
+    def name(self):
+        """
+        Returns the name of the card.
+
+        Returns:
+            str: The name of the card.
+        """
+        return self.value[0]
+    
+    
+    def description(self):
+        """
+        Returns the description of the card.
+
+        Returns:
+            str: The description of the card.
+        """
+        return self.value[1]
     
     
     def __str__(self):
