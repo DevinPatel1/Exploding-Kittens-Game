@@ -59,10 +59,9 @@
 ####################################################################################
 # Class Specification
 #
-# Since python does not support private attributes nor has a way
-# to set constants nor has any access protections on attributes, the immutable
-# type tuple will be used in conjunction with Enums to store the names and descriptions of the
-# cards.
+# Since python does not support access protections on attributes (like protected or private)
+# nor has a way to set constants, the immutable type tuple will be used in conjunction with
+# Enums to store the names and descriptions of the cards.
 #
 # Card will extend the Enum class.
 #
