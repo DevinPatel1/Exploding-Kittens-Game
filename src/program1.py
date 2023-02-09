@@ -16,6 +16,7 @@ from prog1_Player import Player
 
 def main():
     deck = Deck(number_of_players=3)
+    print(str(deck))
     
 # End of main
 
