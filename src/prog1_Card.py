@@ -82,7 +82,8 @@
 #   + BCAT: ("Beard Cat", description)
 #
 # Methods:
-#   None
+#   + __str__(): returns the name and description of the card
+#                in an easily printable format
 ####################################################################################
 
 
@@ -102,7 +103,7 @@ class Card(Enum):
     D = ("Defuse", "\tIf you drew an Exploding Kitten, you can play this card instead of dying.\n"
          + "\tThen take the Exploding Kitten, and without reordering or viewing the other cards, secretly"
          + "put it back in the draw pile anywhere you'd like.\n\tWant to hurt the player right after you?"
-         + "Put the Kitten right on top of the deck.\n\tYour turn is over after playing this card.\nThe Defuse card can only be used once.")
+         + "Put the Kitten right on top of the deck.\n\tYour turn is over after playing this card.\n\tThe Defuse card can only be used once.")
     
     N = ("Nope", "\tStop any action except for an Exploding Kitten or a Defuse Card.\n"
          + "\tImagine that any card beneath a Nope Card never existed.\n"
@@ -115,9 +116,9 @@ class Card(Enum):
          + "\tPlay then continues from that player.\n"
          + "\tThe victim of this card takes a turn as normal (play-or-pass then draw).\n"
          + "\tThen, when their first turn is over, it's their turn again.\n\n"
-         + "\tIf the victim of an Attack Card plays an Attack Card on any of their turns,"
-         + "the new target must take any remaining turns plus the number of attacks on "
-         + "the Attack Card just played (e.g. 4 turns, then 6, and so on).")
+         + "\tIf the victim of an Attack Card plays an Attack Card on any of their turns,\n"
+         + "\tthe new target must take any remaining turns plus the number of attacks on\n"
+         + "\tthe Attack Card just played (e.g. 4 turns, then 6, and so on).")
     
     SK = ("Skip", "\tImmediately end your turn without drawing a card.\n"
           + "\tIf you play a Skip Card as a defense to an Attack Card, it only ends 1 of the 2 turns.\n"
@@ -145,5 +146,13 @@ class Card(Enum):
             + "\tyou can play them as a pair to steal a random card from any player.")
     
     
+    def __str__(self):
+        """
+        Returns the name and description of the card in an easily printable format.
+
+        Returns:
+            str: A string representation of the card's name and description.
+        """
+        return str(self.value[0] + ":\n" + self.value[1])
     
     
