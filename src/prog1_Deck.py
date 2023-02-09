@@ -87,7 +87,7 @@ class Deck:
         Constructor for the Deck class.
         Sets a local variable for the number of players in the game.
         Initializes the deck with the appropriate number of Cards using reset().
-        Seeds the random number generator using 
+        Seeds the random number generator using time.
         
         Args:
             number_of_players (int): The number of players in the game.
