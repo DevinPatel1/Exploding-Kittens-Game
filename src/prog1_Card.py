@@ -5,8 +5,8 @@
 # Term:             SP 23
 ####################################################################################
 # Filename:     prog1_Card.py
-# Purpose:      To implement an individual Card class that contains
-#               the card's name and description.
+# Purpose:      To implement a Card enum class that contains
+#               all of the cards' names and descriptions in a tuple.
 ####################################################################################
 # Design Requirements
 #
@@ -17,7 +17,7 @@
 #
 #   - Defuse: If you drew an Exploding Kitten, you can play this card instead of dying.
 #             Then take the Exploding Kitten, and without reordering or viewing the other
-#             cards, secretly put it back in the Draw Pile anywhere you’d like. Want to
+#             cards, secretly put it back in the draw pile anywhere you’d like. Want to
 #             hurt the player right after you? Put the Kitten right on top of the deck.
 #             If you’d like, hold the deck under the table so that no one else can see
 #             where you put it. Your turn is over after playing this card.
@@ -45,41 +45,105 @@
 #
 #   - Favor: Force another player to give you one of their cards. They can choose which one.
 #
-#   - Shuffle: Shuffle the Draw Pile.
+#   - Shuffle: Shuffles the draw pile.
 #
-#   - See the Future: Privately view the top 3 cards from the Draw Pile.
-#   - Cat Cards: These cards are powerless on their own, but if you collect any 2 matching
-#                Cat Cards, you can play them as a Pair to steal a random card from any player.
-#       -- Taco Cat
-#       -- Hairy Potato Cat
-#       -- Cattermelon
-#       -- Rainbow Ralphing Cat
-#       -- Beard Cat
+#   - See the Future: Privately view the top 3 cards from the draw pile.
+#   - Cat Cards: <Cat Type> are powerless on their own, but if you collect any 2 matching
+#                <Cat Type> cards, you can play them as a pair to steal a random card from any player.
+#       Cat Types:
+#       - Taco Cat
+#       - Hairy Potato Cat
+#       - Cattermelon
+#       - Rainbow Ralphing Cat
+#       - Beard Cat
 ####################################################################################
 # Class Specification
 #
-# Since python does not have a private attribute modifier nor has a way to
-# set constants, the following PEP8 python naming conventions will be used:
-#   1. Any private attributes will be prefixed with a double underscore '__'.
-#   2. Any methods that aren't meant to be used outside of the class will be
-#      prefixed with a single underscore '_'.
-#   3. Any constants will be all caps.
+# Since python does not support private attributes nor has a way
+# to set constants nor has any access protections on attributes, the immutable
+# type tuple will be used in conjunction with Enums to store the names and descriptions of the
+# cards.
 #
+# Card will extend the Enum class.
 #
-# Attributes:
-#
+# Attributes/Enums:
+#   + EK: ("Exploding Kitten", description)
+#   + D: ("Defuse", description)
+#   + N: ("Nope", description)
+#   + A: ("Attack", description)
+#   + SK: ("Skip", description)
+#   + F: ("Favor", description)
+#   + SH: ("Shuffle", description)
+#   + STF: ("See the Future", description)
+#   + TCAT: ("Taco Cat", description)
+#   + HPCAT: ("Hairy Potato Cat", description)
+#   + CATMELON: ("Cattermelon", description)
+#   + RRCAT: ("Rainbow Ralphing Cat", description)
+#   + BCAT: ("Beard Cat", description)
 #
 # Methods:
-#
+#   None
 ####################################################################################
 
 
+# Imports
+from enum import Enum
 
-
-
-# Each card will have a name and description of what it does.
-# Make card and enum type for all the card names and descriptions
-# Needs to have a __str__ method and a copy method
-
-class Card:
-    pass
+class Card(Enum):
+    """
+    Extends the Enum class.
+    Contains all of the cards' names and descriptions in a tuple (name, description).
+    """
+    
+    EK = ("Exploding Kitten", "You must show this card immediately.\n"
+          + "Unless you have a Defuse Card, you're dead.\n"
+          + "Discard all of your cards, including the Exploding Kitten.")
+    
+    D = ("Defuse", "If you drew an Exploding Kitten, you can play this card instead of dying.\n"
+         + "Then take the Exploding Kitten, and without reordering or viewing the other cards, secretly"
+         + "put it back in the draw pile anywhere you'd like.\nWant to hurt the player right after you?"
+         + "Put the Kitten right on top of the deck.\nYour turn is over after playing this card.\nThe Defuse card can only be used once.")
+    
+    N = ("Nope", "Stop any action except for an Exploding Kitten or a Defuse Card.\n"
+         + "Imagine that any card beneath a Nope Card never existed.\n"
+         + "A Nope can also be played on another Nope to negate it and create a Yup, and so on.\n"
+         + "Nope can be played at any time before an action has begun, even if it's not your turn.\n"
+         + "Any cards that have been Noped are lost.")
+    
+    A = ("Attack", "Do not draw any cards.\n"
+         + "Instead, immediately force the next player to take 2 turns in a row.\n"
+         + "Play then continues from that player.\n"
+         + "The victim of this card takes a turn as normal (play-or-pass then draw).\n"
+         + "Then, when their first turn is over, it's their turn again.\n\n"
+         + "If the victim of an Attack Card plays an Attack Card on any of their turns,"
+         + "the new target must take any remaining turns plus the number of attacks on "
+         + "the Attack Card just played (e.g. 4 turns, then 6, and so on).")
+    
+    SK = ("Skip", "Immediately end your turn without drawing a card.\n"
+          + "If you play a Skip Card as a defense to an Attack Card, it only ends 1 of the 2 turns.\n"
+          + "2 Skip Cards would end both turns.")
+    
+    F = ("Favor", "Force another player to give you one of their cards. They can choose which one.")
+    
+    SH = ("Shuffle", "Shuffles the draw pile.")
+    
+    STF = ("See the Future", "Privately view the top 3 cards from the draw pile.")
+    
+    TCAT = ("Taco Cat", "Taco Cats are powerless on their own, but if you collect any 2 matching Taco Cat cards,\n"
+            + "you can play them as a pair to steal a random card from any player.")
+    
+    HPCAT = ("Hairy Potato Cat", "Hairy Potato Cats are powerless on their own, but if you collect any 2 matching Hairy Potato Cat cards,\n"
+             + "you can play them as a pair to steal a random card from any player.")
+    
+    CATMELON = ("Cattermelon", "Cattermelons are powerless on their own, but if you collect any 2 matching Cattermelon cards,\n"
+                + "you can play them as a pair to steal a random card from any player.")
+    
+    RRRCAT = ("Rainbow Ralphing Cat", "Rainbow Ralphing Cats are powerless on their own, but if you collect any 2 matching Rainbow Ralphing Cat cards,\n"
+              + "you can play them as a pair to steal a random card from any player.")
+    
+    BCAT = ("Beard Cat", "Beard Cats are powerless on their own, but if you collect any 2 matching Beard Cat cards,\n"
+            + "you can play them as a pair to steal a random card from any player.")
+    
+    
+    
+    

@@ -14,6 +14,15 @@
 ####################################################################################
 # Class Specification
 #
+# Since python does not support private attributes nor has a way
+# to set constants nor has any access protections on attributes, the following
+# PEP8 python naming conventions will be used:
+#   1. Any private attributes will be prefixed with a double underscore '__'.
+#   2. Any public attributes will be directly accessible instead of using a getter.
+#   3. Any methods that aren't meant to be used outside of the class will be
+#      prefixed with a single underscore '_'.
+#   4. Any constants will be all caps.
+#
 # Attributes:
 #
 #

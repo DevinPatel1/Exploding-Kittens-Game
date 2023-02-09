@@ -5,7 +5,8 @@
 # Term:             SP 23
 ####################################################################################
 # Filename:     program1.py
-# Purpose:      This is the main program for Programming Assignment 1.
+# Purpose:      This is the main program for Programming Assignment 1
+#               and the starting point for Exploding Kittens.
 ####################################################################################
 
 # Imports
