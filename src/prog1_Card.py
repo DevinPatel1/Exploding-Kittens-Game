@@ -182,6 +182,6 @@ class Card(Enum):
         Returns:
             str: A string representation of the card's name and description.
         """
-        return str(self.value[0] + ":\n" + self.value[1])
+        return f"{self.value[0]}:\n{self.value[1]}"
     
     
