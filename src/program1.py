@@ -16,6 +16,10 @@ from prog1_Player import Player
 
 def main():
     deck = Deck(number_of_players=3)
+    player1 = Player("Player 1")
+    
+    for _ in range(7): player1.add_card(deck.draw())
+    print(player1)
     
 # End of main
 

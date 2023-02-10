@@ -162,6 +162,7 @@ class Card(Enum):
             str: The name of the card.
         """
         return self.value[0]
+    # End of name
     
     
     def description(self):
@@ -172,6 +173,7 @@ class Card(Enum):
             str: The description of the card.
         """
         return self.value[1]
+    # End of description
     
     
     def __str__(self):
@@ -182,5 +184,6 @@ class Card(Enum):
             str: A string representation of the card's name and description.
         """
         return f"{self.value[0]}:\n{self.value[1]}"
+    # End of __str__
     
-    
+# End of Card
