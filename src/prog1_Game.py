@@ -33,20 +33,20 @@
 #####################################################################################
 # Class Specification
 # @TODO Finish this section as the code is written
-# Since python does not support access protections on attributes (e.g., protected or private)
-# nor has a way to set constants, the following PEP8 python naming conventions will be used:
-#   1. Any private attributes will be prefixed with a double underscore '__'.
-#   2. Any public attributes will be directly accessible instead of using an accessor method.
-#   3. Any methods that aren't meant to be used outside of the class will be
-#      prefixed with a single underscore '_'.
+# Since python does not enforce access protections on attributes (e.g., protected or private)
+# nor has a way to set constants, the following python conventions will be followed:
+#   1. Any private attributes or methods will be prefixed with a single underscore '_'.
+#   2. Any public attributes or methods will be directly accessible instead of using a getter.
+#   3. Any attributes or methods that shouldn't get overriden by a subclass will be prefixed with a double underscore '__'.
+#      This tells the python interpreter to instead prefix the attribute or method as '_ClassName__attribute' or '_ClassName_method'.
 #   4. Any constants will be all caps.
 #
 #
 # Attributes:
-#   - __draw_pile (list: Card): List of drawable cards
-#   - __players (list: Player): List of players
-#   - __current_player (int): Index of which player's turn it is
-#   - __num_players (int): Number of players in the game
+#   - _draw_pile (Deck):        Deck of cards representing the draw pile
+#   - _players (list: Player):  List of players
+#   - _current_player (int):    Index of which player's turn it is
+#   - _num_players (int):       Number of players in the game
 #
 # Methods:
 #   + __init__(): Initializes the game object
@@ -60,4 +60,21 @@ from prog1_Deck import Deck
 from prog1_Player import Player
 
 class Game:
-    pass
+    """
+    Game will facilitate Exploding Kittens functionality and game loop.
+    """
+    
+    def __init__(self):
+        """
+        Declares the game class attributes.
+        The start method will be in charge of properly initializing the game attributes.
+        """
+        # Attributes are initialized here instead of in the class definition
+        # to avoid the attributes being shared between all instances of the class.
+        self._draw_pile = Deck()
+        self._players = []
+        self._current_player = 0
+        self._num_players = 0
+    # End of __init__
+    
+# End of Game

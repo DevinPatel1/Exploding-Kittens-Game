@@ -14,18 +14,18 @@
 ####################################################################################
 # Class Specification
 #
-# Since python does not support access protections on attributes (e.g., protected or private)
-# nor has a way to set constants, the following PEP8 python naming conventions will be used:
-#   1. Any private attributes will be prefixed with a double underscore '__'.
-#   2. Any public attributes will be directly accessible instead of using a getter.
-#   3. Any methods that aren't meant to be used outside of the class will be
-#      prefixed with a single underscore '_'.
+# Since python does not enforce access protections on attributes (e.g., protected or private)
+# nor has a way to set constants, the following python conventions will be followed:
+#   1. Any private attributes or methods will be prefixed with a single underscore '_'.
+#   2. Any public attributes or methods will be directly accessible instead of using a getter.
+#   3. Any attributes or methods that shouldn't get overriden by a subclass will be prefixed with a double underscore '__'.
+#      This tells the python interpreter to instead prefix the attribute or method as '_ClassName__attribute' or '_ClassName_method'.
 #   4. Any constants will be all caps.
 #
-# Attributes:
+# Instance Attributes:
 #   + name (str):   Name of the player
 #   + losses (int): Number of losses the player has
-#   - __hand (list: Card): List of cards the player has
+#   - _hand (list: Card): List of cards the player has
 #
 # Methods:
 #   + __init__(name: str): Initiales an empty hand and sets the name of the player
@@ -44,11 +44,6 @@ class Player:
     Contains a player's hand of cards and facilitates adding and removing cards.
     """
     
-    # Attributes
-    __hand = []  # list of cards the player has
-    name = ""    # name of the player
-    losses = 0     # number of losses the player has
-    
     def __init__(self, name: str) -> None:
         """
         Constructor for the Player class.
@@ -57,8 +52,11 @@ class Player:
         Args:
             name (str): Name of the player
         """
-        self.__hand.clear()
+        # Attributes are initialized here instead of in the class definition
+        # to avoid the attributes being shared between all instances of the class.
+        self._hand = []
         self.name = name
+        self.losses = 0
     # End of __init__
     
     
@@ -76,14 +74,14 @@ class Player:
         # list.index() raises a ValueError if the card is not found.
         # If an exception is caught, then append the card to the end of the list.
         try:
-            identical_index = self.__hand.index(card)
+            identical_index = self._hand.index(card)
             
             # Exception not raised, so an identical card is found.
             # Insert the new card next to the identical card.
-            self.__hand.insert(identical_index + 1, card)
+            self._hand.insert(identical_index + 1, card)
             
         except ValueError:
-            self.__hand.append(card)
+            self._hand.append(card)
     # End of add_card
     
     
@@ -97,7 +95,7 @@ class Player:
         Raises:
             ValueError: If the card is not in the player's hand
         """
-        self.__hand.remove(card)
+        self._hand.remove(card)
     # End of remove_card
     
     
@@ -108,7 +106,7 @@ class Player:
         Returns:
             str: String representation of the player's hand
         """
-        return "".join(f"\t{card.name()}\n" for card in self.__hand)
+        return "".join(f"\t{card.name()}\n" for card in self._hand)
     # End of sprintf_hand
     
     def __str__(self) -> str:

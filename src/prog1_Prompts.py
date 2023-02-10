@@ -17,12 +17,12 @@
 #####################################################################################
 # Class Specification
 # @TODO Update this section as code is written
-# Since python does not support access protections on attributes (e.g., protected or private)
-# nor has a way to set constants, the following PEP8 python naming conventions will be used:
-#   1. Any private attributes will be prefixed with a double underscore '__'.
-#   2. Any public attributes will be directly accessible instead of using an accessor method.
-#   3. Any methods that aren't meant to be used outside of the class will be
-#      prefixed with a single underscore '_'.
+# Since python does not enforce access protections on attributes (e.g., protected or private)
+# nor has a way to set constants, the following python conventions will be followed:
+#   1. Any private attributes or methods will be prefixed with a single underscore '_'.
+#   2. Any public attributes or methods will be directly accessible instead of using a getter.
+#   3. Any attributes or methods that shouldn't get overriden by a subclass will be prefixed with a double underscore '__'.
+#      This tells the python interpreter to instead prefix the attribute or method as '_ClassName__attribute' or '_ClassName_method'.
 #   4. Any constants will be all caps.
 #
 #
@@ -34,3 +34,4 @@
 
 class Prompts:
     pass
+# End of Prompts

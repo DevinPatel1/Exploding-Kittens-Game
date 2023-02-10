@@ -59,11 +59,7 @@
 ####################################################################################
 # Class Specification
 #
-# Since python does not support access protections on attributes (e.g., protected or private)
-# nor has a way to set constants, the immutable type tuple will be used in conjunction with
-# Enums to store the names and descriptions of the cards.
-#
-# Card will extend the Enum class.
+# Card will extend the Enum class, so all of its attributes and methods will be public.
 #
 # Attributes/Enums:
 #   + EK: ("Exploding Kitten", description)

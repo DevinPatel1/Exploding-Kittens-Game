@@ -31,20 +31,20 @@
 #####################################################################################
 # Class Specification
 #
-# Since python does not support access protections on attributes (e.g., protected or private)
-# nor has a way to set constants, the following PEP8 python naming conventions will be used:
-#   1. Any private attributes will be prefixed with a double underscore '__'.
-#   2. Any public attributes will be directly accessible instead of using a getter.
-#   3. Any methods that aren't meant to be used outside of the class will be
-#      prefixed with a single underscore '_'.
+# Since python does not enforce access protections on attributes (e.g., protected or private)
+# nor has a way to set constants, the following python conventions will be followed:
+#   1. Any private attributes or methods will be prefixed with a single underscore '_'.
+#   2. Any public attributes or methods will be directly accessible instead of using a getter.
+#   3. Any attributes or methods that shouldn't get overriden by a subclass will be prefixed with a double underscore '__'.
+#      This tells the python interpreter to instead prefix the attribute or method as '_ClassName__attribute' or '_ClassName_method'.
 #   4. Any constants will be all caps.
 #
 #
-# Attributes:
+# Instance Attributes:
 #? + size (int):                  The number of cards in the deck.
 # + remaining_kittens (int):      The number of remaining Exploding Kittens.
-# - __deck (list: Card):          A list of Card types.
-# - __number_of_players (int):    The number of players in the game.
+# - _deck (list: Card):           A list of Card types.
+# - _number_of_players (int):     The number of players in the game.
 #
 # Methods:
 #  + __init__(number_of_players: int): Initializes the attributes, the deck, and the RNG.
@@ -65,21 +65,10 @@ from prog1_Card import Card
 import random   # Random Number Generator
 import time     # Seeding the Random Number Generator
 
-class Deck:
+class Deck(object):
     """
     Deck will contain a list of cards and will be used to shuffle, draw, and reset cards.
-    
-    Attributes:
-        size (int): The number of remaining cards in the draw pile.
     """
-
-    # Attributes
-    __deck = []
-    __number_of_players = 0 # Number of players in the game
-    remaining_kittens = 0   # Number of remaining Exploding Kittens
-    size = 0                # Number of remaining cards in the draw pile
-    
-    
     
     def __init__(self, number_of_players) -> None:
         """
@@ -91,9 +80,18 @@ class Deck:
         Args:
             number_of_players (int): The number of players in the game.
         """
-        self.__number_of_players = number_of_players
+        # Attributes are initialized here instead of in the class definition
+        # to avoid the attributes being shared between all instances of the class.
+        self._deck = []
+        self._number_of_players = number_of_players
+        self.remaining_kittens = number_of_players - 1
+        self.size = 0
+        
+        # Initialize deck
         self.reset()
-        random.seed(time.time()) # Seeds the RNG with the current time
+        
+        # Seeds the RNG with the current time
+        random.seed(time.time())
     # End of __init__
     
     
@@ -102,7 +100,7 @@ class Deck:
         """
         Shuffles the order of the remaining cards in the deck.
         """
-        random.shuffle(self.__deck)
+        random.shuffle(self._deck)
     # End of shuffle
     
     
@@ -113,7 +111,7 @@ class Deck:
         
         Returns (Card): The card that was popped from the end of the list.
         """
-        card = self.__deck.pop()
+        card = self._deck.pop()
         self.size -= 1
         
         # Checks if the card is an Exploding Kitten
@@ -152,17 +150,17 @@ class Deck:
         
         # If location was specified, place the card at that location
         if index == -1:
-            if location == 'top': self.__deck.append(card)
-            elif location == 'bottom': self.__deck.insert(0, card)
-            elif location == 'middle': self.__deck.insert(self.size // 2, card)
-            elif location == 'random': self.__deck.insert(random.randint(0, self.size-1), card)
+            if location == 'top': self._deck.append(card)
+            elif location == 'bottom': self._deck.insert(0, card)
+            elif location == 'middle': self._deck.insert(self.size // 2, card)
+            elif location == 'random': self._deck.insert(random.randint(0, self.size-1), card)
         
             # Raises a ValueError if the place is invalid
             else: raise ValueError(f"Invalid place: {location}")
         
         # Else if index was specified, place the card at that index
         elif location == "NoNe":
-            self.__deck.insert(index, card)
+            self._deck.insert(index, card)
         
         # Else raise a ValueError
         else: raise ValueError("Invalid parameters.")
@@ -178,55 +176,55 @@ class Deck:
         Clears the game deck, refills it with the appropriate cards, then shuffles it.
         """
         # Sets number of Exploding Kittens
-        self.remaining_kittens = self.__number_of_players - 1
+        self.remaining_kittens = self._number_of_players - 1
         
         # Clears the deck
-        self.__deck.clear()
+        self._deck.clear()
         
         # Add the Exploding Kittens
-        for _ in range(self.remaining_kittens): self.__deck.append(Card.EK)
+        for _ in range(self.remaining_kittens): self._deck.append(Card.EK)
         
         # Add the Defuse cards
-        for _ in range(6): self.__deck.append(Card.D)
+        for _ in range(6): self._deck.append(Card.D)
         
         # Add the Nope cards
-        for _ in range(5): self.__deck.append(Card.N)
+        for _ in range(5): self._deck.append(Card.N)
         
         # Add the Attack cards
-        for _ in range(4): self.__deck.append(Card.A)
+        for _ in range(4): self._deck.append(Card.A)
         
         # Add the Skip cards
-        for _ in range(4): self.__deck.append(Card.SK)
+        for _ in range(4): self._deck.append(Card.SK)
         
         # Add the Favor cards
-        for _ in range(4): self.__deck.append(Card.F)
+        for _ in range(4): self._deck.append(Card.F)
         
         # Add the Shuffle cards
-        for _ in range(4): self.__deck.append(Card.SH)
+        for _ in range(4): self._deck.append(Card.SH)
         
         # Add the See the Future cards
-        for _ in range(5): self.__deck.append(Card.STF)
+        for _ in range(5): self._deck.append(Card.STF)
         
         # Add the Taco Cat cards
-        for _ in range(4): self.__deck.append(Card.TCAT)
+        for _ in range(4): self._deck.append(Card.TCAT)
         
         # Add the Hairy Potato Cat cards
-        for _ in range(4): self.__deck.append(Card.HPCAT)
+        for _ in range(4): self._deck.append(Card.HPCAT)
         
         # Add the Cattermelon cards
-        for _ in range(4): self.__deck.append(Card.CATM)
+        for _ in range(4): self._deck.append(Card.CATM)
         
         # Add the Rainbow Ralphing Cat cards
-        for _ in range(4): self.__deck.append(Card.RRCAT)
+        for _ in range(4): self._deck.append(Card.RRCAT)
         
         # Add the Beard Cat cards
-        for _ in range(4): self.__deck.append(Card.BCAT)
+        for _ in range(4): self._deck.append(Card.BCAT)
         
         # Shuffle the deck
         self.shuffle()
         
         # Set the size
-        self.size = len(self.__deck)
+        self.size = len(self._deck)
                 
     # End of reset
     
@@ -258,10 +256,10 @@ class Deck:
         s += "Deck:\n["
         
         # Appends deck contents to cumulative string s
-        for i, card in enumerate(self.__deck):
+        for i, card in enumerate(self._deck):
             
             # If on last element, don't append a comma
-            if i == len(self.__deck) - 1: 
+            if i == len(self._deck) - 1: 
                 s += str(card.name())
             
             # Else append a comma
