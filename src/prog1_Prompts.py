@@ -26,13 +26,13 @@
 #   4. Any constants will be all caps.
 #
 #
-# Class Attributes:
-#   - __PS1: Prompt symbol indicating user input. The name PS1 comes from the bash prompt variable "PS1".
-#            Because this constant is a class attribute, it will have a double underscore to help protect its value.
+# Attributes:
+#   None
 #
 # Methods:
 #   + __init__(): No attributes to initialize, so it does nothing.
 #   + prompt_num_players(): Prompts the user for the number of players in the game.
+#   - _input(): Macro that creates the user input prompt and returns the string received from stdin.
 ####################################################################################
 
 class Prompts:
@@ -40,14 +40,24 @@ class Prompts:
     Prompts will manage user input and return validated prompt data for the Game class.
     """
     
-    # Class Attributes
-    __PS1 = ">>"
-    
     def __init__(self) -> None:
         """
         Nothing initiated here, this is just a functional class.
         """
         pass
+    # End of __init__
+    
+    
+    def _input(self) -> str:
+        """
+        Macro that creates the user input prompt and returns the string received from stdin.
+        The macro also strips the whitespace from the string prior to returning it.
+
+        Returns:
+            str: String received from stdin.
+        """
+        return input(">>").strip()
+    # End of _input
     
     
     def print_welcome(self) -> None:
@@ -70,7 +80,7 @@ class Prompts:
         # Input loop
         while True:
             try:
-                num_players = int(input(self.__PS1).strip())
+                num_players = int(self._input())
                 if num_players < 2:
                     print("There must be at least 2 players.")
                 else:
@@ -78,6 +88,7 @@ class Prompts:
             except ValueError:
                 print("Please enter a integer that is 2 or greater.")
         # End of Input loop
+    # End of prompt_num_players
     
     
 # End of Prompts
