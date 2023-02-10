@@ -43,7 +43,7 @@
 # Attributes:
 #? + size (int):                  The number of cards in the deck.
 # + remaining_kittens (int):      The number of remaining Exploding Kittens.
-# - __deck (list<Card>):          A list of Card types.
+# - __deck (list: Card):          A list of Card types.
 # - __number_of_players (int):    The number of players in the game.
 #
 # Methods:

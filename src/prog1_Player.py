@@ -23,9 +23,9 @@
 #   4. Any constants will be all caps.
 #
 # Attributes:
-#   + name: Name of the player
-#   + losses: Number of losses the player has
-#   - __hand: List of cards the player has
+#   + name (str):   Name of the player
+#   + losses (int): Number of losses the player has
+#   - __hand (list: Card): List of cards the player has
 #
 # Methods:
 #   + __init__(name: str): Initiales an empty hand and sets the name of the player

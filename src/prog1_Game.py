@@ -32,7 +32,7 @@
 #
 #####################################################################################
 # Class Specification
-#
+# @TODO Finish this section as the code is written
 # Since python does not support access protections on attributes (e.g., protected or private)
 # nor has a way to set constants, the following PEP8 python naming conventions will be used:
 #   1. Any private attributes will be prefixed with a double underscore '__'.
@@ -43,8 +43,21 @@
 #
 #
 # Attributes:
-#
+#   - __draw_pile (list: Card): List of drawable cards
+#   - __players (list: Player): List of players
+#   - __current_player (int): Index of which player's turn it is
+#   - __num_players (int): Number of players in the game
 #
 # Methods:
-#   + deal(): Deals cards to the players
+#   + __init__(): Initializes the game object
+#   + start(): Starts the game
+#   - _deal(): Deals cards to the players
 ####################################################################################
+
+# Imports
+from prog1_Card import Card
+from prog1_Deck import Deck
+from prog1_Player import Player
+
+class Game:
+    pass

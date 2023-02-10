@@ -154,7 +154,7 @@ class Card(Enum):
     # Methods
     ############################################################
     
-    def name(self):
+    def name(self) -> str:
         """
         Returns the name of the card.
 
@@ -165,7 +165,7 @@ class Card(Enum):
     # End of name
     
     
-    def description(self):
+    def description(self) -> str:
         """
         Returns the description of the card.
 
@@ -176,7 +176,7 @@ class Card(Enum):
     # End of description
     
     
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Returns the name and description of the card in an easily printable format.
 
