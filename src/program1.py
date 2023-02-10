@@ -10,17 +10,11 @@
 ####################################################################################
 
 # Imports
-from prog1_Card import Card
-from prog1_Deck import Deck
-from prog1_Player import Player
+from prog1_Game import Game
 
 def main():
-    deck = Deck(number_of_players=3)
-    player1 = Player("Player 1")
-    
-    for _ in range(7): player1.add_card(deck.draw())
-    print(player1)
-    
+    game = Game()
+    game.start()
 # End of main
 
 

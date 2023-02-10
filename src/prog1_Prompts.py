@@ -26,12 +26,58 @@
 #   4. Any constants will be all caps.
 #
 #
-# Attributes:
+# Class Attributes:
+#   - __PS1: Prompt symbol indicating user input. The name PS1 comes from the bash prompt variable "PS1".
+#            Because this constant is a class attribute, it will have a double underscore to help protect its value.
 #
 # Methods:
-#   
+#   + __init__(): No attributes to initialize, so it does nothing.
+#   + prompt_num_players(): Prompts the user for the number of players in the game.
 ####################################################################################
 
 class Prompts:
-    pass
+    """
+    Prompts will manage user input and return validated prompt data for the Game class.
+    """
+    
+    # Class Attributes
+    __PS1 = ">>"
+    
+    def __init__(self) -> None:
+        """
+        Nothing initiated here, this is just a functional class.
+        """
+        pass
+    
+    
+    def print_welcome(self) -> None:
+        """
+        Prints a welcome message to the user.
+        """
+        print("Welcome to Exploding Kittens!\n")
+        
+    
+    def prompt_num_players(self) -> int:
+        """
+        Prompts the user for the number of players in the game.
+        
+        Returns:
+            int: The number of players in the game.
+        """
+        print("How many players are playing?")
+        print("Please type an integer that is 2 or greater.")
+        
+        # Input loop
+        while True:
+            try:
+                num_players = int(input(self.__PS1).strip())
+                if num_players < 2:
+                    print("There must be at least 2 players.")
+                else:
+                    return num_players # Breaks Input loop
+            except ValueError:
+                print("Please enter a integer that is 2 or greater.")
+        # End of Input loop
+    
+    
 # End of Prompts

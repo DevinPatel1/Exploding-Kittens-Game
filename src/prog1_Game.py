@@ -32,7 +32,7 @@
 #
 #####################################################################################
 # Class Specification
-# @TODO Finish this section as the code is written
+#
 # Since python does not enforce access protections on attributes (e.g., protected or private)
 # nor has a way to set constants, the following python conventions will be followed:
 #   1. Any private attributes or methods will be prefixed with a single underscore '_'.
@@ -41,8 +41,9 @@
 #      This tells the python interpreter to instead prefix the attribute or method as '_ClassName__attribute' or '_ClassName_method'.
 #   4. Any constants will be all caps.
 #
-#
+# @TODO Finish this section as the code is written
 # Attributes:
+#   - _prompter (Prompts):      Manages user input for all game prompts
 #   - _draw_pile (Deck):        Deck of cards representing the draw pile
 #   - _players (list: Player):  List of players
 #   - _current_player (int):    Index of which player's turn it is
@@ -50,7 +51,7 @@
 #
 # Methods:
 #   + __init__(): Initializes the game object
-#   + start(): Starts the game
+#   + start(): Starts the game by initializing the attributes and entering the game loop
 #   - _deal(): Deals cards to the players
 ####################################################################################
 
@@ -58,23 +59,44 @@
 from prog1_Card import Card
 from prog1_Deck import Deck
 from prog1_Player import Player
+from prog1_Prompts import Prompts
 
 class Game:
     """
     Game will facilitate Exploding Kittens functionality and game loop.
     """
     
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Declares the game class attributes.
-        The start method will be in charge of properly initializing the game attributes.
+        The start method will properly initialize the game attributes.
         """
         # Attributes are initialized here instead of in the class definition
         # to avoid the attributes being shared between all instances of the class.
-        self._draw_pile = Deck()
+        self._prompter = Prompts()
+        self._draw_pile = 0
         self._players = []
         self._current_player = 0
         self._num_players = 0
     # End of __init__
+    
+    
+    def start(self) -> None:
+        """
+        Starts the game by initializing the attributes and entering the game loop.
+        """
+        # Prints welcome message
+        self._prompter.print_welcome()
+        
+        # Prompt for number of players
+        self._num_players = self._prompter.prompt_num_players()
+
+        # Go ahead and initialize the deck
+        self._draw_pile = Deck(number_of_players=self._num_players)
+        
+        # Prompt for player names
+        # Deal cards to players
+        # Enter game loop
+        # End of game
     
 # End of Game
