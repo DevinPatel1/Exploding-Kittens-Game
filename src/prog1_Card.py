@@ -83,7 +83,6 @@
 #                in an easily printable format
 ####################################################################################
 
-
 # Imports
 from enum import Enum
 

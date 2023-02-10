@@ -41,24 +41,23 @@
 #
 #
 # Instance Attributes:
-#? + size (int):                  The number of cards in the deck.
-# + remaining_kittens (int):      The number of remaining Exploding Kittens.
-# - _deck (list: Card):           A list of Card types.
-# - _number_of_players (int):     The number of players in the game.
+#?   + size (int):                  The number of cards in the deck.
+#   + remaining_kittens (int):      The number of remaining Exploding Kittens.
+#   - _deck (list: Card):           A list of Card types.
+#   - _number_of_players (int):     The number of players in the game.
 #
 # Methods:
-#  + __init__(number_of_players: int): Initializes the attributes, the deck, and the RNG.
-#  + shuffle(): Shuffles the order of the remaining cards in the deck.
-#  + draw():    Pops a card from the bottom of the deck list and returns it.
-#  + place(card: Card, location="NoNe", index=-1):   Places a card at the specified location OR index in the deck.
+#   + __init__(number_of_players: int): Initializes the attributes, the deck, and the RNG.
+#   + shuffle(): Shuffles the order of the remaining cards in the deck.
+#   + draw():    Pops a card from the bottom of the deck list and returns it.
+#   + place(card: Card, location="NoNe", index=-1):   Places a card at the specified location OR index in the deck.
 #                                     Valid values for location are 'top', 'bottom',
 #                                     'middle', or 'random', otherwise a ValueError will be raised.
-#  + reset():   Resets the deck with all cards and shuffles.
+#   + reset():   Resets the deck with all cards and shuffles.
 #               Must be used with a method that clears cards from hands.
-#?  + get_deck_count(): Returns the number of remaining cards in the deck.
-#  + __str__(): Converts the deck to a string representation for printing/debugging.
+#?   + get_deck_count(): Returns the number of remaining cards in the deck.
+#   + __str__(): Converts the deck to a string representation for printing/debugging.
 #####################################################################################
-
 
 # Imports
 from prog1_Card import Card
