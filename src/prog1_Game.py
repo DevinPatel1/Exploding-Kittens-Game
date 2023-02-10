@@ -23,6 +23,7 @@
 #       5.5. If the player draws an Exploding Kitten, and they have a Defuse card, they will be prompted
 #            to play it (default option) or not (which results in a loss and game over).
 #       5.6. If the player draws an Exploding Kitten, and they do not have a Defuse card, they lose, and the game is over.
+#            Increment that player's loss count and display the scoreboard for each player.
 #       5.7. Once the player's turn is over, a prompt will be displayed to switch to the next player before continuing.
 #    6. If the game is over, prompt the user to either play again or quit.
 #       6.1. If the player wants to change the number of players, they will have to restart the program.
@@ -32,10 +33,10 @@
 #####################################################################################
 # Class Specification
 #
-# Since python does not support access protections on attributes (like protected or private)
+# Since python does not support access protections on attributes (e.g., protected or private)
 # nor has a way to set constants, the following PEP8 python naming conventions will be used:
 #   1. Any private attributes will be prefixed with a double underscore '__'.
-#   2. Any public attributes will be directly accessible instead of using a getter.
+#   2. Any public attributes will be directly accessible instead of using an accessor method.
 #   3. Any methods that aren't meant to be used outside of the class will be
 #      prefixed with a single underscore '_'.
 #   4. Any constants will be all caps.
@@ -45,5 +46,5 @@
 #
 #
 # Methods:
-#   + deal(): deals cards to the players
+#   + deal(): Deals cards to the players
 ####################################################################################

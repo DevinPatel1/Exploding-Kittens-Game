@@ -31,7 +31,7 @@
 #####################################################################################
 # Class Specification
 #
-# Since python does not support access protections on attributes (like protected or private)
+# Since python does not support access protections on attributes (e.g., protected or private)
 # nor has a way to set constants, the following PEP8 python naming conventions will be used:
 #   1. Any private attributes will be prefixed with a double underscore '__'.
 #   2. Any public attributes will be directly accessible instead of using a getter.
@@ -57,7 +57,7 @@
 #               Must be used with a method that clears cards from hands.
 #?  + get_deck_count(): Returns the number of remaining cards in the deck.
 #  + __str__(): Converts the deck to a string representation for printing/debugging.
-####################################################################################
+#####################################################################################
 
 
 # Imports

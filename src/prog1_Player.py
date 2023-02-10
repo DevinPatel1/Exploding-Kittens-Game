@@ -14,7 +14,7 @@
 ####################################################################################
 # Class Specification
 #
-# Since python does not support access protections on attributes (like protected or private)
+# Since python does not support access protections on attributes (e.g., protected or private)
 # nor has a way to set constants, the following PEP8 python naming conventions will be used:
 #   1. Any private attributes will be prefixed with a double underscore '__'.
 #   2. Any public attributes will be directly accessible instead of using a getter.
@@ -23,15 +23,16 @@
 #   4. Any constants will be all caps.
 #
 # Attributes:
-#   + name: name of the player
-#   - __hand: list of cards the player has
+#   + name: Name of the player
+#   + losses: Number of losses the player has
+#   - __hand: List of cards the player has
 #
 # Methods:
 #   + __init__(name: str): Initiales an empty hand and sets the name of the player
-#   + add_card(card: Card): adds a card to the player's hand
-#   + pop_card(card: Card): pops a card from the player's hand
-#   + sprintf_hand(): returns a string representation of the player's hand
-#   + __str__(): returns a string representation of all Player attributes
+#   + add_card(card: Card): Adds a card to the player's hand
+#   + pop_card(card: Card): Pops a card from the player's hand
+#   + sprintf_hand(): Returns a string representation of the player's hand
+#   + __str__(): Returns a string representation of all Player attributes
 ####################################################################################
 
 # Imports
@@ -46,6 +47,7 @@ class Player:
     # Attributes
     __hand = []  # list of cards the player has
     name = ""    # name of the player
+    losses = 0     # number of losses the player has
     
     def __init__(self, name: str) -> None:
         """

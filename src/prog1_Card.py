@@ -59,7 +59,7 @@
 ####################################################################################
 # Class Specification
 #
-# Since python does not support access protections on attributes (like protected or private)
+# Since python does not support access protections on attributes (e.g., protected or private)
 # nor has a way to set constants, the immutable type tuple will be used in conjunction with
 # Enums to store the names and descriptions of the cards.
 #
@@ -81,9 +81,9 @@
 #   + BCAT: ("Beard Cat", description)
 #
 # Methods:
-#   + name(): macro that returns the name of the card
-#   + description(): macro that returns the description of the card
-#   + __str__(): returns the name and description of the card as a string
+#   + name(): Macro that returns the name of the card
+#   + description(): Macro that returns the description of the card
+#   + __str__(): Returns the name and description of the card as a string
 #                in an easily printable format
 ####################################################################################
 
