@@ -138,11 +138,11 @@ class Prompter:
         Returns:
             int: The number of players in the game.
         """
-        self._spacer()
-        print(f"{self.__PRMPT} How many players are playing? Only 2-5 players are able to play.")
-        
         # Input loop
         while True:
+            self._spacer()
+            print(f"{self.__PRMPT} How many players are playing? Only 2-5 players are able to play.")
+        
             try: # Capture and cast user input as an int
                 num_players = int(self._input())
             except ValueError:
@@ -176,11 +176,12 @@ class Prompter:
         list_of_players = []
         
         for i in range(num_players):
-            # Prints the prompt for each player
-            print(f"{self.__PRMPT} Player {i+1}'s name?")
-        
             # Input loop
             while True:
+                # Prints the prompt for each player
+                self._spacer()
+                print(f"{self.__PRMPT} Player {i+1}'s name?")
+        
                 name = self._input()
                 
                 # Check if the name is empty or only digits
