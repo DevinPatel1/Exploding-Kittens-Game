@@ -39,8 +39,12 @@
 #   + prompt_player_names(num_players: int): Prompts the user for the names of the players.
 #   + alert_player_turn(): Alerts which user's turn it is so their hand can't be seen by other players.
 #   + prompt_play_or_pass(): Prompts the user to play a card or pass.
+#
+# Macros:
 #   - _input(prompt_symbol=">>"): Macro that creates the user input prompt and returns the string received from stdin.
 #   - _spacer(lines: int): Macro that prints lines of whitespace to the terminal for readability.
+#   - _continue(): Macro that prompts the user to press enter to continue.
+#   - _error(error_msg: str): Macro that prints an error message to the terminal.
 ####################################################################################
 
 # Imports
@@ -56,7 +60,7 @@ class Prompter:
     # Class Attributes
     __GAME = "[GAME]"    # For game updates
     __PRMPT = "[PROMPT]" # For prompts
-    __ERR = "[ERROR]\a"  # For errors or invalid input
+    __ERR = "[ERROR]\a"  # For errors or invalid input. Plays a bell char if the terminal supports it.
     
     def __init__(self) -> None:
         """
@@ -95,6 +99,24 @@ class Prompter:
         print("\n"*lines, end="")
     # End of _spacer
     
+    def _continue(self) -> None:
+        """
+        Macro that prompts the user to press enter to continue.
+        """
+        input("Press [Enter] to continue...")
+    
+    def _error(self, error_msg: str) -> None:
+        """
+        Macro that prints an error message to the terminal.
+        The user then presses enter to continue.
+        
+        Args:
+            error_msg (str): The error message to print.
+        """
+        self._spacer()
+        print(f"{self.__ERR} {error_msg}")
+        self._continue()
+    
     
     
     ########################################
@@ -125,15 +147,15 @@ class Prompter:
                 num_players = int(self._input())
             except ValueError:
                 # Input is not an integer
-                print(f"{self.__ERR} Please enter a integer that is 2 or greater.")
+                self._error("Please enter a integer that is 2 or greater.")
                 continue
             # End of try/except
             
             # Check if there are enough players
             if num_players < 2:
-                print(f"{self.__ERR} There must be at least 2 players.")
+                self._error("There must be at least 2 players.")
             elif num_players > 5:
-                print(f"{self.__ERR} There can't be more than 5 players.")
+                self._error("There can't be more than 5 players.")
             else: # Valid input
                 return num_players # Breaks Input loop
         # End of Input loop
@@ -163,7 +185,7 @@ class Prompter:
                 
                 # Check if the name is empty or only digits
                 if len(name) == 0 or name.isnumeric():
-                    print(f"{self.__ERR} Please enter a name with at least some letters.")
+                    self._error("Please enter a name with at least some letters.")
                 else:
                     # Valid input, append player then break
                     list_of_players.append(Player(name))
@@ -183,9 +205,9 @@ class Prompter:
         Args:
             player (Player): The player whose turn it is.
         """
-        self._spacer(10)
+        self._spacer(30)
         print(f"{self.__GAME} It is {player.name}'s turn.")
-        input("Press Enter to continue...")
+        self._continue()
         
         
     # End of alert_player_turn
@@ -198,8 +220,9 @@ class Prompter:
         The following key words have functionality:
             1. "pass" - Effectively ends their turn. They will draw a card.
             2. "show" - Prints the player's hand.
-            2. <card> - The name of the card the user wants to play.
+            3. <card> - The name of the card the user wants to play.
                         The player cannot play their Defuse card here.
+        All other input is invalid.
 
         Args:
             player (Player): The player whose turn it is.
@@ -217,14 +240,14 @@ class Prompter:
         while True:
             self._spacer()
             print(f"{self.__PRMPT} {player.name}, please enter one of the following:")
-            print(f"{len(self.__PRMPT)*' '}  1) The name of the card from your hand to play")
-            print(f"{len(self.__PRMPT)*' '}  2) 'pass' to end your turn and draw a card")
-            print(f"{len(self.__PRMPT)*' '}  3) 'show' to see your hand")
+            print(f"{len(self.__PRMPT)*' '}   1) The name of the card from your hand to play")
+            print(f"{len(self.__PRMPT)*' '}   2) 'show' to see your hand")
+            print(f"{len(self.__PRMPT)*' '}   3) 'pass' to end your turn and draw a card")
             
             input = self._input().lower()
             
             # Check for pass
-            if input == 'pass' or input == '1': return (None, True)
+            if input == 'pass' or input == '3': return (None, True)
             
             # Check for show, print hand if so
             if input == 'show' or input == '2':
@@ -234,17 +257,18 @@ class Prompter:
             
             # Check for defuse card
             if input == 'defuse':
-                print(f"{self.__ERR} You can\'t play your Defuse card now.")
+                self._error("You can't play your Defuse card now.")
                 continue
             
             # Check if the player has that card. If they do, play it.
             for card in player.hand:
-                if card.name().lower() == input: # User has card, return it
+                if card == Card.EK: continue       # Skip Exploding Kittens
+                if card.name().lower() == input:   # User has card, return it
                     return (card, False)
             # End of for loop
             
             # Everything else is either unacceptable input or the player doesn't have the card
-            print(f"{self.__ERR} Please enter \'pass\', \'show\', or a valid card name from your hand.")
+            self._error("Please enter \'pass\', \'show\', or a valid card name from your hand.")
         # End of Input loop
         
     # End of prompt_play_or_pass
