@@ -186,7 +186,6 @@ class Deck:
         """
         Clears the game deck, refills it with the appropriate cards, then shuffles it.
         """
-        
         # Clears the deck
         self._deck.clear()
         
@@ -198,10 +197,10 @@ class Deck:
         # However, if there are 2 or 3 players, only 2 Defuse cards get added to the deck.
         # Thus, two generator expressions are used.
         # The first adds 6-number_of_players Defuse cards to the deck if there are more than 3 players.
-        [self._deck.append(Card.D) for _ in range(6-self._num_players) if self._num_players > 3]
+        if self._num_players > 3: [self._deck.append(Card.D) for _ in range(6-self._num_players)]
         
         # The second adds 2 Defuse cards to the deck if there are 2 or 3 players.
-        [self._deck.append(Card.D) for _ in range(2) if self._num_players <= 3]
+        if self._num_players <= 3: [self._deck.append(Card.D) for _ in range(2)]
         
         # Add the Nope cards
         for _ in range(5): self._deck.append(Card.N)
