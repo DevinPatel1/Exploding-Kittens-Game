@@ -113,19 +113,21 @@ class Prompter:
         
         # Input loop
         while True:
-            try:
+            try: # Capture and cast user input as an int
                 num_players = int(self._input())
-                
-                # Check if there are enough players
-                if num_players < 2:
-                    print(f"{self.__ERR} There must be at least 2 players.")
-                elif num_players > 5:
-                    print(f"{self.__ERR} There can't be more than 5 players.")
-                else: # Valid input
-                    return num_players # Breaks Input loop
             except ValueError:
                 # Input is not an integer
                 print(f"{self.__ERR} Please enter a integer that is 2 or greater.")
+                continue
+            # End of try/except
+            
+            # Check if there are enough players
+            if num_players < 2:
+                print(f"{self.__ERR} There must be at least 2 players.")
+            elif num_players > 5:
+                print(f"{self.__ERR} There can't be more than 5 players.")
+            else: # Valid input
+                return num_players # Breaks Input loop
         # End of Input loop
     # End of prompt_num_players
     
@@ -140,8 +142,8 @@ class Prompter:
         Returns:
             list: List of all the players as Player objects.
         """
-        list_of_players = []
         self._spacer()
+        list_of_players = []
         
         for i in range(num_players):
             # Prints the prompt for each player
