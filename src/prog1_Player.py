@@ -10,7 +10,10 @@
 ####################################################################################
 # Design Requirements
 #
-#
+# The Player class will be responsible for the following:
+#   1. Maintain, manage, and report a player's hand of cards.
+#   2. Facilitate adding and removing cards from the player's hand.
+#   3. Keep track of the player's name and number of wins they have.
 ####################################################################################
 # Class Specification
 #
@@ -24,13 +27,13 @@
 #
 # Instance Attributes:
 #   + name (str):   Name of the player
-#   + losses (int): Number of losses the player has
+#   + wins (int): Number of wins the player has
 #   - _hand (list: Card): List of cards the player has
 #
 # Methods:
 #   + __init__(name: str): Initiales an empty hand and sets the name of the player
 #   + add_card(card: Card): Adds a card to the player's hand
-#   + pop_card(card: Card): Pops a card from the player's hand
+#   + remove_card(card: Card): Pops a card from the player's hand
 #   + sprintf_hand(): Returns a string representation of the player's hand
 #   + __str__(): Returns a string representation of all Player attributes
 ####################################################################################
@@ -56,7 +59,7 @@ class Player:
         # to avoid the attributes being shared between all instances of the class.
         self._hand = []
         self.name = name
-        self.losses = 0
+        self.wins = 0
     # End of __init__
     
     
