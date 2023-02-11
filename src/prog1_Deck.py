@@ -106,7 +106,8 @@ class Deck(object):
         """
         Pops a card from the end of the deck list and returns it.
         
-        Returns (Card): The card that was popped from the end of the list.
+        Returns:
+            Card: The card that was popped from the end of the list.
         """
         card = self._deck.pop()
         self.size -= 1
