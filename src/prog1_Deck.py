@@ -43,7 +43,7 @@
 # Instance Attributes:
 #?   + size (int):                  The number of cards in the deck.
 #   - _deck (list: Card):           A list of Card types.
-#   - _number_of_players (int):     The number of players in the game.
+#   - _num_players (int):           The number of players in the game.
 #
 # Methods:
 #   + __init__(number_of_players: int): Initializes the attributes, the deck, and the RNG.
@@ -81,7 +81,7 @@ class Deck(object):
         # Attributes are initialized here instead of in the class definition
         # to avoid the attributes being shared between all instances of the class.
         self._deck = []
-        self._number_of_players = number_of_players
+        self._num_players = number_of_players
         self.size = 0
         
         # Initialize deck
@@ -173,17 +173,17 @@ class Deck(object):
         self._deck.clear()
         
         # Add the Exploding Kittens
-        for _ in range(self._number_of_players-1): self._deck.append(Card.EK)
+        for _ in range(self._num_players-1): self._deck.append(Card.EK)
         
         # Add the Defuse cards. This has special rules.
         # Each player gets one Defuse card in their hand, and the rest are put in the deck.
         # However, if there are 2 or 3 players, only 2 Defuse cards get added to the deck.
         # Thus, two generator expressions are used.
         # The first adds 6-number_of_players Defuse cards to the deck if there are more than 3 players.
-        [self._deck.append(Card.D) for _ in range(6-self._number_of_players) if self._number_of_players > 3]
+        [self._deck.append(Card.D) for _ in range(6-self._num_players) if self._num_players > 3]
         
         # The second adds 2 Defuse cards to the deck if there are 2 or 3 players.
-        [self._deck.append(Card.D) for _ in range(2) if self._number_of_players <= 3]
+        [self._deck.append(Card.D) for _ in range(2) if self._num_players <= 3]
         
         # Add the Nope cards
         for _ in range(5): self._deck.append(Card.N)
@@ -250,7 +250,7 @@ class Deck(object):
         s = ""
         
         s += f"Deck size: {self.size}\n"
-        s += f"Number of Exploding Kittens: {self._number_of_players-1}\n"
+        s += f"Number of Exploding Kittens: {self._num_players-1}\n"
         s += "Deck:\n["
         
         # Appends deck contents to cumulative string s
