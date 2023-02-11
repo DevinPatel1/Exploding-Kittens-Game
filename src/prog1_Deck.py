@@ -86,11 +86,11 @@ class Deck:
         self._num_players = number_of_players
         self.size = 0
         
-        # Initialize deck
-        self.reset()
-        
         # Seeds the RNG with the current time
         random.seed(time.time())
+        
+        # Initialize deck
+        self.reset()
     # End of __init__
     
     
