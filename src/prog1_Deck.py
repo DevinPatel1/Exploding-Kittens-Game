@@ -44,7 +44,7 @@
 #
 # Instance Attributes:
 #   + size (int):                   The number of cards in the deck.
-#   - _deck (list: Card):           A list of Card types.
+#   - _deck (list[Card]):           A list of Card types.
 #   - _num_players (int):           The number of players in the game.
 #
 # Methods:
@@ -68,7 +68,7 @@ class Deck:
     Deck will contain a list of cards and will be used to shuffle, draw, and reset cards.
     """
     
-    def __init__(self, num_players) -> None:
+    def __init__(self, num_players: int) -> None:
         """
         Constructor for the Deck class.
         Sets a local variable for the number of players in the game.
@@ -80,7 +80,7 @@ class Deck:
         """
         # Attributes are initialized here instead of in the class definition
         # to avoid the attributes being shared between all instances of the class.
-        self._deck = []
+        self._deck: list[Card] = []
         self._num_players = num_players
         self.size = 0
         

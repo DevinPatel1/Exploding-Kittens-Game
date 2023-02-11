@@ -34,9 +34,12 @@
 #
 # Methods:
 #   + __init__(): No attributes to initialize, so it does nothing.
+#   + print_welcome(): Prints a welcome message to the user.
 #   + prompt_num_players(): Prompts the user for the number of players in the game.
 #   + prompt_player_names(num_players: int): Prompts the user for the names of the players.
-#   - _input(): Macro that creates the user input prompt and returns the string received from stdin.
+#   + alert_player_turn(): Alerts which user's turn it is so their hand can't be seen by other players.
+#   + prompt_play_or_pass(): Prompts the user to play a card or pass.
+#   - _input(prompt_symbol=">>"): Macro that creates the user input prompt and returns the string received from stdin.
 #   - _spacer(lines: int): Macro that prints lines of whitespace to the terminal for readability.
 ####################################################################################
 
@@ -66,15 +69,20 @@ class Prompter:
     # Private Macros
     ########################################
     
-    def _input(self) -> str:
+    def _input(self, prompt_symbol=">>") -> str:
         """
         Macro that prints the input prompt symbol and returns the string received from stdin.
         The macro also strips the whitespace from the string prior to returning it.
 
+            input(<prompt_symbol>).strip()
+
+        Args:
+            prompt_symbol (str, optional): The symbol to print indicating user input. Defaults to ">>".
+
         Returns:
             str: String received from stdin.
         """
-        return input(">>").strip()
+        return input(prompt_symbol).strip()
     # End of _input
     
     def _spacer(self, lines=1) -> None:
@@ -132,7 +140,7 @@ class Prompter:
     # End of prompt_num_players
     
     
-    def prompt_player_names(self, num_players: int) -> list:
+    def prompt_player_names(self, num_players: int) -> list[Player]:
         """
         Prompts the user for the names of the players.
         
@@ -166,5 +174,79 @@ class Prompter:
         
         return list_of_players
     # End of prompt_player_names
+    
+    
+    def alert_player_turn(self, player: Player) -> None:
+        """
+        Alerts which user's turn it is so their hand can't be seen by other players.
+
+        Args:
+            player (Player): The player whose turn it is.
+        """
+        self._spacer(10)
+        print(f"{self.__GAME} It is {player.name}'s turn.")
+        input("Press Enter to continue...")
+        
+        
+    # End of alert_player_turn
+    
+    
+    def prompt_play_or_pass(self, player: Player) -> tuple[Card, bool]:
+        """
+        Prompts the user to play a card or pass.
+        Their hand will be printed to the terminal to show them what they can play.
+        The following key words have functionality:
+            1. "pass" - Effectively ends their turn. They will draw a card.
+            2. "show" - Prints the player's hand.
+            2. <card> - The name of the card the user wants to play.
+                        The player cannot play their Defuse card here.
+
+        Args:
+            player (Player): The player whose turn it is.
+
+        Returns:
+            tuple[Card, bool]: Returns the card the user wants to play and
+                               a boolean denoting whether the user wants to pass.
+                               True means the user wants to pass, and False
+                               means the user wants to play.
+        """
+        self._spacer()
+        print(f"{self.__GAME} {player.sprintf_hand()}") # Print the player's hand
+        
+        # Input loop only breaks when valid input is returned
+        while True:
+            self._spacer()
+            print(f"{self.__PRMPT} {player.name}, please enter one of the following:")
+            print(f"{len(self.__PRMPT)*' '}  1) The name of the card from your hand to play")
+            print(f"{len(self.__PRMPT)*' '}  2) 'pass' to end your turn and draw a card")
+            print(f"{len(self.__PRMPT)*' '}  3) 'show' to see your hand")
+            
+            input = self._input().lower()
+            
+            # Check for pass
+            if input == 'pass' or input == '1': return (None, True)
+            
+            # Check for show, print hand if so
+            if input == 'show' or input == '2':
+                print(f"{self.__GAME} {player.sprintf_hand()}")
+                self._spacer()
+                continue
+            
+            # Check for defuse card
+            if input == 'defuse':
+                print(f"{self.__ERR} You can\'t play your Defuse card now.")
+                continue
+            
+            # Check if the player has that card. If they do, play it.
+            for card in player.hand:
+                if card.name().lower() == input: # User has card, return it
+                    return (card, False)
+            # End of for loop
+            
+            # Everything else is either unacceptable input or the player doesn't have the card
+            print(f"{self.__ERR} Please enter \'pass\', \'show\', or a valid card name from your hand.")
+        # End of Input loop
+        
+    # End of prompt_play_or_pass
     
 # End of Prompter

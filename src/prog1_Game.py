@@ -11,8 +11,7 @@
 #
 # The Game class will be responsible for the following:
 #   1. Run a game of Exploding Kittens per the rules of the board game (minus combos).
-#   2. Prompt the user for the number of players and their names. Display a confirmation
-#      of all the players and their names before continuing.
+#   2. Prompt the user for the number of players and their names.
 #   3. Instantiate a deck of cards and deal them to the players.
 #   4. Cycle through the players' turns until someone loses to an Exploding Kitten.
 #   5. A player's turn will consist of the following:
@@ -41,11 +40,10 @@
 #   4. Any constants will be all caps.
 #
 #
-# Attributes:
-#   - _prompter (Prompter):      Manages user input for all game prompts
+# Instance Attributes:
+#   - _prompter (Prompter):     Facilitates user input for all game prompts
 #   - _draw_pile (Deck):        Deck of cards representing the draw pile
-#   - _players (list: Player):  List of players
-#   - _current_player (int):    Index of which player's turn it is
+#   - _players (list[Player]):          List of players
 #   - _num_players (int):       Number of players in the game
 #
 # Methods:
@@ -54,6 +52,8 @@
 #   - _deal(): Deals cards to the players
 #   - _game_loop(): Runs the game loop until a player loses,
 #                   at which point the user is prompted to play again.
+#   - _player_turn(player_index: int): Facilitates a play-or-pass loop for a player's turn.
+#   - _end_turn(player_index: int): Ends a player's turn and facilitates the drawing process.
 ####################################################################################
 
 # Imports
@@ -75,12 +75,15 @@ class Game:
         # Attributes are initialized here instead of in the class definition
         # to avoid the attributes being shared between all instances of the class.
         self._prompter = Prompter()
-        self._draw_pile = 0
-        self._players = []
-        self._current_player = 0
+        self._draw_pile: Deck = None
+        self._players: list[Player] = []
         self._num_players = -1
     # End of __init__
     
+    
+    ##############################
+    # Setup Methods
+    ##############################
     
     def start(self) -> None:
         """
@@ -95,9 +98,6 @@ class Game:
         
         # Initialize the list of players if this is the first game
         if len(self._players) == 0: self._players = self._prompter.prompt_player_names(self._num_players)
-        
-        # Initialize the current player. Keep this value <= _num_players-1
-        self._current_player = 0
 
         # Initialize the deck using the player count
         self._draw_pile = Deck(num_players=self._num_players)
@@ -107,7 +107,6 @@ class Game:
         
         # Setup complete, enter game loop
         self._game_loop()
-        
     # End of start
     
     
@@ -148,10 +147,72 @@ class Game:
     # End of _deal
     
     
-    def _game_loop(self) -> None:
+    ##############################
+    # Game Loop Method
+    ##############################
+    
+    def _game_loop(self) -> None: # @bookmark _game_loop()
         """
         Game loop that cycles through the players' turns until everyone loses to an Exploding Kitten.
         All card rules are applied here.
         """
+        winner_declared = False
+        current_player = 0  # Keep this value between 0 and _num_players-1
+        
+        # Game loop
+        while not winner_declared:
+            self._player_turn(current_player)
+            
+            # Player's turn is done, move to next player
+            current_player += 1
+            # Wrap around if current player was the last player
+            if current_player >= self._num_players: current_player = 0
+            
+        # End of game loop
+        
+        # Game is over, display the win scoreboard and return to main()
+        # to prompt the user to play again.
+        # @TODO Implement an end_game() method to do this.
+        
+    # End of _game_loop
+    
+    
+    ##############################
+    # Game Helper Methods
+    ##############################
+    
+    def _player_turn(self, player_index: int) -> None:
+        """
+        Facilitates a play-or-pass loop for a player's turn.
+        
+        Args:
+            player_index (int): Index of which player's turn it is.
+        """
+        # Alert the player it is their turn
+        self._prompter.alert_player_turn(self._players[player_index])
+        
+        # Prompt for card to play
+        card, pass_ = self._prompter.prompt_play_or_pass(self._players[player_index])
+        
+        # If the player chooses to pass, end their turn and return to the game loop
+        if pass_:
+            self._end_turn(player_index)
+            return
+        
+        # If player plays a card, apply the rules
+        
+        
+    # End of _player_turn
+    
+    
+    def _end_turn(self, player_index: int) -> None:
+        """
+        Ends the player's turn. This method handles the drawing process
+        and handles Exploding Kitten draws and Defuse plays.
+        
+        Args:
+            player_index (int): Index of which player's turn to end.
+        """
         pass
+    # End of _end_turn
 # End of Game

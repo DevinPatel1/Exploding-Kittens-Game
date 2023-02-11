@@ -6,7 +6,7 @@
 ####################################################################################
 # Filename:     prog1_Player.py
 # Purpose:      To implement a base player class that contains a player's hand of cards.
-#?               This class will be inherited by ComputerPlayer.
+# @TODO               This class will be inherited by ComputerPlayer.
 ####################################################################################
 # Design Requirements
 #
@@ -28,12 +28,14 @@
 # Instance Attributes:
 #   + name (str):   Name of the player
 #   + wins (int): Number of wins the player has
-#   - _hand (list: Card): List of cards the player has
+#   + hand (list[Card]): List of cards the player has
+#   + still_playing (bool): Indicates if the player is still playing or if they lost
 #
 # Methods:
 #   + __init__(name: str): Initiales an empty hand and sets the name of the player
 #   + add_card(card: Card): Adds a card to the player's hand
-#   + remove_card(card: Card): Pops a card from the player's hand
+#   + pop_card(card: Card): Pops a card from the player's hand and returns it
+#   + has_card(card: Card): Returns True if the player has the card in their hand
 #   + sprintf_hand(): Returns a string representation of the player's hand
 #   + __str__(): Returns a string representation of all Player attributes
 ####################################################################################
@@ -57,9 +59,10 @@ class Player:
         """
         # Attributes are initialized here instead of in the class definition
         # to avoid the attributes being shared between all instances of the class.
-        self._hand = []
+        self.hand: list[Card] = []
         self.name = name
         self.wins = 0
+        self.is_still_playing = True
     # End of __init__
     
     
@@ -77,20 +80,20 @@ class Player:
         # list.index() raises a ValueError if the card is not found.
         # If an exception is caught, then append the card to the end of the list.
         try:
-            identical_index = self._hand.index(card)
+            identical_index = self.hand.index(card)
             
             # Exception not raised, so an identical card is found.
             # Insert the new card next to the identical card.
-            self._hand.insert(identical_index + 1, card)
+            self.hand.insert(identical_index + 1, card)
             
         except ValueError:
-            self._hand.append(card)
+            self.hand.append(card)
     # End of add_card
     
     
-    def remove_card(self, card: Card) -> None:
+    def pop_card(self, card: Card) -> Card:
         """
-        Removes a card from the player's hand.
+        Removes a card from the player's hand and returns it.
         
         Args:
             card (Card): Card to remove from the player's hand
@@ -98,8 +101,22 @@ class Player:
         Raises:
             ValueError: If the card is not in the player's hand
         """
-        self._hand.remove(card)
+        return self.hand.pop(self.hand.index(card))
     # End of remove_card
+    
+    
+    def has_card(self, a_card: Card) -> bool:
+        """
+        Returns True if the player has the card in their hand.
+
+        Args:
+            a_card (Card): Card to search for.
+
+        Returns:
+            bool: Returns True if the card is in the player's hand. False if otherwise.
+        """
+        return a_card in self.hand
+    # End of has_card
     
     
     def sprintf_hand(self) -> str:
@@ -109,17 +126,18 @@ class Player:
         Returns:
             str: String representation of the player's hand
         """
-        return "".join(f"\t{card.name()}\n" for card in self._hand)
+        return f"{self.name}'s Hand:\n".join(f"\t{card.name()}\n" for card in self.hand)
     # End of sprintf_hand
+    
     
     def __str__(self) -> str:
         """
         Returns a string representation of all Player attributes.
         
         Returns:
-            str: Player name and hand
+            str: Player name, win count, and hand
         """
-        return f"{self.name}'s Hand:\n{self.sprintf_hand()}"
+        return f"{self.name} won {self.wins} times.\n{self.sprintf_hand()}"
     # End of __str__
     
 # End of Player
