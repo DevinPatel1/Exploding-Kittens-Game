@@ -104,12 +104,13 @@ class Prompter:
     def prompt_num_players(self) -> int:
         """
         Prompts the user for the number of players in the game.
+        Valid input is an integer between 2 and 5.
         
         Returns:
             int: The number of players in the game.
         """
         self._spacer()
-        print(f"{self.__PRMPT} How many players are playing? Please type an integer that is 2 or greater.")
+        print(f"{self.__PRMPT} How many players are playing? Please type an integer that is between 2 and 5.")
         
         # Input loop
         while True:
@@ -119,6 +120,8 @@ class Prompter:
                 # Check if there are enough players
                 if num_players < 2:
                     print(f"{self.__ERR} There must be at least 2 players.")
+                elif num_players > 5:
+                    print(f"{self.__ERR} There can't be more than 5 players.")
                 else: # Valid input
                     return num_players # Breaks Input loop
             except ValueError:

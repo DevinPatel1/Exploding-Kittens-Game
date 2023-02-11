@@ -42,7 +42,6 @@
 #
 # Instance Attributes:
 #?   + size (int):                  The number of cards in the deck.
-#   + remaining_kittens (int):      The number of remaining Exploding Kittens.
 #   - _deck (list: Card):           A list of Card types.
 #   - _number_of_players (int):     The number of players in the game.
 #
@@ -83,7 +82,6 @@ class Deck(object):
         # to avoid the attributes being shared between all instances of the class.
         self._deck = []
         self._number_of_players = number_of_players
-        self.remaining_kittens = number_of_players - 1
         self.size = 0
         
         # Initialize deck
@@ -112,10 +110,6 @@ class Deck(object):
         """
         card = self._deck.pop()
         self.size -= 1
-        
-        # Checks if the card is an Exploding Kitten
-        if card == Card.EK:
-            self.remaining_kittens -= 1
         
         return card
     # End of draw
@@ -174,17 +168,22 @@ class Deck(object):
         """
         Clears the game deck, refills it with the appropriate cards, then shuffles it.
         """
-        # Sets number of Exploding Kittens
-        self.remaining_kittens = self._number_of_players - 1
         
         # Clears the deck
         self._deck.clear()
         
         # Add the Exploding Kittens
-        for _ in range(self.remaining_kittens): self._deck.append(Card.EK)
+        for _ in range(self._number_of_players-1): self._deck.append(Card.EK)
         
-        # Add the Defuse cards
-        for _ in range(6): self._deck.append(Card.D)
+        # Add the Defuse cards. This has special rules.
+        # Each player gets one Defuse card in their hand, and the rest are put in the deck.
+        # However, if there are 2 or 3 players, only 2 Defuse cards get added to the deck.
+        # Thus, two generator expressions are used.
+        # The first adds 6-number_of_players Defuse cards to the deck if there are more than 3 players.
+        [self._deck.append(Card.D) for _ in range(6-self._number_of_players) if self._number_of_players > 3]
+        
+        # The second adds 2 Defuse cards to the deck if there are 2 or 3 players.
+        [self._deck.append(Card.D) for _ in range(2) if self._number_of_players <= 3]
         
         # Add the Nope cards
         for _ in range(5): self._deck.append(Card.N)
@@ -251,7 +250,7 @@ class Deck(object):
         s = ""
         
         s += f"Deck size: {self.size}\n"
-        s += f"Remaining Exploding Kittens: {self.remaining_kittens}\n"
+        s += f"Number of Exploding Kittens: {self._number_of_players-1}\n"
         s += "Deck:\n["
         
         # Appends deck contents to cumulative string s

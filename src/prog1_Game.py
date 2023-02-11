@@ -83,7 +83,8 @@ class Game:
     
     def start(self) -> None:
         """
-        Starts the game by initializing the attributes and entering the game loop.
+        Starts the game by initializing the attributes and completing setup.
+        Ends with entering the game loop.
         """
         # Prints welcome message
         self._prompter.print_welcome()
@@ -103,7 +104,7 @@ class Game:
         # Deal cards to players
         self._deal()
         
-        # Enter game loop
+        # @TODO Setup complete, enter game loop
         
     # End of start
     
@@ -113,12 +114,35 @@ class Game:
         Deals cards to the players.
         Setup is as follows:
             1. Remove all Exploding Kittens from the deck
-               (in this case, every exploding kitten draw will be immediately discarded).
-            2. 
+               (in this case, every drawn Exploding Kitten will be placed on the bottom).
+            2. Every player gets 1 Defuse card to start with. The Deck reset() method handles
+               what to do with the remaining Defuse cards. In this method, drawn Defuse cards
+               get placed on the bottom.
+            3. The deck is randomly generated, so there is no need to shuffle.
+            4. Every player gets 7 cards such that their hand will have 7 cards plus 1 Defuse.
+               As with steps 1 and 2, any drawn Defuses or Exploding Kittens will be placed on the bottom.
+            5. Shuffle the deck again to get the Defuses and Exploding Kittens mixed out of the bottom.
         """
+        # No action for Steps 1 and 3
+        # Steps 2 and 4:
         for player in self._players:
-            for _ in range(4):
-                player.add_card(self._draw_pile.draw_card())
+            player.add_card(Card.D) # Step 2
+            
+            # Step 4:
+            for i in range(7):
+                draw = self._draw_pile.draw()
+                
+                # If drawn card is Defuse or Exploding Kitten, place it back on the bottom
+                if draw == Card.D or draw == Card.EK:
+                    self._draw_pile.place(draw, location='bottom')
+                    i -= 1 # Draw again
+                    continue
+                else: # Valid card drawn
+                    player.add_card(draw)
+            # End of step 4 for loop
+        # End of step 2 and 4 for loop
+        
+        self._draw_pile.shuffle() # Step 5
     # End of _deal
     
 # End of Game
