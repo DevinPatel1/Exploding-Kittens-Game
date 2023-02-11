@@ -93,7 +93,6 @@ class Prompter:
     # Prompt Methods
     ########################################
     
-    
     def print_welcome(self) -> None:
         """
         Prints a welcome message to the user.

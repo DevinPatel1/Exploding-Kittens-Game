@@ -53,6 +53,8 @@
 #   + __init__(): Initializes the game object
 #   + start(): Starts the game by initializing the attributes and entering the game loop
 #   - _deal(): Deals cards to the players
+#   - _game_loop(): Runs the game loop until a player loses,
+#                   at which point the user is prompted to play again.
 ####################################################################################
 
 # Imports
@@ -104,7 +106,8 @@ class Game:
         # Deal cards to players
         self._deal()
         
-        # @TODO Setup complete, enter game loop
+        # Setup complete, enter game loop
+        self._game_loop()
         
     # End of start
     
@@ -145,4 +148,12 @@ class Game:
         self._draw_pile.shuffle() # Step 5
     # End of _deal
     
+    
+    def _game_loop(self) -> None:
+        """
+        Game loop that cycles through the players' turns until someone loses to an Exploding Kitten.
+        All card rules are applied here.
+        """
+        # @TODO Implement game loop
+        pass
 # End of Game

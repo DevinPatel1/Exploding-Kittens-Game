@@ -12,6 +12,8 @@
 # Design Requirements
 #
 # The card deck class will contain a list of Card types to represent the deck.
+# The list will be treated as a stack with the first element being the bottom of the deck
+# and the last element being the top of the deck.
 #
 # The following cards will be included in the deck:
 #   - Exploding Kitten: Player Count - 1 cards
@@ -60,10 +62,11 @@
 
 # Imports
 from prog1_Card import Card
+from prog1_Prompter import Prompter
 import random   # Random Number Generator
 import time     # Seeding the Random Number Generator
 
-class Deck(object):
+class Deck:
     """
     Deck will contain a list of cards and will be used to shuffle, draw, and reset cards.
     """
@@ -115,9 +118,9 @@ class Deck(object):
         return card
     # End of draw
     
-    def place(self, card: Card, location="NoNe", index=-1) -> None:
+    def place(self, card: Card, location="NoNe", index=-1) -> int:
         """
-        Places a card at a specified location in the deck.
+        Places a card at a specified location in the deck and returns the exact index where it was placed.
         If location is not specified, the card will be placed at the index parameter.
         If index is not specified, the card will be placed at the location parameter.
         If both or neither are specified, a ValueError will be raised.
@@ -128,26 +131,38 @@ class Deck(object):
                                                       Valid values are 'top' (last index), 'bottom' (index 0), 'middle', or 'random'.
                                                       Defaults to 'NoNe'.
             index (int, optional if location passed): The index to place the card. Defaults to -1.
+            
+        Returns:
+            int: The index where the card was placed.
         
         Raises:
-            ValueError: If the place is not 'top', 'bottom', 'middle', or 'random'.
+            ValueError: If location is not 'top', 'bottom', 'middle', or 'random'.
             ValueError: If both location and index were passed or neither were passed.
-            ValueError: If the parameter checks pass but location != "NoNe" and index != -1.
+            ValueError: If the parameter checks pass but somehow location != "NoNe" and index != -1.
         """
-                
+        placed_index: int
+        
         # Check parameters to see if both or neither were passed
         if location == "NoNe" and index == -1: 
-            raise ValueError("Specify either a location or an index, but not both.")
-        elif location != "NoNe" and index != -1:
             raise ValueError("Specify either a location or an index, but not neither.")
+        elif location != "NoNe" and index != -1:
+            raise ValueError("Specify either a location or an index, but not both.")
         
         
         # If location was specified, place the card at that location
         if index == -1:
-            if location == 'top': self._deck.append(card)
-            elif location == 'bottom': self._deck.insert(0, card)
-            elif location == 'middle': self._deck.insert(self.size // 2, card)
-            elif location == 'random': self._deck.insert(random.randint(0, self.size-1), card)
+            if location == 'top':
+                placed_index = self.size - 1
+                self._deck.append(card)
+            elif location == 'bottom':
+                placed_index = 0
+                self._deck.insert(placed_index, card)
+            elif location == 'middle':
+                placed_index = self.size // 2
+                self._deck.insert(placed_index, card)
+            elif location == 'random':
+                placed_index = random.randint(0, self.size-1)
+                self._deck.insert(placed_index, card)
         
             # Raises a ValueError if the place is invalid
             else: raise ValueError(f"Invalid place: {location}")
@@ -161,6 +176,9 @@ class Deck(object):
         
         # Once completed, increment the size of the deck
         self.size += 1
+        
+        # Return the index where the card was placed
+        return placed_index
         
     # End of place(card, place)
     
