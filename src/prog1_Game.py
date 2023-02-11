@@ -22,11 +22,10 @@
 #       5.4. The player will draw a card from the deck (assuming they haven't played a card that bypasses this).
 #       5.5. If the player draws an Exploding Kitten, and they have a Defuse card, they will be prompted
 #            to play it (default option) or not (which results in a loss and game over).
-#       5.6. If the player draws an Exploding Kitten, and they do not have a Defuse card, they lose, and the game is over.
-#            Increment that player's loss count and display the scoreboard for each player.
+#       5.6. If the player draws an Exploding Kitten, and they do not have a Defuse card, they lose, and are no longer playing the game.
+#            The player's play state will change to False, and the game will continue with the remaining players.
 #       5.7. Once the player's turn is over, a prompt will be displayed to switch to the next player before continuing.
-#    6. If the game is over, prompt the user to either play again or quit.
-#       6.1. If the player wants to change the number of players, they will have to restart the program.
+#    6. The game ends when one person is left, and the user will be prompted to either play again or quit in program1.main().
 #    7. All user input will be sanitized and checked in an input loop prior to being used.
 #       If any of the checks fail, the user will be reprompted to re-enter the input.
 #
@@ -41,7 +40,7 @@
 #      This tells the python interpreter to instead prefix the attribute or method as '_ClassName_attribute' or '_ClassName_method'.
 #   4. Any constants will be all caps.
 #
-# @TODO Finish this section as the code is written
+#
 # Attributes:
 #   - _prompter (Prompter):      Manages user input for all game prompts
 #   - _draw_pile (Deck):        Deck of cards representing the draw pile
@@ -79,7 +78,7 @@ class Game:
         self._draw_pile = 0
         self._players = []
         self._current_player = 0
-        self._num_players = 0
+        self._num_players = -1
     # End of __init__
     
     
@@ -91,17 +90,17 @@ class Game:
         # Prints welcome message
         self._prompter.print_welcome()
         
-        # Prompt for number of players
-        self._num_players = self._prompter.prompt_num_players()
+        # Prompt for number of players if this is the first game
+        if self._num_players == -1: self._num_players = self._prompter.prompt_num_players()
         
-        # Initialize the list of players
-        self._players = self._prompter.prompt_player_names(self._num_players)
+        # Initialize the list of players if this is the first game
+        if len(self._players) == 0: self._players = self._prompter.prompt_player_names(self._num_players)
         
         # Initialize the current player. Keep this value <= _num_players-1
         self._current_player = 0
 
         # Initialize the deck using the player count
-        self._draw_pile = Deck(number_of_players=self._num_players)
+        self._draw_pile = Deck(num_players=self._num_players)
         
         # Deal cards to players
         self._deal()
@@ -151,9 +150,8 @@ class Game:
     
     def _game_loop(self) -> None:
         """
-        Game loop that cycles through the players' turns until someone loses to an Exploding Kitten.
+        Game loop that cycles through the players' turns until everyone loses to an Exploding Kitten.
         All card rules are applied here.
         """
-        # @TODO Implement game loop
         pass
 # End of Game

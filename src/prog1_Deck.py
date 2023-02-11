@@ -68,7 +68,7 @@ class Deck:
     Deck will contain a list of cards and will be used to shuffle, draw, and reset cards.
     """
     
-    def __init__(self, number_of_players) -> None:
+    def __init__(self, num_players) -> None:
         """
         Constructor for the Deck class.
         Sets a local variable for the number of players in the game.
@@ -76,12 +76,12 @@ class Deck:
         Seeds the random number generator using time.
         
         Args:
-            number_of_players (int): The number of players in the game.
+            num_players (int): The number of players in the game.
         """
         # Attributes are initialized here instead of in the class definition
         # to avoid the attributes being shared between all instances of the class.
         self._deck = []
-        self._num_players = number_of_players
+        self._num_players = num_players
         self.size = 0
         
         # Seeds the RNG with the current time

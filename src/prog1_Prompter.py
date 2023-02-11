@@ -46,7 +46,7 @@ from prog1_Card import Card
 
 class Prompter:
     """
-    Prompter will manage user input and return validated prompt data,
+    Prompter will facilitate user input and return validated prompt data,
     as well as print any game-related messages to the terminal.
     """
     
@@ -57,7 +57,7 @@ class Prompter:
     
     def __init__(self) -> None:
         """
-        Nothing initiated here, this is just a functional class.
+        Nothing initiated here, Prompter is a stateless class.
         """
         pass
     # End of __init__
