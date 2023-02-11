@@ -78,6 +78,9 @@ class Game:
         self._draw_pile: Deck = None
         self._players: list[Player] = []
         self._num_players = -1
+        
+        # Prints welcome message
+        self._prompter.print_welcome()
     # End of __init__
     
     
@@ -90,8 +93,7 @@ class Game:
         Starts the game by initializing the attributes and completing setup.
         Ends with entering the game loop.
         """
-        # Prints welcome message
-        self._prompter.print_welcome()
+        print("A new game of Exploding Kittens has started!")
         
         # Prompt for number of players if this is the first game
         if self._num_players == -1: self._num_players = self._prompter.prompt_num_players()
