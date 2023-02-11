@@ -12,12 +12,7 @@
 # Imports
 from prog1_Game import Game
 
-def main():
+if __name__ == '__main__':
     game = Game()
     game.start()
 # End of main
-
-
-
-if __name__ == '__main__':
-    main()

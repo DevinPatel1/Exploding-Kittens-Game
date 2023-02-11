@@ -19,7 +19,7 @@
 #   1. Any private attributes or methods will be prefixed with a single underscore '_'.
 #   2. Any public attributes or methods will be directly accessible instead of using a getter.
 #   3. Any attributes or methods that shouldn't get overriden by a subclass will be prefixed with a double underscore '__'.
-#      This tells the python interpreter to instead prefix the attribute or method as '_ClassName__attribute' or '_ClassName_method'.
+#      This tells the python interpreter to instead prefix the attribute or method as '_ClassName_attribute' or '_ClassName_method'.
 #   4. Any constants will be all caps.
 #
 # Instance Attributes:
