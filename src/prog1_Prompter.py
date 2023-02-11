@@ -53,7 +53,7 @@ class Prompter:
     # Class Attributes
     __GAME = "[GAME]"    # For game updates
     __PRMPT = "[PROMPT]" # For prompts
-    __ERR = "[ERROR]"    # For errors or invalid input
+    __ERR = "[ERROR]\a"  # For errors or invalid input
     
     def __init__(self) -> None:
         """

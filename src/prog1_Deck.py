@@ -224,7 +224,7 @@ class Deck(object):
         
         # Set the size
         self.size = len(self._deck)
-                
+        
     # End of reset
     
     
