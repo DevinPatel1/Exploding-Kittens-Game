@@ -179,8 +179,7 @@ class Deck:
         
         # Return the index where the card was placed
         return placed_index
-        
-    # End of place(card, place)
+    # End of place
     
     
     def reset(self) -> None:
