@@ -109,7 +109,7 @@ class Prompter:
             int: The number of players in the game.
         """
         self._spacer()
-        print(f"{self.__PRMPT} How many players are playing? There are only 2-5 players.")
+        print(f"{self.__PRMPT} How many players are playing? Only 2-5 players are able to play.")
         
         # Input loop
         while True:
