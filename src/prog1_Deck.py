@@ -200,7 +200,7 @@ class Deck:
         if self._num_players > 3: [self._deck.append(Card.D) for _ in range(6-self._num_players)]
         
         # The second adds 2 Defuse cards to the deck if there are 2 or 3 players.
-        if self._num_players <= 3: [self._deck.append(Card.D) for _ in range(2)]
+        elif self._num_players <= 3: [self._deck.append(Card.D) for _ in range(2)]
         
         # Add the Nope cards
         for _ in range(5): self._deck.append(Card.N)
