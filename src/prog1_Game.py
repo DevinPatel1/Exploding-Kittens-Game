@@ -43,7 +43,7 @@
 #
 # @TODO Finish this section as the code is written
 # Attributes:
-#   - _prompter (Prompts):      Manages user input for all game prompts
+#   - _prompter (Prompter):      Manages user input for all game prompts
 #   - _draw_pile (Deck):        Deck of cards representing the draw pile
 #   - _players (list: Player):  List of players
 #   - _current_player (int):    Index of which player's turn it is
@@ -59,7 +59,7 @@
 from prog1_Card import Card
 from prog1_Deck import Deck
 from prog1_Player import Player
-from prog1_Prompts import Prompts
+from prog1_Prompter import Prompter
 
 class Game:
     """
@@ -73,7 +73,7 @@ class Game:
         """
         # Attributes are initialized here instead of in the class definition
         # to avoid the attributes being shared between all instances of the class.
-        self._prompter = Prompts()
+        self._prompter = Prompter()
         self._draw_pile = 0
         self._players = []
         self._current_player = 0
@@ -90,13 +90,35 @@ class Game:
         
         # Prompt for number of players
         self._num_players = self._prompter.prompt_num_players()
+        
+        # Initialize the list of players
+        self._players = self._prompter.prompt_player_names(self._num_players)
+        
+        # Initialize the current player. Keep this value <= _num_players-1
+        self._current_player = 0
 
-        # Go ahead and initialize the deck
+        # Initialize the deck using the player count
         self._draw_pile = Deck(number_of_players=self._num_players)
         
-        # Prompt for player names
         # Deal cards to players
+        self._deal()
+        
         # Enter game loop
-        # End of game
+        
+    # End of start
+    
+    
+    def _deal(self) -> None:
+        """
+        Deals cards to the players.
+        Setup is as follows:
+            1. Remove all Exploding Kittens from the deck
+               (in this case, every exploding kitten draw will be immediately discarded).
+            2. 
+        """
+        for player in self._players:
+            for _ in range(4):
+                player.add_card(self._draw_pile.draw_card())
+    # End of _deal
     
 # End of Game
