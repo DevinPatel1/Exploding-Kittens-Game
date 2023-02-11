@@ -195,7 +195,7 @@ class Deck:
         # Add the Defuse cards. This has special rules.
         # Each player gets one Defuse card in their hand, and the rest are put in the deck.
         # However, if there are 2 or 3 players, only 2 Defuse cards get added to the deck.
-        # Thus, two generator expressions are used.
+        # Thus, one of two generator expressions are used.
         # The first adds 6-number_of_players Defuse cards to the deck if there are more than 3 players.
         if self._num_players > 3: [self._deck.append(Card.D) for _ in range(6-self._num_players)]
         
