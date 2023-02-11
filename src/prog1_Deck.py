@@ -61,8 +61,7 @@
 
 # Imports
 from prog1_Card import Card
-import random   # Random Number Generator
-import time     # Seeding the Random Number Generator
+import random, time   # Random Number Generator and seed generator for RNG
 
 class Deck:
     """
