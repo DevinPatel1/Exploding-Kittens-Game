@@ -205,7 +205,7 @@ class Prompter:
         Args:
             player (Player): The player whose turn it is.
         """
-        self._spacer(30)
+        self._spacer(50)
         print(f"{self.__GAME} It is {player.name}'s turn.")
         self._continue()
         
