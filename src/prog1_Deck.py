@@ -61,7 +61,6 @@
 
 # Imports
 from prog1_Card import Card
-from prog1_Prompter import Prompter
 import random   # Random Number Generator
 import time     # Seeding the Random Number Generator
 
