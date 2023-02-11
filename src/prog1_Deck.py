@@ -43,7 +43,7 @@
 #
 #
 # Instance Attributes:
-#?   + size (int):                  The number of cards in the deck.
+#   + size (int):                   The number of cards in the deck.
 #   - _deck (list: Card):           A list of Card types.
 #   - _num_players (int):           The number of players in the game.
 #
@@ -56,7 +56,6 @@
 #                                     'middle', or 'random', otherwise a ValueError will be raised.
 #   + reset():   Resets the deck with all cards and shuffles.
 #               Must be used with a method that clears cards from hands.
-#?   + get_deck_count(): Returns the number of remaining cards in the deck.
 #   + __str__(): Converts the deck to a string representation for printing/debugging.
 #####################################################################################
 
@@ -243,19 +242,6 @@ class Deck:
         
     # End of reset
     
-    
-    # @TODO Delete this if not needed. If it is, add it back to the documentation header above.
-    def get_deck_count(self) -> int:
-        """
-        Returns the number of remaining cards in the deck.
-        
-        Returns:
-            int: The number of remaining cards in the deck.
-        """
-        return self.size
-    # End of get_deck_count
-    
-
 
     def __str__(self) -> str:
         """
