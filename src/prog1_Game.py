@@ -245,6 +245,7 @@ class Game:
         # skip_draw is a boolean control flag that is set to True if the player has
         # to immediately end their turn without drawing.
         skip_draw: bool = None
+        played_card: Card = None
         
         # Play-or-pass loop that breaks when the player chooses to pass or a skip card is played.
         while True:
@@ -257,6 +258,7 @@ class Game:
             
             # If player plays a card, apply the rules of the card.
             skip_draw = self._play_card(card, player)
+            played_card = card
             
             # Break if skip_draw is True
             if skip_draw: break
@@ -264,6 +266,7 @@ class Game:
         
         # End of the player's turn, draw if allowed
         if player.remaining_turns > 0: player.remaining_turns -= 1
+        if played_card == Card.A: player.remaining_turns += 1 # Undo decrement for Attack card continuity
         if not skip_draw: self._draw_card(player)
             
     # End of _player_turn
@@ -294,28 +297,37 @@ class Game:
         # Check each card type and apply the appropriate action
         match card:
             case Card.N:                    # @TODO Nope
-                pass
+                self._nope_card(player)
+                return not SKIP_DRAW
             case Card.A:                    # Attack
                 self._attack_card(player)
                 return SKIP_DRAW
             case Card.SK:                   # Skip
                 return self._skip_card(player)
-            case Card.F:                    # @TODO Favor
-                pass
-            case Card.SH:                   # @TODO Shuffle
-                pass
-            case Card.STF:                  # @TODO See the Future
-                pass
-            case Card.TCAT:                 # @TODO Taco Cat
-                pass
-            case Card.HPCAT:                # @TODO Hairy Potato Cat
-                pass
-            case Card.CATM:                 # @TODO Cattermelon
-                pass
-            case Card.RRCAT:                # @TODO Rainbow Ralphing Cat
-                pass
-            case Card.BCAT:                 # @TODO Bearded Cat
-                pass
+            case Card.F:                    # Favor
+                self._favor_card(player)
+                return not SKIP_DRAW
+            case Card.SH:                   # Shuffle
+                self._shuffle_card(player)
+                return not SKIP_DRAW
+            case Card.STF:                  # See the Future
+                self._see_the_future_card(player)
+                return not SKIP_DRAW
+            case Card.TCAT:                 # Taco Cat
+                self._cat_cards(player, Card.TCAT)
+                return not SKIP_DRAW
+            case Card.HPCAT:                # Hairy Potato Cat
+                self._cat_cards(player, Card.HPCAT)
+                return not SKIP_DRAW
+            case Card.CATM:                 # Cattermelon
+                self._cat_cards(player, Card.CATM)
+                return not SKIP_DRAW
+            case Card.RRCAT:                # Rainbow Ralphing Cat
+                self._cat_cards(player, Card.RRCAT)
+                return not SKIP_DRAW
+            case Card.BCAT:                 # Bearded Cat
+                self._cat_cards(player, Card.BCAT)
+                return not SKIP_DRAW
             case _:                         # Invalid card
                 raise ValueError(f"Invalid card played: {card.name()}")
     # End of _play_card
@@ -334,7 +346,8 @@ class Game:
         
         # Check if the card is an Exploding Kitten
         if draw == Card.EK:
-            self._defuse(player)
+            location = self._defuse(player)
+            self._prompter.report_prompt_play_defuse(player, location)
         
         # Else add it to the player's hand
         else:
@@ -344,12 +357,11 @@ class Game:
     
     
     
-    # @bookmark Action Card Methods
     ##############################
     # Action Card Methods
     ##############################
     
-    def _defuse(self, player: Player) -> None:
+    def _defuse(self, player: Player) -> str:
         """
         Handles the Defuse card actions.
         
@@ -358,27 +370,31 @@ class Game:
             2. If the user specifies an index, then place the Exploding Kitten back in the draw pile at that index.
             3. If the user chooses not to use a Defuse card (i.e., the specified index is negative), then the player loses.
         
+        Returns:
+            str: The location where the Exploding Kitten was placed.
+        
         Args:
             player (Player): The current player whose turn it is.
         """
         # If the player has a Defuse card, play it.
         if player.has_card(Card.D):
             # Prompt the player to play the Defuse card
-            play_defuse = self._prompter.prompt_play_defuse(player, self._draw_pile.size-1)
+            play_defuse = self._prompter.prompt_play_defuse(self._draw_pile.size-1)
             
             # Check if play_defuse is a number
             if play_defuse.isnumeric():
-                play_defuse = int(play_defuse)
-                # play_defuse is negative if the player chooses not to play the Defuse card.
-                if not play_defuse < 0:
+                int_play_defuse = int(play_defuse)
+                # int_play_defuse is negative if the player chooses not to play the Defuse card.
+                if not int_play_defuse < 0:
                     player.remove_card(Card.D)
-                    self._draw_pile.place(Card.EK, index=play_defuse)
-                    return
+                    self._draw_pile.place(Card.EK, index=int_play_defuse)
+                    return play_defuse
                 # Else just fall through to the player losing.
                 
             else: # play_defuse is one of the location keywords
                 player.remove_card(Card.D)
                 self._draw_pile.place(Card.EK, location=play_defuse)
+                return play_defuse
         # End of if player.has_card(Card.D)
         
         player.lose() # If the player does not have a Defuse card, they lose.
@@ -390,9 +406,10 @@ class Game:
         Handles the Nope card actions.
         
         Args:
-            player (Player): The current player whose turn it is.
+            player (Player): The player whose turn it is.
         """
-        pass
+        # @TODO Implement Nope
+        self._prompter.report_nope(player)
     # End of _nope_card
     
     
@@ -406,7 +423,7 @@ class Game:
             3. Set the current player's remaining turns to 0, so the loop would break when their current turn ends.
         
         Args:
-            player (Player): The current player whose turn it is.
+            player (Player): The player whose turn it is.
         """
         # Get next player
         try: next_player = self._players[self._current_player_index+1]
@@ -416,7 +433,9 @@ class Game:
         next_player.remaining_turns += (player.remaining_turns-1) + 2
         
         # Set the current player's remaining turns to 0
-        player.remaining_turns = 0
+        player.remaining_turns = -1
+        
+        self._prompter.report_attack(player)
     # End of _attack_card
 
 
@@ -431,13 +450,13 @@ class Game:
                2.2 If there are 0 turns left, return a True control flag to indicate the player should skip drawing a card.
         
         Args:
-            player (Player): The current player whose turn it is.
+            player (Player): The player whose turn it is.
             
         Returns:
             bool: False if the the player has > 0 turns left, True otherwise.
         """
         player.remaining_turns -= 1
-        
+        self._prompter.report_skip(player)
         return not player.remaining_turns > 0
     # End of _skip_card
     
@@ -446,10 +465,19 @@ class Game:
         """
         Handles the Favor card actions.
         
+        This card needs to accomplish the following:
+            1. Prompt the current player to select a player to target.
+            2. Send an alert to tell the target player to take over.
+            3. Prompt the target player to select a card to give to the current player.
+            4. Report the transaction before continuing the current player's turn.
+        
         Args:
-            player (Player): The current player whose turn it is.
+            player (Player): The player whose turn it is.
         """
-        pass
+        # @TODO Implement Favor
+        target = Player("Target") # @DEBUG
+        stolen_card = Card.BCAT # @DEBUG
+        self._prompter.report_favor(player, target, stolen_card)
     # End of _favor_card
     
     
@@ -457,10 +485,14 @@ class Game:
         """
         Handles the Shuffle card actions.
         
+        This card needs to accomplish the following:
+            1. Shuffle the draw pile.
+        
         Args:
-            player (Player): The current player whose turn it is.
+            player (Player): The player whose turn it is.
         """
-        pass
+        self._draw_pile.shuffle()
+        self._prompter.report_shuffle(player)
     # End of _shuffle_card
     
     
@@ -468,10 +500,14 @@ class Game:
         """
         Handles the See the Future card actions.
         
+        This card needs to accomplish the following:
+            1. Fetch the top three cards of the draw pile.
+            2. Tell the user what the top three cards are.
+        
         Args:
-            player (Player): The current player whose turn it is.
+            player (Player): The player whose turn it is.
         """
-        pass
+        self._prompter.report_see_the_future(player, self._draw_pile.peek_top_three())
     # End of _see_the_future_card
     
     
@@ -481,10 +517,14 @@ class Game:
         
         Args:
             card (Card): The cat card that was played
-            player (Player): The current player whose turn it is.
+            player (Player): The player whose turn it is.
         """
+        # @TODO Implement Cats
         # Remove the second card from the player's hand
         player.remove_card(card)
+        target = Player("Target") # @DEBUG
+        stolen_card = Card.BCAT # @DEBUG
+        self._prompter.report_cat(player, target, card, stolen_card)
         
     # End of _cat_cards
     

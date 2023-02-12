@@ -56,7 +56,8 @@
 #                                     'middle', or 'random', otherwise a ValueError will be raised.
 #   + reset():   Resets the deck with all cards and shuffles.
 #               Must be used with a method that clears cards from hands.
-#   + get_num_players(): Returns the number of players in the game.
+#   + peek_top_three(): Returns a list of the top three cards in the deck.
+#   + get_num_EK(): Returns the number of Exploding Kittens in the deck.
 #   + __str__(): Converts the deck to a string representation for printing/debugging.
 #   + __len__(): Returns the number of cards in the deck.
 #####################################################################################
@@ -239,15 +240,24 @@ class Deck:
         
         # Set the size
         self.size = len(self._deck)
-        
     # End of reset
+    
+    
+    def peek_top_three(self) -> list[Card]:
+        """
+        Returns the top three cards in the deck.
+        
+        Returns:
+            list[Card]: The top three cards in the deck.
+        """
+        return self._deck[-1:-4:-1]
     
     
     def get_num_EK(self) -> int:
         """
         Counts and returns the number of Exploding Kittens in the deck.
         This method is partially meant for debugging, but its implementation
-        is still functional for the game and as such will be included.
+        is still functional for the game. As such, it will be included.
 
         Returns:
             int: Number of Exploding Kittens in the deck.

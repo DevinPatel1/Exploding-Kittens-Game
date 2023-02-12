@@ -43,6 +43,15 @@
 #   + prompt_play_defuse(max_index: int): Prompts the user to specify an index to place an Exploding Kitten card or set the index to -1 (i.e., they quit).
 #   + player_lost(player: Player): Alerts the user that they lost the game.
 #
+# Action Card Report Methods:
+#?  + report_nope(player: Player): Reports that the user played a Nope card.
+#  + report_attack(player: Player): Reports that the user played an Attack card.
+#  + report_skip(player: Player): Reports that the user played a Skip card.
+#  + report_favor(player: Player, target: Player, stolen_card: Card): Reports that the user played a Favor card and who they targeted.
+#  + report_shuffle(player: Player): Reports that the user played a Shuffle card.
+#  + report_see_the_future(player: Player, cards: list): Reports that the user played a See the Future card and shows the user the top 3 cards.
+#  + report_cat(player: Player, target: Player, used_card: Card, stolen_card: Card): Reports that the user played a pair of cat cards and who they targeted.
+#
 # Macros:
 #   - _input(prompt_symbol=">>"): Macro that creates the user input prompt and returns the string received from stdin.
 #   - _spacer(lines: int): Macro that prints lines of whitespace to the terminal for readability.
@@ -258,9 +267,11 @@ class Prompter:
             self._spacer()
             
             # Print information
-            print(f"Cards in deck: {cards_in_deck}")
-            print(f"Exploding Kittens: {num_EK}")
-            print(f"Remaining turns: {player.remaining_turns}\n")
+            print(f"{self.__GAME} Stats:")
+            print(f"\tWins: {player.wins}")
+            print(f"\tCards in deck: {cards_in_deck}")
+            print(f"\tExploding Kittens: {num_EK}")
+            print(f"\tRemaining turns: {player.remaining_turns}\n")
             
             # Print the prompt
             print(f"{self.__PRMPT} {player.name}, please enter one of the following:")
@@ -278,7 +289,6 @@ class Prompter:
             # Check for show, print hand if so
             if input == 'show' or input == '4':
                 print(f"{self.__GAME} {player.sprintf_hand()}")
-                self._spacer()
                 continue
             
             # Check for just a '?'
@@ -306,28 +316,28 @@ class Prompter:
                 continue
             
             # Check if the player has that card. If they do, play it.
-            for card in player.hand:
-                if card == Card.EK: continue       # Skip Exploding Kittens
-                
-                # Check if input is a cat card. They need to have a pair of like cats to play it.
-                selected_pair: Card = None
-                if input == Card.TCAT.name().lower(): selected_pair = Card.TCAT
-                elif input == Card.HPCAT.name().lower(): selected_pair = Card.HPCAT
-                elif input == Card.CATM.name().lower(): selected_pair = Card.CATM
-                elif input == Card.RRCAT.name().lower(): selected_pair = Card.RRCAT
-                elif input == Card.BCAT.name().lower(): selected_pair = Card.BCAT
-                
-                # Check if the player has a pair of like cats. If so, return it.
-                if selected_pair and player.has_pair(selected_pair):
-                    return (card, False)
-                elif selected_pair and not player.has_pair(selected_pair):
-                    self._error(f"You need a pair of {selected_pair.name()}s to play them.")
-                    continue
+            try:
+                for card in player.hand:                    
+                    # Check if input is a cat card. They need to have a pair of like cats to play it.
+                    selected_pair: Card = None
+                    if   input == Card.TCAT.name().lower():  selected_pair = Card.TCAT
+                    elif input == Card.HPCAT.name().lower(): selected_pair = Card.HPCAT
+                    elif input == Card.CATM.name().lower():  selected_pair = Card.CATM
+                    elif input == Card.RRCAT.name().lower(): selected_pair = Card.RRCAT
+                    elif input == Card.BCAT.name().lower():  selected_pair = Card.BCAT
                     
-                # Otherwise, return the action card
-                if card.name().lower() == input:
-                    return (card, False)
-            # End of for loop
+                    # Check if the player has a pair of like cats. If so, return it.
+                    if selected_pair and player.has_pair(selected_pair):
+                        return (selected_pair, False)
+                    elif selected_pair and not player.has_pair(selected_pair):
+                        self._error(f"You need a pair of {selected_pair.name()}s to play them.")
+                        raise Exception("Dummy Exception") # Break out of the for loop so the input loop can continue
+
+                    # Otherwise, return the action card
+                    if card.name().lower() == input:
+                        return (card, False)
+                # End of for loop
+            except Exception: continue
             
             # Everything else is either unacceptable input or the player doesn't have the card
             self._error("Please enter \'pass\', \'show\', or a valid card name from your hand.")
@@ -433,7 +443,7 @@ class Prompter:
         self._continue()
     
     
-    def player_lost(self, player: Player):
+    def player_lost(self, player: Player) -> None:
         """
         Prints a message to the terminal to let the user know that they lost.
 
@@ -444,5 +454,108 @@ class Prompter:
         print(f"{self.__GAME} {player.name} has blown up. You can no longer play this round.")
         self._continue()
     # End of player_lost
+    
+    
+    
+    ###############################
+    # Action Card Prompt Methods  
+    ###############################
+    
+    def report_nope(self, player: Player) -> None: # @TODO might have to delete this
+        """
+        Reports to the user that a player played a Nope card.
+
+        Args:
+            player (Player): The player who played the Nope card.
+        """
+        self._spacer(3)
+        print(f"{self.__GAME} {player.name} played a {Card.N.name()} card.")
+        self._continue()
+    # End of report_Nope
+    
+    
+    def report_attack(self, player: Player) -> None:
+        """
+        Reports to the user that a player played an Attack card.
+
+        Args:
+            player (Player): The player who played the Attack card.
+        """
+        self._spacer(3)
+        print(f"{self.__GAME} {player.name} played an {Card.A.name()} card. The next person now has to take two additional turns.")
+        self._continue()
+    # End of report_Attack   
+    
+    
+    def report_skip(self, player: Player) -> None:
+        """
+        Reports to the user that a player played a Skip card.
+
+        Args:
+            player (Player): The player who played the Skip card.
+        """
+        self._spacer(3)
+        print(f"{self.__GAME} {player.name} played a {Card.SK.name()} card. The number of turns has been decreased by 1.")
+        self._continue()
+    # End of report_Skip
+    
+    
+    def report_favor(self, player: Player, target: Player, stolen_card: Card) -> None:
+        """
+        Reports to the user that a player played a Favor card, who they targeted, and what card they stole.
+
+        Args:
+            player (Player): The player who played the Favor card.
+            target (Player): The player who was targeted by the Favor card.
+            stolen_card (Card): The card that was stolen from the target.
+        """
+        self._spacer(3)
+        print(f"{self.__GAME} {player.name} used a {Card.F.name()} card to steal a/an {stolen_card.name()} from {target.name}.")
+        self._continue()
+    # End of report_Favor
+    
+    
+    def report_shuffle(self, player: Player) -> None:
+        """
+        Reports to the user that a player played a Shuffle card.
+
+        Args:
+            player (Player): The player who played the Shuffle card.
+        """
+        self._spacer(3)
+        print(f"{self.__GAME} {player.name} played a {Card.SH.name()} card. The deck is now shuffled.")
+        self._continue()
+    # End of report_Shuffle
+    
+    
+    def report_see_the_future(self, player: Player, cards: list[Card]) -> None:
+        """
+        Reports to the user that a player played a See the Future card and shows them the next three cards in the deck.
+
+        Args:
+            player (Player): The player who played the See the Future card.
+            cards (list[Card]): The next three cards in the deck.
+        """
+        self._spacer(3)
+        print(f"{self.__GAME} {player.name} played a {Card.STF.name()} card.\n{len(self.__GAME)*' '} The next three cards from the top of the deck are:")
+        for i, card in enumerate(cards): print(f"{len(self.__GAME)*' '} \t{i+1}) {card.name()}")
+        self._continue()
+    # End of report_see_the_future
+    
+    
+    def report_cat(self, player: Player, target: Player, used_card: Card, stolen_card: Card) -> None:
+        """
+        Reports to the user that a player played a Cat card, who they targeted, and what card they stole.
+
+        Args:
+            player (Player): The player who played the Cat card.
+            target (Player): The player who was targeted by the Cat card.
+            used_card (Card): The pair of cards that was used to steal stolen_card.
+            stolen_card (Card): The card that was stolen from the target.
+        """
+        self._spacer(3)
+        print(f"{self.__GAME} {player.name} used a pair of {used_card.name()}s to steal a/an {stolen_card.name()} from {target.name}.")
+        self._continue()
+    # End of report_cat
     
 # End of Prompter
