@@ -174,7 +174,7 @@ class Player:
         Returns:
             str: String representation of the player's hand
         """
-        return f"{self.name}'s Hand:\n" + "".join(f"\t{card.name()}\n" for card in self.hand)
+        return f"{self.name} Hand ({len(self.hand)})\n" + "".join(f"\t{card.name()}\n" for card in self.hand)
     # End of sprintf_hand
     
     

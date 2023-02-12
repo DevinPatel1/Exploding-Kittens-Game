@@ -250,7 +250,7 @@ class Game:
         while True:
         
             # Prompt for card to play
-            card, pass_ = self._prompter.prompt_play_or_pass(player)
+            card, pass_ = self._prompter.prompt_play_or_pass(player, self._draw_pile.size, self._draw_pile.get_num_EK())
             
             # If the player chooses to pass, end their turn and return to the game loop
             if pass_: break
@@ -366,12 +366,19 @@ class Game:
             # Prompt the player to play the Defuse card
             play_defuse = self._prompter.prompt_play_defuse(player, self._draw_pile.size-1)
             
-            # play_defuse is negative if the player chooses not to play the Defuse card.
-            if not play_defuse < 0:
+            # Check if play_defuse is a number
+            if play_defuse.isnumeric():
+                play_defuse = int(play_defuse)
+                # play_defuse is negative if the player chooses not to play the Defuse card.
+                if not play_defuse < 0:
+                    player.remove_card(Card.D)
+                    self._draw_pile.place(Card.EK, index=play_defuse)
+                    return
+                # Else just fall through to the player losing.
+                
+            else: # play_defuse is one of the location keywords
                 player.remove_card(Card.D)
-                self._draw_pile.place(play_defuse, Card.EK)
-                return
-            # Else just fall through to the player losing.
+                self._draw_pile.place(Card.EK, location=play_defuse)
         # End of if player.has_card(Card.D)
         
         player.lose() # If the player does not have a Defuse card, they lose.

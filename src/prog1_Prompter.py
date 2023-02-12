@@ -38,7 +38,7 @@
 #   + prompt_num_players(): Prompts the user for the number of players in the game.
 #   + prompt_player_names(num_players: int): Prompts the user for the names of the players.
 #   + alert_player_turn(player: Player): Alerts which user's turn it is so their hand can't be seen by other players.
-#   + prompt_play_or_pass(player: Player): Prompts the user to play a card or pass.
+#   + prompt_play_or_pass(player: Player, cards_in_deck: int, num_EK: int): Prompts the user to play a card or pass.
 #   + alert_draw(player: Player, card: Card): Alerts the user that they drew a card.
 #   + prompt_play_defuse(max_index: int): Prompts the user to specify an index to place an Exploding Kitten card or set the index to -1 (i.e., they quit).
 #   + player_lost(player: Player): Alerts the user that they lost the game.
@@ -225,7 +225,7 @@ class Prompter:
     # End of alert_player_turn
     
     
-    def prompt_play_or_pass(self, player: Player) -> tuple[Card, bool]:
+    def prompt_play_or_pass(self, player: Player, cards_in_deck: int, num_EK: int) -> tuple[Card, bool]:
         """
         Prompts the user to play a card or pass.
         Their hand will be printed to the terminal to show them what they can play.
@@ -241,6 +241,8 @@ class Prompter:
 
         Args:
             player (Player): The player whose turn it is.
+            cards_in_deck (int): The number of cards left in the deck.
+            num_EK (int): The number of Exploding Kittens in the deck.
 
         Returns:
             tuple[Card, bool]: Returns the card the user wants to play and
@@ -254,7 +256,13 @@ class Prompter:
         # Input loop only breaks when valid input is returned
         while True:
             self._spacer()
+            
+            # Print information
+            print(f"Cards in deck: {cards_in_deck}")
+            print(f"Exploding Kittens: {num_EK}")
             print(f"Remaining turns: {player.remaining_turns}\n")
+            
+            # Print the prompt
             print(f"{self.__PRMPT} {player.name}, please enter one of the following:")
             print(f"{len(self.__PRMPT)*' '}   1) The name of the card from your hand to play")
             print(f"{len(self.__PRMPT)*' '}   2) The name of any card followed by \'?\' to see its description")
