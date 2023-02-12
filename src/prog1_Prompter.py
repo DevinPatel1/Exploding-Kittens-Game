@@ -396,10 +396,10 @@ class Prompter:
             input = self._input()
             
             # Check for the keywords first
-            if input == 'top' or input == '2': return 'top'
-            elif input == 'middle' or input == '3': return 'middle'
-            elif input == 'bottom' or input == '4': return 'bottom'
-            elif input == 'random' or input == '5': return 'random'
+            if input == 'top': return 'top'
+            elif input == 'middle': return 'middle'
+            elif input == 'bottom': return 'bottom'
+            elif input == 'random': return 'random'
             
             # All keywords checked, now validate input for int
             try:
@@ -434,7 +434,7 @@ class Prompter:
         """
         self._spacer(2)
         
-        if location == 'top': location = "on top of the deck"
+        if location == 'top' or location == '0': location = "on top of the deck"
         elif location == 'middle': location = "in the middle of the deck"
         elif location == 'bottom': location = "on the bottom of the deck"
         elif location.isnumeric(): location = f"{location} cards from the top of the deck"

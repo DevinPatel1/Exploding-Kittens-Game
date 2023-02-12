@@ -18,10 +18,10 @@ def main() -> None:
     
     # Input loop to play again, reset the game, or quit.
     while True:
-        play_again = input('Would you like to play again? (y/n): ').strip().lower()
+        play_again = input("Would you like to play again? (y/n): ").strip().lower()
         
         if play_again == 'y': # If yes, prompt to keep the players or reset
-            play_reset = input('Would you like to reset the players? (y/n): ').strip().lower()
+            play_reset = input("Would you like to reset the players? (y/n): ").strip().lower()
             print("\n"*4) # Clears the screen for the next game
             
             if play_reset == 'y': # If yes, create new instance of Game and start it

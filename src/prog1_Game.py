@@ -180,7 +180,7 @@ class Game:
     # Game Loop Method
     ##############################
     
-    def _game_loop(self) -> None: # @bookmark _game_loop()
+    def _game_loop(self) -> None:
         """
         Game loop that cycles through the players' turns until everyone loses to an Exploding Kitten.
         All card rules are applied here.
@@ -391,7 +391,7 @@ class Game:
             else: # play_defuse is one of the location keywords
                 player.remove_card(Card.D)
                 placed_index = self._draw_pile.place(Card.EK, location=play_defuse)
-                if play_defuse == 'random': self._prompter.report_prompt_play_defuse(player, str(placed_index))
+                if play_defuse == 'random': self._prompter.report_prompt_play_defuse(player, str(self._draw_pile.size-1 - placed_index))
                 else: self._prompter.report_prompt_play_defuse(player, play_defuse)
                 return
         # End of if player.has_card(Card.D)
