@@ -64,6 +64,7 @@
 #   - _draw_card(player: Player): Facilitates the drawing process for a player.
 # 
 # Action Card Methods:
+#   - _defuse(player: Player): Facilitates the playing of a Defuse card.
 #   - _nope(player: Player): Facilitates the playing of a Nope card.
 #   - _attack(player: Player): Facilitates the playing of an Attack card.
 #   - _skip(player: Player): Facilitates the playing of a Skip card.
@@ -199,6 +200,9 @@ class Game:
             if current_player.remaining_turns == 0:
                 current_player.remaining_turns += 1
             
+            # Alert the player it is their turn
+            self._prompter.alert_player_turn(current_player)
+            
             # Loops until player uses all their turns
             while current_player.remaining_turns > 0:
                 self._player_turn(current_player)
@@ -242,9 +246,6 @@ class Game:
         # to immediately end their turn without drawing.
         skip_draw: bool = None
         
-        # Alert the player it is their turn
-        self._prompter.alert_player_turn(player)
-        
         # Play-or-pass loop that breaks when the player chooses to pass or a skip card is played.
         while True:
         
@@ -255,10 +256,10 @@ class Game:
             if pass_: break
             
             # If player plays a card, apply the rules of the card.
-            skip_draw, end_turn = self._play_card(card, player)
+            skip_draw = self._play_card(card, player)
             
             # Break if skip_draw is True
-            if end_turn: break
+            if skip_draw: break
         # End of play-or-pass loop
         
         # End of the player's turn, draw if allowed
@@ -268,25 +269,23 @@ class Game:
     # End of _player_turn
     
     
-    def _play_card(self, card: Card, player: Player) -> tuple[bool, bool]:
+    def _play_card(self, card: Card, player: Player) -> bool:
         """
         Checks the played card and performs the appropriate action.
-        Returns a tuple of boolean control flags to indicate if the player should skip drawing a card
-        and if the player should immediately end their turn.
+        Returns a boolean control flag to indicate if the player should skip drawing a card.
 
         Args:
             card (Card): The card that was played
             player (Player): The player that played the card
         
         Returns:
-            tuple[bool, bool]: (skip_draw, end_turn)
+            bool: False if the player should draw a card, True otherwise.
         
         Raises:
             ValueError: If an invalid card is played.
                         This should never happen since the input is validated in Prompter.play_or_pass().
         """
         SKIP_DRAW = True  # Constant for readability
-        END_TURN  = True  # Constant for readability
         
         # Remove the card from the hand
         # For cat cards, it needs to be removed twice. The second remove_card call will be in Game._cat_cards().
@@ -298,7 +297,7 @@ class Game:
                 pass
             case Card.A:                    # Attack
                 self._attack_card(player)
-                return (SKIP_DRAW, END_TURN)
+                return SKIP_DRAW
             case Card.SK:                   # Skip
                 return self._skip_card(player)
             case Card.F:                    # @TODO Favor
@@ -330,8 +329,15 @@ class Game:
         Args:
             player (Player): The current player whose turn it is.
         """
-        # @TODO Implement the draw phase
+        # Draw a card
+        draw = self._draw_pile.draw()
         
+        # Check if the card is an Exploding Kitten
+        if draw == Card.EK:
+            self._defuse(player)
+        
+        # Else add it to the player's hand
+        else: player.add_card(draw)
     # End of _draw_card
     
     
@@ -340,6 +346,34 @@ class Game:
     ##############################
     # Action Card Methods
     ##############################
+    
+    def _defuse(self, player: Player) -> None:
+        """
+        Handles the Defuse card actions.
+        
+        This card needs to accomplish the following:
+            1. Prompt the user where to place the Defuse card.
+            2. If the user specifies an index, then place the Exploding Kitten back in the draw pile at that index.
+            3. If the user chooses not to use a Defuse card (i.e., the specified index is negative), then the player loses.
+        
+        Args:
+            player (Player): The current player whose turn it is.
+        """
+        # If the player has a Defuse card, play it.
+        if player.has_card(Card.D):
+            # Prompt the player to play the Defuse card
+            play_defuse = self._prompter.prompt_play_defuse(player)
+            
+            # play_defuse is negative if the player chooses not to play the Defuse card.
+            if not play_defuse < 0:
+                player.remove_card(Card.D)
+                self._defuse(play_defuse)
+                return
+            
+        # End of if player.has_card(Card.D)
+        
+        player.lose() # If the player does not have a Defuse card, they lose.
+    
     
     def _nope_card(self, player: Player) -> None:
         """
@@ -376,25 +410,25 @@ class Game:
     # End of _attack_card
 
 
-    def _skip_card(self, player: Player) -> tuple[bool, bool]:
+    def _skip_card(self, player: Player) -> bool:
         """
         Handles the Skip card actions.
         
         This card needs to accomplish the following:
             1. Immediately decrement the number of turns the player has left.
             2. Check if there are > 0 turns left.
-               2.1 If so, return False for skip_draw and False for end_turn.
-               2.2 If there are 0 turns left, return True for skip_draw and True for end_turn.
+               2.1 If so, return a False control flag to indicate the player should draw a card.
+               2.2 If there are 0 turns left, return a True control flag to indicate the player should skip drawing a card.
         
         Args:
             player (Player): The current player whose turn it is.
             
         Returns:
-            tuple[bool, bool]: (skip_draw, end_turn)
+            bool: False if the the player has > 0 turns left, True otherwise.
         """
         player.remaining_turns -= 1
         
-        return (not player.remaining_turns > 0, player.remaining_turns == 0)
+        return not player.remaining_turns > 0
     # End of _skip_card
     
     

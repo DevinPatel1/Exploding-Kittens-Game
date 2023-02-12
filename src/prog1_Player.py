@@ -38,6 +38,7 @@
 #   + remove_card(card: Card): Removes a card from the player's hand
 #   + has_card(card: Card): Returns True if the player has the card in their hand
 #   + has_pair(card: Card): Returns True if the player has a pair of the card in their hand
+#   + lose(): Sets the player's remaining turns to a negative value to indicate they lost
 #   + reset(): Resets the player's hand and remaining turns to their initial values
 #   + sprintf_hand(): Returns a string representation of the player's hand
 #   + __str__(): Returns a string representation of all Player attributes
@@ -149,6 +150,13 @@ class Player:
             pass
         
         return False # No pairs found
+    
+    
+    def lose(self) -> None:
+        """
+        Sets the player's remaining turns to a negative value to indicate they lost.
+        """
+        self.remaining_turns = -1
     
     def reset(self) -> None:
         """

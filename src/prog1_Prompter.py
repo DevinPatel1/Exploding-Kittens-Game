@@ -39,6 +39,7 @@
 #   + prompt_player_names(num_players: int): Prompts the user for the names of the players.
 #   + alert_player_turn(player: Player): Alerts which user's turn it is so their hand can't be seen by other players.
 #   + prompt_play_or_pass(player: Player): Prompts the user to play a card or pass.
+#   + prompt_play_defuse(player: Player): Prompts the user to specify an index to place an Exploding Kitten card or set the index to -1 (i.e., they quit).
 #
 # Macros:
 #   - _input(prompt_symbol=">>"): Macro that creates the user input prompt and returns the string received from stdin.
@@ -322,5 +323,10 @@ class Prompter:
         # End of Input loop
         
     # End of prompt_play_or_pass
+    
+    
+    def prompt_play_defuse(self, player: Player) -> int:
+        pass
+    # End of prompt_play_defuse
     
 # End of Prompter
