@@ -41,6 +41,8 @@
 #   + prompt_play_or_pass(player: Player, cards_in_deck: int, num_EK: int): Prompts the user to play a card or pass.
 #   + alert_draw(player: Player, card: Card): Alerts the user that they drew a card.
 #   + prompt_play_defuse(max_index: int): Prompts the user to specify an index to place an Exploding Kitten card or set the index to -1 (i.e., they quit).
+#   + prompt_play_favor(current_player: Player, players: list[Player]): Prompts the user to specify a player to target with a Favor card.
+#   + prompt_play_favor_target(target: Player): Prompts the targeted player to specify a card to give to the current player.
 #   + player_lost(player: Player): Alerts the user that they lost the game.
 #
 # Action Card Report Methods:
@@ -438,6 +440,34 @@ class Prompter:
         
         print(f"{self.__GAME} {player.name} placed the Exploding Kitten {location}.")
         self._continue()
+        
+    
+    def prompt_play_favor(self, current_player: Player, players: list[Player]) -> Player:
+        """
+        Prompts the user to specify which player to steal a card from.
+
+        Args:
+            player (Player): The player who played the Favor card.
+
+        Returns:
+            Player: The target player selected by the current player.
+        """
+        self._spacer(3)
+        print(f"{self.__GAME} You played a favor card. Choose a player to steal a card from:")
+        print(f"{len(self.__GAME)*' '} \t" + "".join(for i, p in enumerate()))
+        
+    
+    def prompt_play_favor_target(target: Player) -> Card:
+        """
+        Prompts the targeted player which card to give to the current player.
+
+        Args:
+            target (Player): The targeted player chosen by the current player.
+
+        Returns:
+            Card: The card the targeted player chose.
+        """
+        pass
     
     
     def player_lost(self, player: Player) -> None:

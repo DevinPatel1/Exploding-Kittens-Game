@@ -486,10 +486,19 @@ class Game:
         Args:
             player (Player): The player whose turn it is.
         """
-        # @TODO Implement Favor
-        target = Player("Target") # @DEBUG
-        stolen_card = Card.BCAT # @DEBUG
-        self._prompter.report_favor(player, target, stolen_card)
+        # Prompt the current player to select a player to target.
+        target = self._prompter.prompt_play_favor(player, self._players)
+        
+        # Prompt the target player to select a card to give to the current player.
+        target_card = self._prompter.prompt_play_favor_target(target)
+        
+        # Now perform the swap. The target card needs to be removed from the target player's hand
+        # and added to the current player's hand.
+        target.remove_card(target_card)
+        player.add_card(target_card)
+        
+        # Swap complete, report what happened and return
+        self._prompter.report_favor(player, target, target_card)
     # End of _favor_card
     
     
