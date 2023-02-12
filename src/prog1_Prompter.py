@@ -437,7 +437,7 @@ class Prompter:
         if location == 'top': location = "on top of the deck"
         elif location == 'middle': location = "in the middle of the deck"
         elif location == 'bottom': location = "on the bottom of the deck"
-        elif location.isnumeric(): location = f"at {location} in the deck"
+        elif location.isnumeric(): location = f"{location} cards from the top of the deck"
         
         print(f"{self.__GAME} {player.name} placed the Exploding Kitten {location}.")
         self._continue()
