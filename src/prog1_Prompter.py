@@ -253,16 +253,16 @@ class Prompter:
             input = self._input().lower()
             
             # Check for pass
-            if input == 'pass' or input == '3': return (None, True)
+            if input == 'pass' or input == '5': return (None, True)
             
             # Check for show, print hand if so
-            if input == 'show' or input == '2':
+            if input == 'show' or input == '4':
                 print(f"{self.__GAME} {player.sprintf_hand()}")
                 self._spacer()
                 continue
             
             # Check for just a '?'
-            if input == '?':
+            if input == '?' or input == '3':
                 for card in Card:
                     self._spacer(2)
                     print(f"{self.__GAME} {card}")
