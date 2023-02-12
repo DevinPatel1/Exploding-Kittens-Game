@@ -53,7 +53,8 @@
 #   - _deal(): Deals cards to the players
 #   - _game_loop(): Runs the game loop until a player loses,
 #                   at which point the user is prompted to play again.
-#   - _player_turn(player: Player): Facilitates a play-or-pass loop for a player's turn.
+#   - _player_turn(player: Player, player_index: int): Facilitates a play-or-pass loop for a player's turn.
+#   - _play_card(player: Player, player_index: int, card: Card): Facilitates the playing of a card.
 #   - _end_turn(player: Player): Ends a player's turn and facilitates the drawing process.
 ####################################################################################
 
@@ -187,8 +188,7 @@ class Game:
             
             # Loops until player uses all their turns (usually breaks after one turn)
             while current_player.remaining_turns > 0:
-                self._player_turn(current_player)
-            
+                self._player_turn(current_player, current_player_index)
             
             # Player's turn is done, move to next player
             current_player_index += 1
@@ -208,7 +208,7 @@ class Game:
     # Game Helper Methods
     ##############################
     
-    def _player_turn(self, player: Player) -> None:
+    def _player_turn(self, player: Player, player_index: int) -> None:
         """
         Facilitates a play-or-pass loop for a player's turn.
         Times to break loop:
@@ -221,6 +221,7 @@ class Game:
         
         Args:
             player (Player): The current player whose turn it is.
+            player_index (int): The index of the current player whose turn it is.
         """
         # Alert the player it is their turn
         self._prompter.alert_player_turn(player)
@@ -232,14 +233,30 @@ class Game:
             card, pass_ = self._prompter.prompt_play_or_pass(player)
             
             # If the player chooses to pass, end their turn and return to the game loop
-            if pass_:
-                self._end_turn(player)
-                return
+            if pass_: break
             
-            # @TODO If player plays a card, apply the rules of the card
-        
-        
+            # If player plays a card, apply the rules of the card.
+            self._play_card(card, player, player_index)
+            
+        # End of play-or-pass loop
+        self._end_turn(player)
+            
     # End of _player_turn
+    
+    
+    def _play_card(self, card: Card, player: Player, player_index: int) -> None:
+        """
+        Checks the played card and performs the appropriate action.
+
+        Args:
+            card (Card): The card that was played
+            player (Player): The player that played rthe card
+            player_index (int): The index of the player that played the card
+        """
+        # @TODO Implement this method
+        pass
+    # End of _play_card
+
     
     
     def _end_turn(self, player: Player) -> None:
@@ -251,5 +268,19 @@ class Game:
             player (Player): The current player whose turn it is.
         """
         player.remaining_turns -= 1
+        self._draw_card(player)
     # End of _end_turn
+        
+
+    def _draw_card(self, player: Player) -> None:
+        """
+        Facilitates the drawing process.
+        Also handles Exploding Kitten draws and Defuse plays.
+        
+        Args:
+            player (Player): The current player whose turn it is.
+        """
+        # @TODO Implement this method
+        pass
+    # End of _draw_card
 # End of Game

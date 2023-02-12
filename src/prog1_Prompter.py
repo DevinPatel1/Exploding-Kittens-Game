@@ -234,7 +234,7 @@ class Prompter:
                                True means the user wants to pass, and False
                                means the user wants to play.
         """
-        self._spacer()
+        self._spacer(3)
         print(f"{self.__GAME} {player.sprintf_hand()}") # Print the player's hand
         
         # Input loop only breaks when valid input is returned
