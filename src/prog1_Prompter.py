@@ -370,7 +370,7 @@ class Prompter:
                  If the user wants to quit, return -1.
         """
         self._spacer(3)
-        print(f"{self.__GAME} You drew an Exploding Kitten!\n{len(self.__GAME)*' '} Do you want to use your Defuse card (Y/n)?\n{len(self.__GAME)*' '} (If you don't have a Defuse card, you'll lose the game.)")
+        print(f"{self.__GAME} You drew an Exploding Kitten!\n{len(self.__GAME)*' '} Do you want to use your Defuse card (Y/n)?\n{len(self.__GAME)*' '} (If you don't use your Defuse card, you'll lose the game.)")
         
         # Play input loop
         while True:

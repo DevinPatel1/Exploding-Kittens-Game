@@ -346,8 +346,7 @@ class Game:
         
         # Check if the card is an Exploding Kitten
         if draw == Card.EK:
-            location = self._defuse(player)
-            self._prompter.report_prompt_play_defuse(player, location)
+            self._defuse(player)
         
         # Else add it to the player's hand
         else:
@@ -361,7 +360,7 @@ class Game:
     # Action Card Methods
     ##############################
     
-    def _defuse(self, player: Player) -> str:
+    def _defuse(self, player: Player) -> None:
         """
         Handles the Defuse card actions.
         
@@ -369,9 +368,6 @@ class Game:
             1. Prompt the user where to place the Defuse card.
             2. If the user specifies an index, then place the Exploding Kitten back in the draw pile at that index.
             3. If the user chooses not to use a Defuse card (i.e., the specified index is negative), then the player loses.
-        
-        Returns:
-            str: The location where the Exploding Kitten was placed.
         
         Args:
             player (Player): The current player whose turn it is.
@@ -388,13 +384,16 @@ class Game:
                 if not int_play_defuse < 0:
                     player.remove_card(Card.D)
                     self._draw_pile.place(Card.EK, index=int_play_defuse)
-                    return play_defuse
+                    self._prompter.report_prompt_play_defuse(player, play_defuse)
+                    return
                 # Else just fall through to the player losing.
                 
             else: # play_defuse is one of the location keywords
                 player.remove_card(Card.D)
-                self._draw_pile.place(Card.EK, location=play_defuse)
-                return play_defuse
+                placed_index = self._draw_pile.place(Card.EK, location=play_defuse)
+                if play_defuse == 'random': self._prompter.report_prompt_play_defuse(player, str(placed_index))
+                else: self._prompter.report_prompt_play_defuse(player, play_defuse)
+                return
         # End of if player.has_card(Card.D)
         
         player.lose() # If the player does not have a Defuse card, they lose.
