@@ -222,8 +222,8 @@ class Prompter:
         The user cannot play a Defuse card here.
         
         The following key words have functionality:
-            1. "pass"  - Effectively ends their turn. They will draw a card.
-            2. "show"  - Prints the player's hand.
+            1. pass    - Effectively ends their turn. They will draw a card.
+            2. show    - Prints the player's hand.
             3. <card>? - Prints the name and description of that card.
             4. ?       - Prints the name and description of all cards.
         All other input is invalid.
