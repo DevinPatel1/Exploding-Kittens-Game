@@ -29,13 +29,15 @@
 #   + name (str):   Name of the player
 #   + wins (int): Number of wins the player has
 #   + hand (list[Card]): List of cards the player has
-#   + still_playing (bool): Indicates if the player is still playing or if they lost
+#   + remaining_turns (int): Number of turns the player has left
+#                            This value is negative if the player lost and is no longer playing.
 #
 # Methods:
 #   + __init__(name: str): Initiales an empty hand and sets the name of the player
 #   + add_card(card: Card): Adds a card to the player's hand
 #   + pop_card(card: Card): Pops a card from the player's hand and returns it
 #   + has_card(card: Card): Returns True if the player has the card in their hand
+#   + reset(): Resets the player's hand and remaining turns to their initial values
 #   + sprintf_hand(): Returns a string representation of the player's hand
 #   + __str__(): Returns a string representation of all Player attributes
 ####################################################################################
@@ -62,7 +64,7 @@ class Player:
         self.hand: list[Card] = []
         self.name = name
         self.wins = 0
-        self.is_still_playing = True
+        self.remaining_turns = 0
     # End of __init__
     
     
@@ -117,6 +119,15 @@ class Player:
         """
         return a_card in self.hand
     # End of has_card
+    
+    
+    def reset(self) -> None:
+        """
+        Resets the player's hand and remaining turns to their initial values.
+        """
+        self.hand = []
+        self.remaining_turns = 0
+    # End of reset
     
     
     def sprintf_hand(self) -> str:

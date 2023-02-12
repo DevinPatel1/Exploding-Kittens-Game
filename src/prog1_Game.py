@@ -43,8 +43,9 @@
 # Instance Attributes:
 #   - _prompter (Prompter):     Facilitates user input for all game prompts
 #   - _draw_pile (Deck):        Deck of cards representing the draw pile
-#   - _players (list[Player]):          List of players
+#   - _players (list[Player]):  List of players
 #   - _num_players (int):       Number of players in the game
+#   - _remaining_players (int): Number of players remaining in the game
 #
 # Methods:
 #   + __init__(): Initializes the game object
@@ -78,6 +79,7 @@ class Game:
         self._draw_pile: Deck = None
         self._players: list[Player] = []
         self._num_players = -1
+        self._remaining_players = 0
         
         # Prints welcome message
         self._prompter.print_welcome()
@@ -100,6 +102,11 @@ class Game:
         
         # Initialize the list of players if this is the first game
         if len(self._players) == 0: self._players = self._prompter.prompt_player_names(self._num_players)
+        else: # Reset the players' play states if this is not a first game
+            for player in self._players: player.reset()
+        
+        # Set the remaining players to the number of players
+        self._remaining_players = self._num_players
 
         # Initialize the deck using the player count
         self._draw_pile = Deck(num_players=self._num_players)
@@ -158,21 +165,41 @@ class Game:
         Game loop that cycles through the players' turns until everyone loses to an Exploding Kitten.
         All card rules are applied here.
         """
-        winner_declared = False
-        current_player = 0  # Keep this value between 0 and _num_players-1
+        current_player_index = 0  # Keep this value between 0 and _num_players-1
         
         # Game loop
-        while not winner_declared:
-            self._player_turn(current_player)
+        while True:
+            current_player = self._players[current_player_index]
+            
+            # If there is only one player left, then they are the winner.
+            if self._remaining_players == 1:
+                break
+            
+            # If the player lost, skip them. Losing players have negataive remaining turns.
+            if current_player.remaining_turns < 0: continue
+            
+            # If the player has no remaining turns, give them one turn.
+            if current_player.remaining_turns == 0:
+                current_player.remaining_turns += 1
+                
+            # If the player had an attack card played on them,
+            # then remaining_turns will already be set to the correct
+            # value in the previous player's turn.
+            
+            # Loops until player uses all their turns (usually breaks after one turn)
+            while self._players(current_player_index).remaining_turns > 0:
+                self._player_turn(current_player_index)
+            # End of player turn loop
+            
             
             # Player's turn is done, move to next player
-            current_player += 1
+            current_player_index += 1
             # Wrap around if current player was the last player
-            if current_player >= self._num_players: current_player = 0
+            if current_player_index >= self._num_players: current_player_index = 0
             
         # End of game loop
         
-        # Game is over, display the win scoreboard and return to main()
+        # Game is over, display the winner and the wins scoreboard and return to main()
         # to prompt the user to play again.
         # @TODO Implement an end_game() method to do this.
         
@@ -186,6 +213,13 @@ class Game:
     def _player_turn(self, player_index: int) -> None:
         """
         Facilitates a play-or-pass loop for a player's turn.
+        Times to break loop:
+            1. Player chooses to pass
+            2. Player plays a Skip card
+        Times to skip drawing a card:
+            1. Player plays a Skip card
+            2. Player plays a Defuse card
+            3. Player plays an Attack card
         
         Args:
             player_index (int): Index of which player's turn it is.
@@ -193,15 +227,18 @@ class Game:
         # Alert the player it is their turn
         self._prompter.alert_player_turn(self._players[player_index])
         
-        # Prompt for card to play
-        card, pass_ = self._prompter.prompt_play_or_pass(self._players[player_index])
+        # Play-or-pass loop that breaks when the player chooses to pass or a skip card is played.
+        while True:
         
-        # If the player chooses to pass, end their turn and return to the game loop
-        if pass_:
-            self._end_turn(player_index)
-            return
-        
-        # If player plays a card, apply the rules
+            # Prompt for card to play
+            card, pass_ = self._prompter.prompt_play_or_pass(self._players[player_index])
+            
+            # If the player chooses to pass, end their turn and return to the game loop
+            if pass_:
+                self._end_turn(player_index)
+                return
+            
+            # @TODO If player plays a card, apply the rules of the card
         
         
     # End of _player_turn
