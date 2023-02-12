@@ -42,7 +42,7 @@
 #   + alert_draw(player: Player, card: Card): Alerts the user that they drew a card.
 #   + prompt_play_defuse(max_index: int): Prompts the user to specify an index to place an Exploding Kitten card or set the index to -1 (i.e., they quit).
 #   + prompt_play_favor(current_player: Player, players: list[Player]): Prompts the user to specify a player to target with a Favor card.
-#   + prompt_play_favor_target(target: Player): Prompts the targeted player to specify a card to give to the current player.
+#   + prompt_play_favor_target(target: Player, stealer: Player): Prompts the targeted player to specify a card to give to the current player.
 #   + player_lost(player: Player): Alerts the user that they lost the game.
 #
 # Action Card Report Methods:
@@ -447,27 +447,89 @@ class Prompter:
         Prompts the user to specify which player to steal a card from.
 
         Args:
-            player (Player): The player who played the Favor card.
+            current_player (Player): The player who played the Favor card.
+            players (list[Player]): The list of players in the game.
 
         Returns:
             Player: The target player selected by the current player.
         """
         self._spacer(3)
-        print(f"{self.__GAME} You played a favor card. Choose a player to steal a card from:")
-        print(f"{len(self.__GAME)*' '} \t" + "".join(for i, p in enumerate()))
+        print(f"{self.__GAME} You played a favor card.")
         
-    
-    def prompt_play_favor_target(target: Player) -> Card:
+        # Input loop to get the target player
+        while True:
+            self._spacer()
+            
+            # Prompts user to enter a number to select the player
+            print(f"{self.__PRMPT} Which player do you want to steal a card from? (1-{len(players)})")
+            
+            # Loops to create the list of players to choose from
+            print("".join(f"{len(self.__PRMPT)*' '}   {i+1}) {p.name}\n" for i, p in enumerate(players))) # Print the player in an enumerated list            # End of for loop
+                        
+            # Now get and validate the input
+            # Check if input is an integer
+            try:
+                index = int(self._input())-1
+            except ValueError:
+                self._error("Please enter an integer value.")
+                continue
+            
+            # Check if integer is in range
+            if index < 0 or index > len(players)-1:
+                self._error(f"Please enter a number in the range 1-{len(players)}.")
+                continue
+            
+            # Check if the player chosen is the current player
+            chosen_player = players[index]
+            if chosen_player == current_player:  # The references should be the same since both references came from the same list. This isn't a true equality check.
+                self._error("You cannot choose yourself.")
+                continue
+
+            # Checks passed, return the chosen player
+            else: return chosen_player
+        # End of input loop
+    # End of prompt_play_favor
+        
+        
+    def prompt_play_favor_target(self, target: Player, stealer: Player) -> Card:
         """
         Prompts the targeted player which card to give to the current player.
 
         Args:
             target (Player): The targeted player chosen by the current player.
+            stealer (Player): The current player who played the Favor card.
 
         Returns:
             Card: The card the targeted player chose.
         """
-        pass
+        # Create a bunch of space and an alert to get the target player in the seat.
+        self._spacer(50)
+        print(f"{self.__GAME} {target.name} is now picking a card to give to {stealer.name}.")
+        self._continue()
+        
+        # Input loop to get which card to give to the stealer
+        while True: 
+            self._spacer()
+            
+            # Prompt the target player to choose a card from their hand.
+            print(f"{self.__PRMPT} Which card do you want to give to {stealer.name}? (1-{len(target.hand)})")
+            print("".join(f"{len(self.__PRMPT)*' '}   {i+1}) {c.name()}\n" for i, c in enumerate(target.hand)))
+
+            try:
+                index = int(self._input())-1
+            except ValueError:
+                self._error("Please enter an integer value.")
+                continue
+            
+            # Check if integer is in range
+            if index < 0 or index > len(target.hand)-1:
+                self._error(f"Please enter a number in the range 1-{len(target.hand)}.")
+                continue
+            
+            # Checks passed, return the chosen card
+            else: return target.hand[index]
+        # End of input loop
+    # End of prompt_play_favor_target
     
     
     def player_lost(self, player: Player) -> None:

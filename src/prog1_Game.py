@@ -490,7 +490,7 @@ class Game:
         target = self._prompter.prompt_play_favor(player, self._players)
         
         # Prompt the target player to select a card to give to the current player.
-        target_card = self._prompter.prompt_play_favor_target(target)
+        target_card = self._prompter.prompt_play_favor_target(target, player)
         
         # Now perform the swap. The target card needs to be removed from the target player's hand
         # and added to the current player's hand.
