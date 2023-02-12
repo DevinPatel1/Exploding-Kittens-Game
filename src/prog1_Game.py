@@ -44,6 +44,7 @@
 #   - _prompter (Prompter):        Facilitates user input for all game prompts
 #   - _draw_pile (Deck):           Deck of cards representing the draw pile
 #   - _players (list[Player]):     List of players
+#   - _current_player_index (int): Index of the current player in the _players list
 #   - _num_players (int):          Number of players in the game
 #   - _remaining_players (int):    Number of players remaining in the game
 #
@@ -58,19 +59,18 @@
 #                   at which point the user is prompted to play again.
 # 
 # Player Turn Methods:
-#   - _player_turn(player: Player, player_index: int): Facilitates a play-or-pass loop for a player's turn.
-#   - _play_card(player: Player, player_index: int, card: Card): Facilitates the playing of a card.
+#   - _player_turn(player: Player): Facilitates a play-or-pass loop for a player's turn.
+#   - _play_card(player: Player, card: Card): Facilitates the playing of a card.
 #   - _draw_card(player: Player): Facilitates the drawing process for a player.
-#   - _end_turn(player: Player): Ends a player's turn and facilitates the drawing process.
 # 
 # Action Card Methods:
-#   - _nope(player: Player, player_index: int, card: Card): Facilitates the playing of a Nope card.
-#   - _attack(player: Player, player_index: int, card: Card): Facilitates the playing of an Attack card.
-#   - _skip(player: Player, player_index: int, card: Card): Facilitates the playing of a Skip card.
-#   - _favor(player: Player, player_index: int, card: Card): Facilitates the playing of a Favor card.
-#   - _shuffle(player: Player, player_index: int, card: Card): Facilitates the playing of a Shuffle card.
-#   - _see_the_future_card(player: Player, player_index: int, card: Card): Facilitates the playing of a See the Future card.
-#   - _cat_cards(card: Card, player: Player, player_index: int): Facilitates the playing of a Cat card.
+#   - _nope(player: Player): Facilitates the playing of a Nope card.
+#   - _attack(player: Player): Facilitates the playing of an Attack card.
+#   - _skip(player: Player): Facilitates the playing of a Skip card.
+#   - _favor(player: Player): Facilitates the playing of a Favor card.
+#   - _shuffle(player: Player): Facilitates the playing of a Shuffle card.
+#   - _see_the_future_card(player: Player): Facilitates the playing of a See the Future card.
+#   - _cat_cards(player: Player, card: Card): Facilitates the playing of a Cat card.
 ####################################################################################
 
 # Imports
@@ -94,6 +94,7 @@ class Game:
         self._prompter = Prompter()
         self._draw_pile: Deck = None
         self._players: list[Player] = []
+        self._current_player_index = 0
         self._num_players = -1
         self._remaining_players = 0
         
@@ -123,6 +124,9 @@ class Game:
         
         # Set the remaining players to the number of players
         self._remaining_players = self._num_players
+        
+        # Set the current player index to 0
+        self._current_player_index = 0
 
         # Initialize the deck using the player count
         self._draw_pile = Deck(num_players=self._num_players)
@@ -179,36 +183,30 @@ class Game:
         """
         Game loop that cycles through the players' turns until everyone loses to an Exploding Kitten.
         All card rules are applied here.
-        """
-        current_player_index = 0  # Keep this value between 0 and _num_players-1
-        
+        """        
         # Game loop
         while True:
-            current_player = self._players[current_player_index]
+            current_player = self._players[self._current_player_index]
             
             # If there is only one player left, then they are the winner.
             if self._remaining_players == 1:
                 break
             
-            # If the player lost, skip them. Losing players have negataive remaining turns.
+            # If the player lost, skip them. Losing players have negative remaining turns.
             if current_player.remaining_turns < 0: continue
             
             # If the player has no remaining turns, give them one turn.
             if current_player.remaining_turns == 0:
                 current_player.remaining_turns += 1
-                
-            # If the player had an attack card played on them,
-            # then remaining_turns will already be set to the correct
-            # value in the previous player's turn.
             
-            # Loops until player uses all their turns (usually breaks after one turn)
+            # Loops until player uses all their turns
             while current_player.remaining_turns > 0:
-                self._player_turn(current_player, current_player_index)
+                self._player_turn(current_player)
             
             # Player's turn is done, move to next player
-            current_player_index += 1
+            self._current_player_index += 1
             # Wrap around if current player was the last player
-            if current_player_index >= self._num_players: current_player_index = 0
+            if self._current_player_index >= self._num_players: self._current_player_index = 0
             
         # End of game loop
         
@@ -223,21 +221,27 @@ class Game:
     # Player Turn Methods
     ##############################
     
-    def _player_turn(self, player: Player, player_index: int) -> None:
+    def _player_turn(self, player: Player) -> None:
         """
         Facilitates a play-or-pass loop for a player's turn.
-        Times to break loop:
+        
+        Times to break turn loop:
             1. Player chooses to pass
-            2. Player plays a Skip card
+            2. Player plays an Attack card
+            3. Player plays a Skip card
+            
         Times to skip drawing a card:
-            1. Player plays a Skip card
-            2. Player plays a Defuse card
-            3. Player plays an Attack card
+            1. Player plays a Defuse card
+            2. Player plays an Attack card
+            3. Player plays a Skip card
         
         Args:
             player (Player): The current player whose turn it is.
-            player_index (int): The index of the current player whose turn it is.
         """
+        # skip_draw is a boolean control flag that is set to True if the player has
+        # to immediately end their turn without drawing.
+        skip_draw: bool = None
+        
         # Alert the player it is their turn
         self._prompter.alert_player_turn(player)
         
@@ -251,72 +255,70 @@ class Game:
             if pass_: break
             
             # If player plays a card, apply the rules of the card.
-            self._play_card(card, player, player_index)
+            skip_draw = self._play_card(card, player)
             
+            # Break if skip_draw is True
+            if skip_draw: break
         # End of play-or-pass loop
-        self._end_turn(player)
+        
+        # End of the player's turn, draw if allowed
+        if player.remaining_turns > 0: player.remaining_turns -= 1
+        if not skip_draw: self._draw_card(player)
             
     # End of _player_turn
     
     
-    def _play_card(self, card: Card, player: Player, player_index: int) -> None:
+    def _play_card(self, card: Card, player: Player) -> bool:
         """
         Checks the played card and performs the appropriate action.
+        Returns a boolean control flag to indicate if the player should skip drawing a card.
 
         Args:
             card (Card): The card that was played
-            player (Player): The player that played rthe card
-            player_index (int): The index of the player that played the card
+            player (Player): The player that played the card
+        
+        Returns:
+            bool: False if the player should draw a card, True otherwise.
         
         Raises:
             ValueError: If an invalid card is played.
                         This should never happen since the input is validated in Prompter.play_or_pass().
         """
+        SKIP_DRAW = True  # Constant for readability
+        
         # Remove the card from the hand
         # For cat cards, it needs to be removed twice. The second remove_card call will be in Game._cat_cards().
         player.remove_card(card)
         
         # Check each card type and apply the appropriate action
-        if card == Card.N:        # @TODO Nope
-            pass
-        elif card == Card.A:      # @TODO Attack
-            pass
-        elif card == Card.SK:     # @TODO Skip
-            pass
-        elif card == Card.F:      # @TODO Favor
-            pass
-        elif card == Card.SH:     # @TODO Shuffle
-            pass
-        elif card == Card.STF:    # @TODO See the Future
-            pass
-        elif card == Card.TCAT:   # @TODO Taco Cat
-            pass
-        elif card == Card.HPCAT:  # @TODO Hairy Potato Cat
-            pass
-        elif card == Card.CATM:   # @TODO Cattermelon
-            pass
-        elif card == Card.RRCAT:  # @TODO Rainbow Ralphing Cat
-            pass
-        elif card == Card.BCAT:   # @TODO Bearded Cat
-            pass
-        else:                     # Invalid card
-            raise ValueError(f"Invalid card played: {card.name()}")
+        match card:
+            case Card.N:                    # @TODO Nope
+                pass
+            case Card.A:                    # Attack
+                self._attack_card(player)
+                return SKIP_DRAW
+            case Card.SK:                   # Skip
+                return self._skip_card(player)
+            case Card.F:                    # @TODO Favor
+                pass
+            case Card.SH:                   # @TODO Shuffle
+                pass
+            case Card.STF:                  # @TODO See the Future
+                pass
+            case Card.TCAT:                 # @TODO Taco Cat
+                pass
+            case Card.HPCAT:                # @TODO Hairy Potato Cat
+                pass
+            case Card.CATM:                 # @TODO Cattermelon
+                pass
+            case Card.RRCAT:                # @TODO Rainbow Ralphing Cat
+                pass
+            case Card.BCAT:                 # @TODO Bearded Cat
+                pass
+            case _:                         # Invalid card
+                raise ValueError(f"Invalid card played: {card.name()}")
     # End of _play_card
 
-    
-    
-    def _end_turn(self, player: Player) -> None:
-        """
-        Ends the player's turn. This method handles the drawing process
-        and handles Exploding Kitten draws and Defuse plays.
-        
-        Args:
-            player (Player): The current player whose turn it is.
-        """
-        player.remaining_turns -= 1
-        self._draw_card(player)
-    # End of _end_turn
-        
 
     def _draw_card(self, player: Player) -> None:
         """
@@ -326,8 +328,8 @@ class Game:
         Args:
             player (Player): The current player whose turn it is.
         """
-        # @TODO Implement this method
-        pass
+        # @TODO Implement the draw phase
+        
     # End of _draw_card
     
     
@@ -337,83 +339,108 @@ class Game:
     # Action Card Methods
     ##############################
     
-    def _nope_card(self, player: Player, player_index: int) -> None:
+    def _nope_card(self, player: Player) -> None:
         """
         Handles the Nope card actions.
         
         Args:
             player (Player): The current player whose turn it is.
-            player_index (int): The index of the current player whose turn it is.
         """
         pass
+    # End of _nope_card
     
     
-    def _attack_card(self, player: Player, player_index: int) -> None:
+    def _attack_card(self, player: Player) -> None:
         """
         Handles the Attack card actions.
         
-        Args:
-            player (Player): The current player whose turn it is.
-            player_index (int): The index of the current player whose turn it is.
-        """
-        pass
-    
-    
-    def _skip_card(self, player: Player, player_index: int) -> None:
-        """
-        Handles the Skip card actions.
+        This card needs to accomplish the following:
+            1. Skip the current player's draw phase (handled in _play_card()).
+            2. Add 2 turns plus the current player's remaining turns to the next player.
+            3. Set the current player's remaining turns to 0, so the loop would break when their current turn ends.
         
         Args:
             player (Player): The current player whose turn it is.
-            player_index (int): The index of the current player whose turn it is.
         """
-        pass
+        # Get next player
+        try: next_player = self._players[self._current_player_index+1]
+        except IndexError: next_player = self._players[0]
+        
+        # Add 2 turns plus the current player's remaining turns to the next player
+        next_player.remaining_turns += (player.remaining_turns-1) + 2
+        
+        # Set the current player's remaining turns to 0
+        player.remaining_turns = 0
+    # End of _attack_card
+
+
+    def _skip_card(self, player: Player) -> bool:
+        """
+        Handles the Skip card actions.
+        
+        This card needs to accomplish the following:
+            1. Immediately decrement the number of turns the player has left.
+            2. Check if there are > 0 turns left.
+               2.1 If so, return a False control flag to indicate the player should draw a card.
+               2.2 If there are 0 turns left, return a True control flag to indicate the player should skip drawing a card.
+        
+        Args:
+            player (Player): The current player whose turn it is.
+            
+        Returns:
+            bool: False if the the player has > 0 turns left, True otherwise.
+        """
+        player.remaining_turns -= 1
+        
+        return not player.remaining_turns > 0
+    # End of _skip_card
     
     
-    def _favor_card(self, player: Player, player_index: int) -> None:
+    def _favor_card(self, player: Player) -> None:
         """
         Handles the Favor card actions.
         
         Args:
             player (Player): The current player whose turn it is.
-            player_index (int): The index of the current player whose turn it is.
         """
         pass
+    # End of _favor_card
     
     
-    def _shuffle_card(self, player: Player, player_index: int) -> None:
+    def _shuffle_card(self, player: Player) -> None:
         """
         Handles the Shuffle card actions.
         
         Args:
             player (Player): The current player whose turn it is.
-            player_index (int): The index of the current player whose turn it is.
         """
         pass
+    # End of _shuffle_card
     
     
-    def _see_the_future_card(self, player: Player, player_index: int) -> None:
+    def _see_the_future_card(self, player: Player) -> None:
         """
         Handles the See the Future card actions.
         
         Args:
             player (Player): The current player whose turn it is.
-            player_index (int): The index of the current player whose turn it is.
         """
         pass
+    # End of _see_the_future_card
     
     
-    def _cat_cards(self, card: Card, player: Player, player_index: int) -> None:
+    def _cat_cards(self, player: Player, card: Card) -> None:
         """
         Handles the Cat cards actions.
         
         Args:
             card (Card): The cat card that was played
             player (Player): The current player whose turn it is.
-            player_index (int): The index of the current player whose turn it is.
         """
         # Remove the second card from the player's hand
         player.remove_card(card)
+        
+    # End of _cat_cards
     
     
 # End of Game

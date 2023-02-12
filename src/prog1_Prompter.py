@@ -37,8 +37,8 @@
 #   + print_welcome(): Prints a welcome message to the user.
 #   + prompt_num_players(): Prompts the user for the number of players in the game.
 #   + prompt_player_names(num_players: int): Prompts the user for the names of the players.
-#   + alert_player_turn(): Alerts which user's turn it is so their hand can't be seen by other players.
-#   + prompt_play_or_pass(): Prompts the user to play a card or pass.
+#   + alert_player_turn(player: Player): Alerts which user's turn it is so their hand can't be seen by other players.
+#   + prompt_play_or_pass(player: Player): Prompts the user to play a card or pass.
 #
 # Macros:
 #   - _input(prompt_symbol=">>"): Macro that creates the user input prompt and returns the string received from stdin.
@@ -199,18 +199,25 @@ class Prompter:
     # End of prompt_player_names
     
     
-    def alert_player_turn(self, player: Player) -> None:
+    def alert_player_turn(self, player: Player, last_played_card: Card) -> None:
         """
         Alerts which user's turn it is so their hand can't be seen by other players.
+        Also alerts any effects present on the player (e.g., an attack card was played).
 
         Args:
             player (Player): The player whose turn it is.
         """
         self._spacer(50)
-        print(f"{self.__GAME} It is {player.name}'s turn.")
+        print(f"{self.__GAME} It is {player.name}'s turn.\n")
+        
+        # Alerts go here
+        print(f"{self.__GAME} Alerts:")
+        if player.remaining_turns > 1:
+            print(f"\tThe last player played an attack card on you.\n\tYou now have to complete 2 additional turns.")
+        else: # No alerts
+            print("\tNone")
+        
         self._continue()
-        
-        
     # End of alert_player_turn
     
     
@@ -243,6 +250,7 @@ class Prompter:
         # Input loop only breaks when valid input is returned
         while True:
             self._spacer()
+            print(f"Remaining turns: {player.remaining_turns}\n")
             print(f"{self.__PRMPT} {player.name}, please enter one of the following:")
             print(f"{len(self.__PRMPT)*' '}   1) The name of the card from your hand to play")
             print(f"{len(self.__PRMPT)*' '}   2) The name of any card followed by \'?\' to see its description")
