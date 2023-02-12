@@ -47,15 +47,30 @@
 #   - _num_players (int):          Number of players in the game
 #   - _remaining_players (int):    Number of players remaining in the game
 #
-# Methods:
+#
+# Setup Methods:
 #   + __init__(): Initializes the game object
 #   + start(): Starts the game by initializing the attributes and entering the game loop
 #   - _deal(): Deals cards to the players
+#
+# Game Loop Method:
 #   - _game_loop(): Runs the game loop until a player loses,
 #                   at which point the user is prompted to play again.
+# 
+# Player Turn Methods:
 #   - _player_turn(player: Player, player_index: int): Facilitates a play-or-pass loop for a player's turn.
 #   - _play_card(player: Player, player_index: int, card: Card): Facilitates the playing of a card.
+#   - _draw_card(player: Player): Facilitates the drawing process for a player.
 #   - _end_turn(player: Player): Ends a player's turn and facilitates the drawing process.
+# 
+# Action Card Methods:
+#   - _nope(player: Player, player_index: int, card: Card): Facilitates the playing of a Nope card.
+#   - _attack(player: Player, player_index: int, card: Card): Facilitates the playing of an Attack card.
+#   - _skip(player: Player, player_index: int, card: Card): Facilitates the playing of a Skip card.
+#   - _favor(player: Player, player_index: int, card: Card): Facilitates the playing of a Favor card.
+#   - _shuffle(player: Player, player_index: int, card: Card): Facilitates the playing of a Shuffle card.
+#   - _see_the_future_card(player: Player, player_index: int, card: Card): Facilitates the playing of a See the Future card.
+#   - _cat_cards(card: Card, player: Player, player_index: int): Facilitates the playing of a Cat card.
 ####################################################################################
 
 # Imports
@@ -205,7 +220,7 @@ class Game:
     
     
     ##############################
-    # Game Helper Methods
+    # Player Turn Methods
     ##############################
     
     def _player_turn(self, player: Player, player_index: int) -> None:
@@ -252,9 +267,40 @@ class Game:
             card (Card): The card that was played
             player (Player): The player that played rthe card
             player_index (int): The index of the player that played the card
+        
+        Raises:
+            ValueError: If an invalid card is played.
+                        This should never happen since the input is validated in Prompter.play_or_pass().
         """
-        # @TODO Implement this method
-        pass
+        # Remove the card from the hand
+        # For cat cards, it needs to be removed twice. The second remove_card call will be in Game._cat_cards().
+        player.remove_card(card)
+        
+        # Check each card type and apply the appropriate action
+        if card == Card.N:        # @TODO Nope
+            pass
+        elif card == Card.A:      # @TODO Attack
+            pass
+        elif card == Card.SK:     # @TODO Skip
+            pass
+        elif card == Card.F:      # @TODO Favor
+            pass
+        elif card == Card.SH:     # @TODO Shuffle
+            pass
+        elif card == Card.STF:    # @TODO See the Future
+            pass
+        elif card == Card.TCAT:   # @TODO Taco Cat
+            pass
+        elif card == Card.HPCAT:  # @TODO Hairy Potato Cat
+            pass
+        elif card == Card.CATM:   # @TODO Cattermelon
+            pass
+        elif card == Card.RRCAT:  # @TODO Rainbow Ralphing Cat
+            pass
+        elif card == Card.BCAT:   # @TODO Bearded Cat
+            pass
+        else:                     # @TODO Invalid card
+            raise ValueError(f"Invalid card played: {card.name()}")
     # End of _play_card
 
     
@@ -283,4 +329,91 @@ class Game:
         # @TODO Implement this method
         pass
     # End of _draw_card
+    
+    
+    
+    # @bookmark Action Card Methods
+    ##############################
+    # Action Card Methods
+    ##############################
+    
+    def _nope_card(self, player: Player, player_index: int) -> None:
+        """
+        Handles the Nope card actions.
+        
+        Args:
+            player (Player): The current player whose turn it is.
+            player_index (int): The index of the current player whose turn it is.
+        """
+        pass
+    
+    
+    def _attack_card(self, player: Player, player_index: int) -> None:
+        """
+        Handles the Attack card actions.
+        
+        Args:
+            player (Player): The current player whose turn it is.
+            player_index (int): The index of the current player whose turn it is.
+        """
+        pass
+    
+    
+    def _skip_card(self, player: Player, player_index: int) -> None:
+        """
+        Handles the Skip card actions.
+        
+        Args:
+            player (Player): The current player whose turn it is.
+            player_index (int): The index of the current player whose turn it is.
+        """
+        pass
+    
+    
+    def _favor_card(self, player: Player, player_index: int) -> None:
+        """
+        Handles the Favor card actions.
+        
+        Args:
+            player (Player): The current player whose turn it is.
+            player_index (int): The index of the current player whose turn it is.
+        """
+        pass
+    
+    
+    def _shuffle_card(self, player: Player, player_index: int) -> None:
+        """
+        Handles the Shuffle card actions.
+        
+        Args:
+            player (Player): The current player whose turn it is.
+            player_index (int): The index of the current player whose turn it is.
+        """
+        pass
+    
+    
+    def _see_the_future_card(self, player: Player, player_index: int) -> None:
+        """
+        Handles the See the Future card actions.
+        
+        Args:
+            player (Player): The current player whose turn it is.
+            player_index (int): The index of the current player whose turn it is.
+        """
+        pass
+    
+    
+    def _cat_cards(self, card: Card, player: Player, player_index: int) -> None:
+        """
+        Handles the Cat cards actions.
+        
+        Args:
+            card (Card): The cat card that was played
+            player (Player): The current player whose turn it is.
+            player_index (int): The index of the current player whose turn it is.
+        """
+        # Remove the second card from the player's hand
+        player.remove_card(card)
+    
+    
 # End of Game

@@ -218,11 +218,12 @@ class Prompter:
         """
         Prompts the user to play a card or pass.
         Their hand will be printed to the terminal to show them what they can play.
+        To play a card, the user must enter the name of the card.
+        The user cannot play a Defuse card here.
         The following key words have functionality:
-            1. "pass" - Effectively ends their turn. They will draw a card.
-            2. "show" - Prints the player's hand.
-            3. <card> - The name of the card the user wants to play.
-                        The player cannot play their Defuse card here.
+            1. "pass"  - Effectively ends their turn. They will draw a card.
+            2. "show"  - Prints the player's hand.
+            3. <card>? - Prints the name and description of that card.
         All other input is invalid.
 
         Args:
@@ -242,8 +243,9 @@ class Prompter:
             self._spacer()
             print(f"{self.__PRMPT} {player.name}, please enter one of the following:")
             print(f"{len(self.__PRMPT)*' '}   1) The name of the card from your hand to play")
-            print(f"{len(self.__PRMPT)*' '}   2) 'show' to see your hand")
-            print(f"{len(self.__PRMPT)*' '}   3) 'pass' to end your turn and draw a card")
+            print(f"{len(self.__PRMPT)*' '}   2) The name of any card followed by \'?\' to see its description")
+            print(f"{len(self.__PRMPT)*' '}   3) 'show' to see your hand")
+            print(f"{len(self.__PRMPT)*' '}   4) 'pass' to end your turn and draw a card")
             
             input = self._input().lower()
             
@@ -256,6 +258,17 @@ class Prompter:
                 self._spacer()
                 continue
             
+            # Check for card description
+            try:
+                for card in Card:
+                    if card.name().lower() == input[:-1]: # Card found
+                        self._spacer(2)
+                        print(f"{self.__GAME} {card}")    # Print the card's description
+                        raise Exception()  # Break out of the for loop so the input loop can continue
+            except Exception:
+                self._spacer()
+                continue
+            
             # Check for defuse card
             if input == 'defuse':
                 self._error("You can't play your Defuse card now.")
@@ -264,7 +277,24 @@ class Prompter:
             # Check if the player has that card. If they do, play it.
             for card in player.hand:
                 if card == Card.EK: continue       # Skip Exploding Kittens
-                if card.name().lower() == input:   # User has card, return it
+                
+                # Check if input is a cat card. They need to have a pair of like cats to play it.
+                selected_pair: Card = None
+                if input == Card.TCAT.name().lower(): selected_pair = Card.TCAT
+                elif input == Card.HPCAT.name().lower(): selected_pair = Card.HPCAT
+                elif input == Card.CATM.name().lower(): selected_pair = Card.CATM
+                elif input == Card.RRCAT.name().lower(): selected_pair = Card.RRCAT
+                elif input == Card.BCAT.name().lower(): selected_pair = Card.BCAT
+                
+                # Check if the player has a pair of like cats. If so, return it.
+                if selected_pair and player.has_pair(selected_pair):
+                    return (card, False)
+                elif selected_pair and not player.has_pair(selected_pair):
+                    self._error(f"You need a pair of {selected_pair.name()}s to play them.")
+                    continue
+                    
+                # Otherwise, return the action card
+                if card.name().lower() == input:
                     return (card, False)
             # End of for loop
             

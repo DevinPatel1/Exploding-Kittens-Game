@@ -35,8 +35,9 @@
 # Methods:
 #   + __init__(name: str): Initiales an empty hand and sets the name of the player
 #   + add_card(card: Card): Adds a card to the player's hand
-#   + pop_card(card: Card): Pops a card from the player's hand and returns it
+#   + remove_card(card: Card): Removes a card from the player's hand
 #   + has_card(card: Card): Returns True if the player has the card in their hand
+#   + has_pair(card: Card): Returns True if the player has a pair of the card in their hand
 #   + reset(): Resets the player's hand and remaining turns to their initial values
 #   + sprintf_hand(): Returns a string representation of the player's hand
 #   + __str__(): Returns a string representation of all Player attributes
@@ -93,9 +94,9 @@ class Player:
     # End of add_card
     
     
-    def pop_card(self, card: Card) -> Card:
+    def remove_card(self, card: Card) -> None:
         """
-        Removes a card from the player's hand and returns it.
+        Removes a card from the player's hand.
         
         Args:
             card (Card): Card to remove from the player's hand
@@ -120,6 +121,34 @@ class Player:
         return a_card in self.hand
     # End of has_card
     
+    
+    def has_pair(self, a_card: Card) -> bool:
+        """
+        Returns True if the player has a pair of the card in their hand.
+
+        Args:
+            a_card (Card): Card to search for.
+
+        Returns:
+            bool: Returns True if the pair is in the player's hand. False if otherwise.
+        """
+        match_index: int = None
+        # list.index() raises a ValueError if the card is not found.
+        # If the try block fails, then the pair is not in the player's hand. 
+        try:
+            match_index = self.hand.index(a_card)
+        except ValueError:
+            return False
+
+        # Since Player.add_card() keeps identical cards grouped together,
+        # we can check if the card after the match is identical.
+        try:
+            if self.hand[match_index+1] == a_card:
+                return True # Pair is found
+        except IndexError:
+            pass
+        
+        return False # No pairs found
     
     def reset(self) -> None:
         """

@@ -72,7 +72,7 @@
 #   + STF: ("See the Future", description)
 #   + TCAT: ("Taco Cat", description)
 #   + HPCAT: ("Hairy Potato Cat", description)
-#   + CATMELON: ("Cattermelon", description)
+#   + CATM: ("Cattermelon", description)
 #   + RRCAT: ("Rainbow Ralphing Cat", description)
 #   + BCAT: ("Beard Cat", description)
 #
