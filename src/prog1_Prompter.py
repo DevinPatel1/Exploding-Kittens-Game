@@ -220,6 +220,7 @@ class Prompter:
         Their hand will be printed to the terminal to show them what they can play.
         To play a card, the user must enter the name of the card.
         The user cannot play a Defuse card here.
+        
         The following key words have functionality:
             1. "pass"  - Effectively ends their turn. They will draw a card.
             2. "show"  - Prints the player's hand.
