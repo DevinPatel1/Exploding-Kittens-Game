@@ -41,11 +41,11 @@
 #
 #
 # Instance Attributes:
-#   - _prompter (Prompter):     Facilitates user input for all game prompts
-#   - _draw_pile (Deck):        Deck of cards representing the draw pile
-#   - _players (list[Player]):  List of players
-#   - _num_players (int):       Number of players in the game
-#   - _remaining_players (int): Number of players remaining in the game
+#   - _prompter (Prompter):        Facilitates user input for all game prompts
+#   - _draw_pile (Deck):           Deck of cards representing the draw pile
+#   - _players (list[Player]):     List of players
+#   - _num_players (int):          Number of players in the game
+#   - _remaining_players (int):    Number of players remaining in the game
 #
 # Methods:
 #   + __init__(): Initializes the game object
@@ -53,8 +53,8 @@
 #   - _deal(): Deals cards to the players
 #   - _game_loop(): Runs the game loop until a player loses,
 #                   at which point the user is prompted to play again.
-#   - _player_turn(player_index: int): Facilitates a play-or-pass loop for a player's turn.
-#   - _end_turn(player_index: int): Ends a player's turn and facilitates the drawing process.
+#   - _player_turn(player: Player): Facilitates a play-or-pass loop for a player's turn.
+#   - _end_turn(player: Player): Ends a player's turn and facilitates the drawing process.
 ####################################################################################
 
 # Imports
@@ -128,7 +128,7 @@ class Game:
             2. Every player gets 1 Defuse card to start with. The Deck reset() method handles
                what to do with the remaining Defuse cards. In this method, drawn Defuse cards
                get placed on the bottom.
-            3. The deck is randomly generated, so there is no need to shuffle.
+            3. The deck was shuffled when it was instantiated, so there is no need to shuffle prior to dealing.
             4. Every player gets 7 cards such that their hand will have 7 cards plus 1 Defuse.
                As with steps 1 and 2, any drawn Defuses or Exploding Kittens will be placed on the bottom.
             5. Shuffle the deck again to get the Defuses and Exploding Kittens mixed out of the bottom.
@@ -146,7 +146,6 @@ class Game:
                 if draw == Card.D or draw == Card.EK:
                     self._draw_pile.place(draw, location='bottom')
                     i -= 1 # Draw again
-                    continue
                 else: # Valid card drawn
                     player.add_card(draw)
             # End of step 4 for loop
@@ -187,9 +186,8 @@ class Game:
             # value in the previous player's turn.
             
             # Loops until player uses all their turns (usually breaks after one turn)
-            while self._players(current_player_index).remaining_turns > 0:
-                self._player_turn(current_player_index)
-            # End of player turn loop
+            while current_player.remaining_turns > 0:
+                self._player_turn(current_player)
             
             
             # Player's turn is done, move to next player
@@ -210,7 +208,7 @@ class Game:
     # Game Helper Methods
     ##############################
     
-    def _player_turn(self, player_index: int) -> None:
+    def _player_turn(self, player: Player) -> None:
         """
         Facilitates a play-or-pass loop for a player's turn.
         Times to break loop:
@@ -222,20 +220,20 @@ class Game:
             3. Player plays an Attack card
         
         Args:
-            player_index (int): Index of which player's turn it is.
+            player (Player): The current player whose turn it is.
         """
         # Alert the player it is their turn
-        self._prompter.alert_player_turn(self._players[player_index])
+        self._prompter.alert_player_turn(player)
         
         # Play-or-pass loop that breaks when the player chooses to pass or a skip card is played.
         while True:
         
             # Prompt for card to play
-            card, pass_ = self._prompter.prompt_play_or_pass(self._players[player_index])
+            card, pass_ = self._prompter.prompt_play_or_pass(player)
             
             # If the player chooses to pass, end their turn and return to the game loop
             if pass_:
-                self._end_turn(player_index)
+                self._end_turn(player)
                 return
             
             # @TODO If player plays a card, apply the rules of the card
@@ -244,14 +242,14 @@ class Game:
     # End of _player_turn
     
     
-    def _end_turn(self, player_index: int) -> None:
+    def _end_turn(self, player: Player) -> None:
         """
         Ends the player's turn. This method handles the drawing process
         and handles Exploding Kitten draws and Defuse plays.
         
         Args:
-            player_index (int): Index of which player's turn to end.
+            player (Player): The current player whose turn it is.
         """
-        pass
+        player.remaining_turns -= 1
     # End of _end_turn
 # End of Game
