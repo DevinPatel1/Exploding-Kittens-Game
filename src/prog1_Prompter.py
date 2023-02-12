@@ -275,7 +275,7 @@ class Prompter:
                     if card.name().lower() == input[:-1]: # Card found
                         self._spacer(2)
                         print(f"{self.__GAME} {card}")    # Print the card's description
-                        raise Exception()  # Break out of the for loop so the input loop can continue
+                        raise Exception("Dummy Exception")  # Break out of the for loop so the input loop can continue
             except Exception:
                 self._spacer()
                 continue
