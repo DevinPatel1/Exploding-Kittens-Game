@@ -199,7 +199,7 @@ class Prompter:
     # End of prompt_player_names
     
     
-    def alert_player_turn(self, player: Player, last_played_card: Card) -> None:
+    def alert_player_turn(self, player: Player) -> None:
         """
         Alerts which user's turn it is so their hand can't be seen by other players.
         Also alerts any effects present on the player (e.g., an attack card was played).
