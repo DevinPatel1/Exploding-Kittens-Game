@@ -255,10 +255,10 @@ class Game:
             if pass_: break
             
             # If player plays a card, apply the rules of the card.
-            skip_draw = self._play_card(card, player)
+            skip_draw, end_turn = self._play_card(card, player)
             
             # Break if skip_draw is True
-            if skip_draw: break
+            if end_turn: break
         # End of play-or-pass loop
         
         # End of the player's turn, draw if allowed
@@ -268,23 +268,25 @@ class Game:
     # End of _player_turn
     
     
-    def _play_card(self, card: Card, player: Player) -> bool:
+    def _play_card(self, card: Card, player: Player) -> tuple[bool, bool]:
         """
         Checks the played card and performs the appropriate action.
-        Returns a boolean control flag to indicate if the player should skip drawing a card.
+        Returns a tuple of boolean control flags to indicate if the player should skip drawing a card
+        and if the player should immediately end their turn.
 
         Args:
             card (Card): The card that was played
             player (Player): The player that played the card
         
         Returns:
-            bool: False if the player should draw a card, True otherwise.
+            tuple[bool, bool]: (skip_draw, end_turn)
         
         Raises:
             ValueError: If an invalid card is played.
                         This should never happen since the input is validated in Prompter.play_or_pass().
         """
         SKIP_DRAW = True  # Constant for readability
+        END_TURN  = True  # Constant for readability
         
         # Remove the card from the hand
         # For cat cards, it needs to be removed twice. The second remove_card call will be in Game._cat_cards().
@@ -296,7 +298,7 @@ class Game:
                 pass
             case Card.A:                    # Attack
                 self._attack_card(player)
-                return SKIP_DRAW
+                return (SKIP_DRAW, END_TURN)
             case Card.SK:                   # Skip
                 return self._skip_card(player)
             case Card.F:                    # @TODO Favor
@@ -374,25 +376,25 @@ class Game:
     # End of _attack_card
 
 
-    def _skip_card(self, player: Player) -> bool:
+    def _skip_card(self, player: Player) -> tuple[bool, bool]:
         """
         Handles the Skip card actions.
         
         This card needs to accomplish the following:
             1. Immediately decrement the number of turns the player has left.
             2. Check if there are > 0 turns left.
-               2.1 If so, return a False control flag to indicate the player should draw a card.
-               2.2 If there are 0 turns left, return a True control flag to indicate the player should skip drawing a card.
+               2.1 If so, return False for skip_draw and False for end_turn.
+               2.2 If there are 0 turns left, return True for skip_draw and True for end_turn.
         
         Args:
             player (Player): The current player whose turn it is.
             
         Returns:
-            bool: False if the the player has > 0 turns left, True otherwise.
+            tuple[bool, bool]: (skip_draw, end_turn)
         """
         player.remaining_turns -= 1
         
-        return not player.remaining_turns > 0
+        return (not player.remaining_turns > 0, player.remaining_turns == 0)
     # End of _skip_card
     
     
