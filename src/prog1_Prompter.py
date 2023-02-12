@@ -415,11 +415,8 @@ class Prompter:
                 self._error(f"Please enter an integer between 0 and {max_index}.")
                 continue
             
-            # Remember that the draw pile's top is at the end of the list
-            index = max_index - num_cards_down
-            
             # Input is valid, return it
-            return str(index)
+            return str(num_cards_down)
         # End of index input loop
     # End of prompt_play_defuse
     

@@ -59,6 +59,7 @@
 #                   at which point the user is prompted to play again.
 # 
 # Player Turn Methods:
+#   - _increment_next_player(): Increments the current player index to the next player.
 #   - _player_turn(player: Player): Facilitates a play-or-pass loop for a player's turn.
 #   - _play_card(player: Player, card: Card): Facilitates the playing of a card.
 #   - _draw_card(player: Player): Facilitates the drawing process for a player.
@@ -194,7 +195,9 @@ class Game:
                 break
             
             # If the player lost, skip them. Losing players have negative remaining turns.
-            if current_player.remaining_turns < 0: continue
+            if current_player.remaining_turns < 0:
+                self._increment_next_player()
+                continue
             
             # If the player has no remaining turns, give them one turn.
             if current_player.remaining_turns == 0:
@@ -208,9 +211,7 @@ class Game:
                 self._player_turn(current_player)
             
             # Player's turn is done, move to next player
-            self._current_player_index += 1
-            # Wrap around if current player was the last player
-            if self._current_player_index >= self._num_players: self._current_player_index = 0
+            self._increment_next_player()
             
         # End of game loop
         
@@ -218,12 +219,24 @@ class Game:
         # to prompt the user to play again.
         # @TODO Implement an end_game() method to do this.
         
+        
     # End of _game_loop
     
     
     ##############################
     # Player Turn Methods
     ##############################
+    
+    def _increment_next_player(self) -> None:
+        """
+        Increments the current player index to the next player.
+        """
+        # Player's turn is done, move to next player
+        self._current_player_index += 1
+        # Wrap around if current player was the last player
+        if self._current_player_index >= self._num_players: self._current_player_index = 0
+    # End of increment_next_player
+    
     
     def _player_turn(self, player: Player) -> None:
         """
@@ -245,7 +258,6 @@ class Game:
         # skip_draw is a boolean control flag that is set to True if the player has
         # to immediately end their turn without drawing.
         skip_draw: bool = None
-        played_card: Card = None
         
         # Play-or-pass loop that breaks when the player chooses to pass or a skip card is played.
         while True:
@@ -258,7 +270,6 @@ class Game:
             
             # If player plays a card, apply the rules of the card.
             skip_draw = self._play_card(card, player)
-            played_card = card
             
             # Break if skip_draw is True
             if skip_draw: break
@@ -266,7 +277,6 @@ class Game:
         
         # End of the player's turn, draw if allowed
         if player.remaining_turns > 0: player.remaining_turns -= 1
-        if played_card == Card.A: player.remaining_turns += 1 # Undo decrement for Attack card continuity
         if not skip_draw: self._draw_card(player)
             
     # End of _player_turn
@@ -398,6 +408,7 @@ class Game:
         
         player.lose() # If the player does not have a Defuse card, they lose.
         self._prompter.player_lost(player)
+        self._remaining_players -= 1
     
     
     def _nope_card(self, player: Player) -> None:
@@ -428,11 +439,13 @@ class Game:
         try: next_player = self._players[self._current_player_index+1]
         except IndexError: next_player = self._players[0]
         
-        # Add 2 turns plus the current player's remaining turns to the next player
-        next_player.remaining_turns += (player.remaining_turns-1) + 2
+        # Add 2 turns (1 if there haven't been compounded attacks)
+        # plus the current player's remaining turns to the next player
+        if player.remaining_turns > 1: next_player.remaining_turns += player.remaining_turns + 2
+        else: next_player.remaining_turns += player.remaining_turns + 1
         
         # Set the current player's remaining turns to 0
-        player.remaining_turns = -1
+        player.remaining_turns = 0
         
         self._prompter.report_attack(player)
     # End of _attack_card
@@ -454,7 +467,7 @@ class Game:
         Returns:
             bool: False if the the player has > 0 turns left, True otherwise.
         """
-        player.remaining_turns -= 1
+        if player.remaining_turns > 0: player.remaining_turns -= 1
         self._prompter.report_skip(player)
         return not player.remaining_turns > 0
     # End of _skip_card

@@ -169,7 +169,8 @@ class Deck:
         
         # Else if index was specified, place the card at that index
         elif location == "NoNe":
-            self._deck.insert(self.size-1-index, card)
+            placed_index = self.size - index
+            self._deck.insert(placed_index, card)
         
         # Else raise a ValueError
         else: raise ValueError("Invalid parameters.")
