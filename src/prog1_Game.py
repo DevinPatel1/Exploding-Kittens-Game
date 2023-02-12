@@ -337,7 +337,9 @@ class Game:
             self._defuse(player)
         
         # Else add it to the player's hand
-        else: player.add_card(draw)
+        else:
+            player.add_card(draw)
+            self._prompter.alert_draw(player, draw)
     # End of _draw_card
     
     
@@ -362,17 +364,18 @@ class Game:
         # If the player has a Defuse card, play it.
         if player.has_card(Card.D):
             # Prompt the player to play the Defuse card
-            play_defuse = self._prompter.prompt_play_defuse(player)
+            play_defuse = self._prompter.prompt_play_defuse(player, self._draw_pile.size-1)
             
             # play_defuse is negative if the player chooses not to play the Defuse card.
             if not play_defuse < 0:
                 player.remove_card(Card.D)
-                self._defuse(play_defuse)
+                self._draw_pile.place(play_defuse, Card.EK)
                 return
-            
+            # Else just fall through to the player losing.
         # End of if player.has_card(Card.D)
         
         player.lose() # If the player does not have a Defuse card, they lose.
+        self._prompter.player_lost(player)
     
     
     def _nope_card(self, player: Player) -> None:

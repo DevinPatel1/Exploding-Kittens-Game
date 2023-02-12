@@ -39,7 +39,9 @@
 #   + prompt_player_names(num_players: int): Prompts the user for the names of the players.
 #   + alert_player_turn(player: Player): Alerts which user's turn it is so their hand can't be seen by other players.
 #   + prompt_play_or_pass(player: Player): Prompts the user to play a card or pass.
-#   + prompt_play_defuse(player: Player): Prompts the user to specify an index to place an Exploding Kitten card or set the index to -1 (i.e., they quit).
+#   + alert_draw(player: Player, card: Card): Alerts the user that they drew a card.
+#   + prompt_play_defuse(max_index: int): Prompts the user to specify an index to place an Exploding Kitten card or set the index to -1 (i.e., they quit).
+#   + player_lost(player: Player): Alerts the user that they lost the game.
 #
 # Macros:
 #   - _input(prompt_symbol=">>"): Macro that creates the user input prompt and returns the string received from stdin.
@@ -143,8 +145,9 @@ class Prompter:
         while True:
             self._spacer()
             print(f"{self.__PRMPT} How many players are playing? Only 2-5 players are able to play.")
-        
-            try: # Capture and cast user input as an int
+
+            # Validate user input as int
+            try:
                 num_players = int(self._input())
             except ValueError:
                 # Input is not an integer
@@ -325,8 +328,113 @@ class Prompter:
     # End of prompt_play_or_pass
     
     
-    def prompt_play_defuse(self, player: Player) -> int:
-        pass
+    def alert_draw(self, player: Player, card: Card):
+        """
+        Alerts the user the card they drew.
+        """
+        self._spacer(2)
+        print(f"{self.__GAME} {player.name} drew a/an {card.name()}.")
+        self._continue()
+    
+    
+    def prompt_play_defuse(self, max_index: int) -> str:
+        """
+        Prompts the user to play a Defuse card if they have one.
+        They can choose to play it or take the loss and quit playing.
+        If they choose to play it, they must enter the index of where they want to place an Exploding Kitten
+        or specify a location keyword as defined in the Deck.place() method.
+
+        Args:
+            max_index (int): The maximum index of where to place an Exploding Kitten.
+
+        Returns:
+            str: Returns either the index of where in the deck to place an Exploding Kitten as a string or a location keyword.
+                 If the user wants to quit, return -1.
+        """
+        self._spacer(3)
+        print(f"{self.__GAME} You drew an Exploding Kitten!\n{len(self.__GAME)*' '} Do you want to use your Defuse card (Y/n)?\n{len(self.__GAME)*' '} (If you don't have a Defuse card, you'll lose the game.)")
+        
+        # Play input loop
+        while True:
+            input = self._input().lower()
+            
+            if input == 'y' or input == 'yes' or input == '': break
+            elif input == 'n' or input == 'no': return '-1'
+            else: self._error("Please enter \'y\' or \'n\'.")
+        # End of play input loop
+        
+        
+        # Now prompt for where to palce the Exploding Kitten
+        print(f"{self.__GAME} Where do you want to place the Exploding Kitten?\n"
+              + f"{len(self.__GAME)*' '} Enter one of the following inputs:\n"
+              + f"{len(self.__GAME)*' '} \t1) An integer between 0 and {max_index} denoting how many cards below the top card it should be placed\n"
+              + f"{len(self.__GAME)*' '} \t2) \'top\' to place it on top of the draw pile (next card)\n"
+              + f"{len(self.__GAME)*' '} \t3) \'middle\' to place it in the middle of the draw pile\n"
+              + f"{len(self.__GAME)*' '} \t4) \'bottom\' to place it on the bottom of the draw pile (last card)\n"
+              + f"{len(self.__GAME)*' '} \t5) \'random\' to place it at a random index in the draw pile")
+            
+        # Index input loop
+        while True:
+            input = self._input()
+            
+            # Check for the keywords first
+            if input == 'top' or input == '2': return 'top'
+            elif input == 'middle' or input == '3': return 'middle'
+            elif input == 'bottom' or input == '4': return 'bottom'
+            elif input == 'random' or input == '5': return 'random'
+            
+            # All keywords checked, now validate input for int
+            try:
+                num_cards_down = int(input)
+            except ValueError:
+                # Input is not an integer
+                self._error("Please enter a integer.")
+                continue
+            # End of try/except
+            
+            # Check if index is in bounds
+            if num_cards_down < 0 or num_cards_down > max_index:
+                self._error(f"Please enter an integer between 0 and {max_index}.")
+                continue
+            
+            # Remember that the draw pile's top is at the end of the list
+            index = max_index - num_cards_down
+            
+            # Input is valid, return it
+            return str(index)
+        # End of index input loop
     # End of prompt_play_defuse
+    
+    
+    def report_prompt_play_defuse(self, player: Player, location: str) -> None:
+        """
+        Reports to the user where they placed the Exploding Kitten after using a Defuse.
+
+        Args:
+            player (Player): The player who played the Defuse card.
+            location (str): The index or location where the Exploding Kitten was placed.
+        """
+        self._spacer(2)
+        
+        if location == 'top': location = "on top of the deck"
+        elif location == 'middle': location = "in the middle of the deck"
+        elif location == 'bottom': location = "on the bottom of the deck"
+        elif location.isnumeric(): location = f"at {location} in the deck"
+        
+        print(f"{self.__GAME} {player.name} placed the Exploding Kitten {location}.")
+        self._continue()
+    
+    
+    def player_lost(self, player: Player):
+        """
+        Prints a message to the terminal to let the user know that they lost.
+
+        Args:
+            player (Player): The player who lost.
+        """
+        self._spacer(5)
+        print(f"{self.__GAME} {player.name} has blown up. You can no longer play this round.")
+        self._continue()
+    # End of player_lost
     
 # End of Prompter
