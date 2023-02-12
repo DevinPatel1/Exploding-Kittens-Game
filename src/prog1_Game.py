@@ -299,7 +299,7 @@ class Game:
             pass
         elif card == Card.BCAT:   # @TODO Bearded Cat
             pass
-        else:                     # @TODO Invalid card
+        else:                     # Invalid card
             raise ValueError(f"Invalid card played: {card.name()}")
     # End of _play_card
 

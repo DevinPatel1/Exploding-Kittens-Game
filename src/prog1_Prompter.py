@@ -224,6 +224,7 @@ class Prompter:
             1. "pass"  - Effectively ends their turn. They will draw a card.
             2. "show"  - Prints the player's hand.
             3. <card>? - Prints the name and description of that card.
+            4. ?       - Prints the name and description of all cards.
         All other input is invalid.
 
         Args:
@@ -244,8 +245,9 @@ class Prompter:
             print(f"{self.__PRMPT} {player.name}, please enter one of the following:")
             print(f"{len(self.__PRMPT)*' '}   1) The name of the card from your hand to play")
             print(f"{len(self.__PRMPT)*' '}   2) The name of any card followed by \'?\' to see its description")
-            print(f"{len(self.__PRMPT)*' '}   3) 'show' to see your hand")
-            print(f"{len(self.__PRMPT)*' '}   4) 'pass' to end your turn and draw a card")
+            print(f"{len(self.__PRMPT)*' '}   3) Just a \'?\' to see all card descriptions")
+            print(f"{len(self.__PRMPT)*' '}   4) 'show' to see your hand")
+            print(f"{len(self.__PRMPT)*' '}   5) 'pass' to end your turn and draw a card")
             
             input = self._input().lower()
             
@@ -255,6 +257,14 @@ class Prompter:
             # Check for show, print hand if so
             if input == 'show' or input == '2':
                 print(f"{self.__GAME} {player.sprintf_hand()}")
+                self._spacer()
+                continue
+            
+            # Check for just a '?'
+            if input == '?':
+                for card in Card:
+                    self._spacer(2)
+                    print(f"{self.__GAME} {card}")
                 self._spacer()
                 continue
             

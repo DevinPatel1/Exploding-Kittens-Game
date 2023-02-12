@@ -101,8 +101,9 @@ class Card(Enum):
           + "\tDiscard all of your cards, including the Exploding Kitten.")
     
     D = ("Defuse", "\tIf you drew an Exploding Kitten, you can play this card instead of dying.\n"
-         + "\tThen take the Exploding Kitten, and without reordering or viewing the other cards, secretly"
-         + "put it back in the draw pile anywhere you'd like.\n\tWant to hurt the player right after you?"
+         + "\tThen take the Exploding Kitten, and without reordering or viewing\n"
+         + "\tthe other cards, secretly put it back in the draw pile anywhere you'd like.\n"
+         + "\tWant to hurt the player right after you?"
          + "Put the Kitten right on top of the deck.\n\tYour turn is over after playing this card.\n\tThe Defuse card can only be used once.")
     
     N = ("Nope", "\tStop any action except for an Exploding Kitten or a Defuse Card.\n"
