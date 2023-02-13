@@ -185,7 +185,7 @@ class Game:
         """
         Game loop that cycles through the players' turns until everyone loses to an Exploding Kitten.
         All card rules are applied here.
-        """        
+        """
         # Game loop
         while True:
             current_player = self._players[self._current_player_index]
@@ -212,14 +212,22 @@ class Game:
             
             # Player's turn is done, move to next player
             self._increment_next_player()
-            
         # End of game loop
         
-        # Game is over, display the winner and the wins scoreboard and return to main()
+        # Game is over. Get the winning player.
+        winner: Player = None
+
+        for player in self._players:
+            if player.remaining_turns >= 0:
+                winner = player
+                break
+
+        # Increment the winner's win count
+        winner.wins += 1
+
+        # Now display the winner and the wins scoreboard and return to main()
         # to prompt the user to play again.
-        # @TODO Implement an end_game() method to do this.
-        
-        
+        self._prompter.print_winner(winner, self._players)
     # End of _game_loop
     
     

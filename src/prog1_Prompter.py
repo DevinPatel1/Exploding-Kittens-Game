@@ -44,6 +44,7 @@
 #   + prompt_play_favor(current_player: Player, players: list[Player]): Prompts the user to specify a player to target with a Favor card.
 #   + prompt_play_favor_target(target: Player, stealer: Player): Prompts the targeted player to specify a card to give to the current player.
 #   + player_lost(player: Player): Alerts the user that they lost the game.
+#   + print_winner(winner: Player, players: list[Player]): Prints the winner of the game and the scoreboard of all players' wins.
 #
 # Action Card Report Methods:
 #?  + report_nope(player: Player): Reports that the user played a Nope card.
@@ -544,6 +545,28 @@ class Prompter:
         self._continue()
     # End of player_lost
     
+    
+    def print_winner(self, winner: Player, players: list[Player]) -> None:
+        """
+        Reports to the user that the game is over.
+        Display the winner's name and the scoreboard of all the player's win counts.
+
+        Args:
+            winner (Player): Player who won
+            players (list[Player]): List of all the players in the game
+        """
+        self._spacer(5)
+        
+        print(f"{self.__GAME} {winner.name} has won the game!\n")
+        print(f"{self.__GAME} Here is the final scoreboard:")
+
+        # Prints each player's name and win count in a table
+        print(f"{len(self.__GAME)*' '} \tName\tWins")
+        print("".join(f"{len(self.__GAME)*' '} \t{p.name}\t{p.wins}\n" for p in players))
+        
+        self._spacer()
+        self._continue()
+        self._spacer(5)
     
     
     ###############################
