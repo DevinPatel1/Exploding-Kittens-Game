@@ -142,7 +142,24 @@ class Prompter:
         """
         Prints a welcome message to the user.
         """
-        print("Welcome to Exploding Kittens!")
+        # Print ascii cover art
+        print("##########################################" + "\n"
+            + "            _ ._  _ , _ ._" + "\n"
+            + "          (_ ' ( `  )_  .__)" + "\n"
+            + "        ( (  (    )   `)  ) _)" + "\n"
+            + "       (__ (_   (_ . _) _) ,__)" + "\n"
+            + "           `~~`\\ ' . /`~~`" + "\n"
+            + "   /\\_/\\        ;   ;        /\\_/\\" + "\n"
+            + "  ( o.o )       /   \\       ( o.o )" + "\n"
+            + " __> ^ <_______/_ __ \\_______> ^ <__" + "\n"
+            + "##########################################" + "\n\n")
+        
+
+        print("Welcome to Exploding Kittens!\n")
+        self._continue()
+        self._spacer(2)
+    # End of print_welcome
+        
         
     
     def prompt_num_players(self) -> int:
@@ -300,6 +317,7 @@ class Prompter:
                     self._spacer(2)
                     print(f"{self.__GAME} {card}")
                 self._spacer()
+                self._continue()
                 continue
             
             # Check for card description
@@ -307,7 +325,8 @@ class Prompter:
                 for card in Card:
                     if card.name().lower() == input[:-1]: # Card found
                         self._spacer(2)
-                        print(f"{self.__GAME} {card}")    # Print the card's description
+                        print(f"{self.__GAME} {card}\n")    # Print the card's description
+                        self._continue()                    # Wait for user to continue
                         raise Exception("Dummy Exception")  # Break out of the for loop so the input loop can continue
             except Exception:
                 self._spacer()
@@ -455,7 +474,7 @@ class Prompter:
             Player: The target player selected by the current player.
         """
         self._spacer(3)
-        print(f"{self.__GAME} You played a favor card.")
+        print(f"{self.__GAME} You played a Favor card.")
         
         # Input loop to get the target player
         while True:
@@ -531,6 +550,55 @@ class Prompter:
             else: return target.hand[index]
         # End of input loop
     # End of prompt_play_favor_target
+    
+    
+    def prompt_play_cat(self, current_player: Player, players: list[Player], played_card: Card) -> Player:
+        """
+        Prompts the user to specify which player to steal a card from.
+
+        Args:
+            current_player (Player): The player who played the Cat cards.
+            players (list[Player]): The list of players in the game.
+
+        Returns:
+            Player: The target player selected by the current player.
+        """
+        self._spacer(3)
+        print(f"{self.__GAME} You played a pair of {played_card.name()}s.")
+        
+        # Input loop to get the target player
+        while True:
+            self._spacer()
+            
+            # Prompts user to enter a number to select the player
+            print(f"{self.__PRMPT} Which player do you want to steal a card from? (1-{len(players)})")
+            
+            # Loops to create the list of players to choose from
+            print("".join(f"{len(self.__PRMPT)*' '}   {i+1}) {p.name}\n" for i, p in enumerate(players))) # Print the player in an enumerated list            # End of for loop
+                        
+            # Now get and validate the input
+            # Check if input is an integer
+            try:
+                index = int(self._input())-1
+            except ValueError:
+                self._error("Please enter an integer value.")
+                continue
+            
+            # Check if integer is in range
+            if index < 0 or index > len(players)-1:
+                self._error(f"Please enter a number in the range 1-{len(players)}.")
+                continue
+            
+            # Check if the player chosen is the current player
+            chosen_player = players[index]
+            if chosen_player == current_player:  # The references should be the same since both references came from the same list. This isn't a true equality check.
+                self._error("You cannot choose yourself.")
+                continue
+
+            # Checks passed, return the chosen player
+            else: return chosen_player
+        # End of input loop
+    # End of prompt_play_cat
     
     
     def player_lost(self, player: Player) -> None:

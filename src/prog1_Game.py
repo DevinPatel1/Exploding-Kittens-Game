@@ -540,7 +540,7 @@ class Game:
     # End of _see_the_future_card
     
     
-    def _cat_cards(self, player: Player, card: Card) -> None:
+    def _cat_cards(self, player: Player, cat_card: Card) -> None:
         """
         Handles the Cat cards actions.
         
@@ -548,12 +548,24 @@ class Game:
             card (Card): The cat card that was played
             player (Player): The player whose turn it is.
         """
-        # @TODO Implement Cats
         # Remove the second card from the player's hand
-        player.remove_card(card)
-        target = Player("Target") # @DEBUG
-        stolen_card = Card.BCAT # @DEBUG
-        self._prompter.report_cat(player, target, card, stolen_card)
+        player.remove_card(cat_card)
+        
+        
+        # Prompt the current player to select a player to target.
+        target = self._prompter.prompt_play_cat(player, self._players, cat_card)
+        
+        # Randomly choose a card from the target player's hand to give to the current player.
+        from random import choice
+        target_card = choice(target.hand)
+        
+        # Now perform the swap. The target card needs to be removed from the target player's hand
+        # and added to the current player's hand.
+        target.remove_card(target_card)
+        player.add_card(target_card)
+        
+        # Swap complete, report what happened and return
+        self._prompter.report_cat(player, target, cat_card, target_card)
         
     # End of _cat_cards
     
