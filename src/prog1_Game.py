@@ -171,7 +171,6 @@ class Game:
                 # If drawn card is Defuse or Exploding Kitten, place it back on the bottom
                 if draw == Card.D or draw == Card.EK:
                     self._draw_pile.place(draw, location='bottom')
-                    print("\n\nhappened")
                 else: # Valid card drawn
                     player.add_card(draw)
                     i+=1
