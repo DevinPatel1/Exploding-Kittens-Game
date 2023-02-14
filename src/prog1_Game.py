@@ -52,6 +52,7 @@
 # Setup Methods:
 #   + __init__(): Initializes the game object
 #   + start(): Starts the game by initializing the attributes and entering the game loop
+#   + reset(): Resets the game attributes to their default values
 #   - _deal(): Deals cards to the players
 #
 # Game Loop Method:
@@ -121,6 +122,7 @@ class Game:
         
         # Initialize the list of players if this is the first game
         if len(self._players) == 0: self._players = self._prompter.prompt_player_names(self._num_players)
+        
         else: # Reset the players' play states if this is not a first game
             for player in self._players: player.reset()
         
@@ -130,8 +132,9 @@ class Game:
         # Set the current player index to 0
         self._current_player_index = 0
 
-        # Initialize the deck using the player count
-        self._draw_pile = Deck(num_players=self._num_players)
+        # Initialize the deck using the player count if this is the first game. Else just reset the deck.
+        if self._draw_pile: self._draw_pile.reset()
+        else: self._draw_pile = Deck(num_players=self._num_players)
         
         # Deal cards to players
         self._deal()
@@ -177,6 +180,23 @@ class Game:
         
         self._draw_pile.shuffle() # Step 5
     # End of _deal
+    
+    
+    def reset(self) -> None:
+        """
+        Resets the game attributes such that a game with new players can be started.
+        """
+        # 1) The draw pile needs to be set to None so that it can be reinstantiated with a different player count.
+        # 2) Clear the players list.
+        # 3) Set the number of players to -1 so that the number of players can be prompted for.
+        # 4) The remaining players will be set in start(), so it does not need to be reset here.
+        # 5) Current player index will be set in start(), so it does not need to be reset here.
+        
+        self._draw_pile = None
+        self._players.clear()
+        self._num_players = -1
+    # End of _reset
+    
     
     
     ##############################

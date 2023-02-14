@@ -24,13 +24,14 @@ def main() -> None:
             play_reset = input("Would you like to reset the players? (y/n): ").strip().lower()
             print("\n"*4) # Clears the screen for the next game
             
-            if play_reset == 'y': # If yes, create new instance of Game and start it
-                game = Game()
+            if play_reset == 'y': # If yes, reset game and start it.
+                game.reset()
                 game.start()
             elif play_reset == 'n': # If no, start another game in the same instance
                 game.start()
             else: # Invalid input
                 print("Invalid input. Please enter a \'y\' or \'n\'.")
+                
         elif play_again == 'n': # If no, quit the program
             print("\n\nQuitting...")
             return

@@ -162,7 +162,7 @@ class Player:
         """
         Resets the player's hand and remaining turns to their initial values.
         """
-        self.hand = []
+        self.hand.clear()
         self.remaining_turns = 0
     # End of reset
     
