@@ -59,6 +59,8 @@
 #   - _input(prompt_symbol=">>"): Macro that creates the user input prompt and returns the string received from stdin.
 #   - _spacer(lines: int): Macro that prints lines of whitespace to the terminal for readability.
 #   - _continue(): Macro that prompts the user to press enter to continue.
+#   - _game(game_msg: str): Macro that prints a game message to the terminal.
+#   - _prompt(prompt_msg: str): Macro that prints a prompt message to the terminal.
 #   - _error(error_msg: str): Macro that prints an error message to the terminal.
 ####################################################################################
 
@@ -119,6 +121,27 @@ class Prompter:
         Macro that prompts the user to press enter to continue.
         """
         input("Press [Enter] to continue...")
+    # End of _continue
+    
+    def _game(self, game_msg: str) -> None:
+        """
+        Macro that prints a game message to the terminal.
+        
+        Args:
+            game_msg (str): The game message to print.
+        """
+        print(f"{self.__GAME} {game_msg}")
+    # End of _game
+    
+    def _prompt(self, prompt_msg: str) -> None:
+        """
+        Macro that prints a prompt message to the terminal.
+        
+        Args:
+            prompt_msg (str): The prompt message to print.
+        """
+        print(f"{self.__PRMPT} {prompt_msg}")
+    # End of _prompt
     
     def _error(self, error_msg: str) -> None:
         """
@@ -131,6 +154,7 @@ class Prompter:
         self._spacer()
         print(f"{self.__ERR} {error_msg}")
         self._continue()
+    # End of _error
     
     
     
@@ -184,7 +208,7 @@ class Prompter:
         # Input loop
         while True:
             self._spacer()
-            print(f"{self.__PRMPT} How many players are playing? Only 2-5 players are able to play.")
+            self._prompt("How many players are playing? Only 2-5 players are able to play.")
 
             # Validate user input as int
             try:
@@ -224,7 +248,7 @@ class Prompter:
             while True:
                 # Prints the prompt for each player
                 self._spacer()
-                print(f"{self.__PRMPT} Player {i+1}'s name?")
+                self._prompt(f"Player {i+1}'s name?")
         
                 name = self._input()
                 
@@ -252,10 +276,10 @@ class Prompter:
             player (Player): The player whose turn it is.
         """
         self._spacer(50)
-        print(f"{self.__GAME} It is {player.name}'s turn.\n")
+        self._game(f"It is {player.name}'s turn.\n")
         
         # Alerts go here
-        print(f"{self.__GAME} Alerts:")
+        self._game(f"Alerts:")
         if player.remaining_turns > 1:
             print(f"\tThe last player played an attack card on you.\n\tYou now have to complete 2 additional turns.")
         else: # No alerts
@@ -291,21 +315,21 @@ class Prompter:
                                means the user wants to play.
         """
         self._spacer(3)
-        print(f"{self.__GAME} {player.sprintf_hand()}") # Print the player's hand
+        self._game(player.sprintf_hand()) # Print the player's hand
         
         # Input loop only breaks when valid input is returned
         while True:
             self._spacer()
             
             # Print information
-            print(f"{self.__GAME} Stats:")
+            self._game("Stats:")
             print(f"\tWins: {player.wins}")
             print(f"\tCards in deck: {cards_in_deck}")
             print(f"\tExploding Kittens: {num_EK}")
             print(f"\tRemaining turns: {player.remaining_turns}\n")
             
             # Print the prompt
-            print(f"{self.__PRMPT} {player.name}, please enter one of the following:")
+            self._prompt(f"{player.name}, please enter one of the following:")
             print(f"{len(self.__PRMPT)*' '}   1) The name of the card from your hand to play")
             print(f"{len(self.__PRMPT)*' '}   2) The name of any card followed by \'?\' to see its description")
             print(f"{len(self.__PRMPT)*' '}   3) Just a \'?\' to see all card descriptions")
@@ -319,14 +343,14 @@ class Prompter:
             
             # Check for show, print hand if so
             if input == 'show' or input == '4':
-                print(f"{self.__GAME} {player.sprintf_hand()}")
+                self._game(player.sprintf_hand())
                 continue
             
             # Check for just a '?'
             if input == '?' or input == '3':
                 for card in Card:
                     self._spacer(2)
-                    print(f"{self.__GAME} {card}")
+                    self._game(str(card))
                 self._spacer()
                 self._continue()
                 continue
@@ -336,7 +360,7 @@ class Prompter:
                 for card in Card:
                     if card.name().lower() == input[:-1]: # Card found
                         self._spacer(2)
-                        print(f"{self.__GAME} {card}\n")    # Print the card's description
+                        self._game(f"{card}\n")             # Print the card's description
                         self._continue()                    # Wait for user to continue
                         raise Exception("Dummy Exception")  # Break out of the for loop so the input loop can continue
             except Exception:
@@ -384,8 +408,9 @@ class Prompter:
         Alerts the user the card they drew.
         """
         self._spacer(2)
-        print(f"{self.__GAME} {player.name} drew a/an {card.name()}.")
+        self._game(f"{player.name} drew a/an {card.name()}.")
         self._continue()
+    # End of alert_draw
     
     
     def prompt_play_defuse(self, max_index: int) -> str:
@@ -403,7 +428,7 @@ class Prompter:
                  If the user wants to quit, return -1.
         """
         self._spacer(3)
-        print(f"{self.__GAME} You drew an Exploding Kitten!\n{len(self.__GAME)*' '} Do you want to use your Defuse card (Y/n)?\n{len(self.__GAME)*' '} (If you don't use your Defuse card, you'll lose the game.)")
+        self._game(f"You drew an Exploding Kitten!\n{len(self.__GAME)*' '} Do you want to use your Defuse card (Y/n)?\n{len(self.__GAME)*' '} (If you don't use your Defuse card, you'll lose the game.)")
         
         # Play input loop
         while True:
@@ -416,7 +441,7 @@ class Prompter:
         
         
         # Now prompt for where to palce the Exploding Kitten
-        print(f"{self.__GAME} Where do you want to place the Exploding Kitten?\n"
+        self._game(f"Where do you want to place the Exploding Kitten?\n"
               + f"{len(self.__GAME)*' '} Enter one of the following inputs:\n"
               + f"{len(self.__GAME)*' '} \t1) An integer between 0 and {max_index} denoting how many cards below the top card it should be placed\n"
               + f"{len(self.__GAME)*' '} \t2) \'top\' to place it on top of the draw pile (next card)\n"
@@ -469,7 +494,7 @@ class Prompter:
         elif location == 'bottom': location = "on the bottom of the deck"
         elif location.isnumeric(): location = f"{location} cards from the top of the deck"
         
-        print(f"{self.__GAME} {player.name} placed the Exploding Kitten {location}.")
+        self._game(f"{player.name} placed the Exploding Kitten {location}.")
         self._continue()
         
     
@@ -485,14 +510,14 @@ class Prompter:
             Player: The target player selected by the current player.
         """
         self._spacer(3)
-        print(f"{self.__GAME} You played a Favor card.")
+        self._game("You played a Favor card.")
         
         # Input loop to get the target player
         while True:
             self._spacer()
             
             # Prompts user to enter a number to select the player
-            print(f"{self.__PRMPT} Which player do you want to steal a card from? (1-{len(players)})")
+            self._prompt(f"Which player do you want to steal a card from? (1-{len(players)})")
             
             # Loops to create the list of players to choose from
             print("".join(f"{len(self.__PRMPT)*' '}   {i+1}) {p.name}\n" for i, p in enumerate(players))) # Print the player in an enumerated list            # End of for loop
@@ -535,7 +560,7 @@ class Prompter:
         """
         # Create a bunch of space and an alert to get the target player in the seat.
         self._spacer(50)
-        print(f"{self.__GAME} {target.name} is now picking a card to give to {stealer.name}.")
+        self._game(f"{target.name} is now picking a card to give to {stealer.name}.")
         self._continue()
         
         # Input loop to get which card to give to the stealer
@@ -543,7 +568,7 @@ class Prompter:
             self._spacer()
             
             # Prompt the target player to choose a card from their hand.
-            print(f"{self.__PRMPT} Which card do you want to give to {stealer.name}? (1-{len(target.hand)})")
+            self._prompt(f"Which card do you want to give to {stealer.name}? (1-{len(target.hand)})")
             print("".join(f"{len(self.__PRMPT)*' '}   {i+1}) {c.name()}\n" for i, c in enumerate(target.hand)))
 
             try:
@@ -575,14 +600,14 @@ class Prompter:
             Player: The target player selected by the current player.
         """
         self._spacer(3)
-        print(f"{self.__GAME} You played a pair of {played_card.name()}s.")
+        self._game(f"You played a pair of {played_card.name()}s.")
         
         # Input loop to get the target player
         while True:
             self._spacer()
             
             # Prompts user to enter a number to select the player
-            print(f"{self.__PRMPT} Which player do you want to steal a card from? (1-{len(players)})")
+            self._prompt(f"Which player do you want to steal a card from? (1-{len(players)})")
             
             # Loops to create the list of players to choose from
             print("".join(f"{len(self.__PRMPT)*' '}   {i+1}) {p.name}\n" for i, p in enumerate(players))) # Print the player in an enumerated list            # End of for loop
@@ -620,7 +645,7 @@ class Prompter:
             player (Player): The player who lost.
         """
         self._spacer(5)
-        print(f"{self.__GAME} {player.name} has blown up. You can no longer play this round.")
+        self._game(f"{player.name} has blown up. You can no longer play this round.")
         self._continue()
     # End of player_lost
     
@@ -636,8 +661,8 @@ class Prompter:
         """
         self._spacer(5)
         
-        print(f"{self.__GAME} {winner.name} has won the game!\n")
-        print(f"{self.__GAME} Here is the final scoreboard:")
+        self._game(f"{winner.name} has won the game!\n")
+        self._game("Here is the final scoreboard:")
 
         # Prints each player's name and win count in a table
         print(f"{len(self.__GAME)*' '} \tName\tWins")
@@ -660,7 +685,7 @@ class Prompter:
             player (Player): The player who played the Nope card.
         """
         self._spacer(3)
-        print(f"{self.__GAME} {player.name} played a {Card.N.name()} card.")
+        self._game(f"{player.name} played a {Card.N.name()} card.")
         self._continue()
     # End of report_Nope
     
@@ -673,7 +698,7 @@ class Prompter:
             player (Player): The player who played the Attack card.
         """
         self._spacer(3)
-        print(f"{self.__GAME} {player.name} played an {Card.A.name()} card. The next person now has to take two additional turns.")
+        self._game(f"{player.name} played an {Card.A.name()} card. The next person now has to take two additional turns.")
         self._continue()
     # End of report_Attack   
     
@@ -686,7 +711,7 @@ class Prompter:
             player (Player): The player who played the Skip card.
         """
         self._spacer(3)
-        print(f"{self.__GAME} {player.name} played a {Card.SK.name()} card. The number of turns has been decreased by 1.")
+        self._game(f"{player.name} played a {Card.SK.name()} card. The number of turns has been decreased by 1.")
         self._continue()
     # End of report_Skip
     
@@ -701,7 +726,7 @@ class Prompter:
             stolen_card (Card): The card that was stolen from the target.
         """
         self._spacer(3)
-        print(f"{self.__GAME} {player.name} used a {Card.F.name()} card to steal a/an {stolen_card.name()} from {target.name}.")
+        self._game(f"{player.name} used a {Card.F.name()} card to steal a/an {stolen_card.name()} from {target.name}.")
         self._continue()
     # End of report_Favor
     
@@ -714,7 +739,7 @@ class Prompter:
             player (Player): The player who played the Shuffle card.
         """
         self._spacer(3)
-        print(f"{self.__GAME} {player.name} played a {Card.SH.name()} card. The deck is now shuffled.")
+        self._game(f"{player.name} played a {Card.SH.name()} card. The deck is now shuffled.")
         self._continue()
     # End of report_Shuffle
     
@@ -728,7 +753,7 @@ class Prompter:
             cards (list[Card]): The next three cards in the deck.
         """
         self._spacer(3)
-        print(f"{self.__GAME} {player.name} played a {Card.STF.name()} card.\n{len(self.__GAME)*' '} The next three cards from the top of the deck are:")
+        self._game(f"{player.name} played a {Card.STF.name()} card.\n{len(self.__GAME)*' '} The next three cards from the top of the deck are:")
         for i, card in enumerate(cards): print(f"{len(self.__GAME)*' '} \t{i+1}) {card.name()}")
         self._continue()
     # End of report_see_the_future
@@ -745,7 +770,7 @@ class Prompter:
             stolen_card (Card): The card that was stolen from the target.
         """
         self._spacer(3)
-        print(f"{self.__GAME} {player.name} used a pair of {used_card.name()}s to steal a/an {stolen_card.name()} from {target.name}.")
+        self._game(f"{player.name} used a pair of {used_card.name()}s to steal a/an {stolen_card.name()} from {target.name}.")
         self._continue()
     # End of report_cat
     
