@@ -161,15 +161,17 @@ class Game:
             player.add_card(Card.D) # Step 2
             
             # Step 4:
-            for i in range(7):
+            i = 0 # Counter for remaining cards to draw
+            while i < 7:
                 draw = self._draw_pile.draw()
                 
                 # If drawn card is Defuse or Exploding Kitten, place it back on the bottom
                 if draw == Card.D or draw == Card.EK:
                     self._draw_pile.place(draw, location='bottom')
-                    i -= 1 # Draw again
+                    print("\n\nhappened")
                 else: # Valid card drawn
                     player.add_card(draw)
+                    i+=1
             # End of step 4 for loop
         # End of step 2 and 4 for loop
         
