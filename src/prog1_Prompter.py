@@ -464,7 +464,7 @@ class Prompter:
                 num_cards_down = int(input)
             except ValueError:
                 # Input is not an integer
-                self._error("Please enter a integer.")
+                self._error("Please enter an integer.")
                 continue
             # End of try/except
             
@@ -488,13 +488,14 @@ class Prompter:
             location (str): The index or location where the Exploding Kitten was placed.
         """
         self._spacer(2)
+        s = ""
         
-        if location == 'top' or location == '0': location = "on top of the deck"
-        elif location == 'middle': location = "in the middle of the deck"
-        elif location == 'bottom': location = "on the bottom of the deck"
-        elif location.isnumeric(): location = f"{location} cards from the top of the deck"
+        if location == 'top' or location == '0': s = "on top of the deck"
+        elif location == 'middle': s = "in the middle of the deck"
+        elif location == 'bottom': s = "on the bottom of the deck"
+        elif location.isnumeric(): s = f"{location} cards from the top of the deck"
         
-        self._game(f"{player.name} placed the Exploding Kitten {location}.")
+        self._game(f"{player.name} placed the Exploding Kitten {s}.")
         self._continue()
         
     
