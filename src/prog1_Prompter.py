@@ -318,23 +318,25 @@ class Prompter:
         self._spacer(3)
         self._game(player.sprintf_hand()) # Print the player's hand
         
+        
+        # Print information
+        self._game("Stats:")
+        print(f"\tWins: {player.wins}")
+        print(f"\tCards in deck: {cards_in_deck}")
+        print(f"\tExploding Kittens: {num_EK}")
+        print(f"\tRemaining turns: {player.remaining_turns}\n")
+        
         # Input loop only breaks when valid input is returned
         while True:
             self._spacer()
             
-            # Print information
-            self._game("Stats:")
-            print(f"\tWins: {player.wins}")
-            print(f"\tCards in deck: {cards_in_deck}")
-            print(f"\tExploding Kittens: {num_EK}")
-            print(f"\tRemaining turns: {player.remaining_turns}\n")
             
             # Print the prompt
             self._prompt(f"{player.name}, please enter one of the following:")
             print(f"{len(self.__PRMPT)*' '}   1) The name of the card from your hand to play")
             print(f"{len(self.__PRMPT)*' '}   2) The name of any card followed by \'?\' to see its description")
             print(f"{len(self.__PRMPT)*' '}   3) Just a \'?\' to see all card descriptions")
-            print(f"{len(self.__PRMPT)*' '}   4) 'show' to see your hand")
+            print(f"{len(self.__PRMPT)*' '}   4) 'show' to see your hand and stats")
             print(f"{len(self.__PRMPT)*' '}   5) 'pass' to end your turn and draw a card")
             
             input = self._input().lower()
@@ -346,6 +348,13 @@ class Prompter:
             if input == 'show' or input == '4':
                 self._game(player.sprintf_hand())
                 self._spacer()
+                self._continue()
+                # Print information
+                self._game("Stats:" + "\n"
+                         + f"\tWins: {player.wins}" + "\n"
+                         + f"\tCards in deck: {cards_in_deck}" + "\n"
+                         + f"\tExploding Kittens: {num_EK}" + "\n"
+                         + f"\tRemaining turns: {player.remaining_turns}" + "\n")
                 self._continue()
                 continue
             
