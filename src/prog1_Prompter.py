@@ -367,16 +367,17 @@ class Prompter:
                 continue
             
             # Check for card description
-            try:
-                for card in Card:
-                    if card.name().lower() == input[:-1]: # Card found
-                        self._spacer(2)
-                        self._game(f"{card}\n")             # Print the card's description
-                        self._continue()                    # Wait for user to continue
-                        raise Exception("Dummy Exception")  # Break out of the for loop so the input loop can continue
-            except Exception:
-                self._spacer()
-                continue
+            if input[-1] == '?':
+                try:
+                    for card in Card:
+                        if card.name().lower() == input[:-1]: # Card found
+                            self._spacer(2)
+                            self._game(f"{card}\n")             # Print the card's description
+                            self._continue()                    # Wait for user to continue
+                            raise Exception("Dummy Exception")  # Break out of the for loop so the input loop can continue
+                except Exception:
+                    self._spacer()
+                    continue
             
             # Check for defuse card
             if input == 'defuse':
