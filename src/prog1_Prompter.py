@@ -497,6 +497,7 @@ class Prompter:
         
         self._game(f"{player.name} placed the Exploding Kitten {s}.")
         self._continue()
+    # End of report_prompt_play_defuse
         
     
     def prompt_play_favor(self, current_player: Player, players: list[Player]) -> Player:
@@ -672,6 +673,7 @@ class Prompter:
         self._spacer()
         self._continue()
         self._spacer(5)
+    # End of print_winner
     
     
     ###############################
