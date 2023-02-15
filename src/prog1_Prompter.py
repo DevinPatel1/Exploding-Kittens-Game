@@ -320,11 +320,11 @@ class Prompter:
         
         
         # Print information
-        self._game("Stats:")
-        print(f"\tWins: {player.wins}")
-        print(f"\tCards in deck: {cards_in_deck}")
-        print(f"\tExploding Kittens: {num_EK}")
-        print(f"\tRemaining turns: {player.remaining_turns}\n")
+        self._game("Stats:" + "\n"
+                 + f"\tWins: {player.wins}" + "\n"
+                 + f"\tCards in deck: {cards_in_deck}" + "\n"
+                 + f"\tExploding Kittens: {num_EK}" + "\n"
+                 + f"\tRemaining turns: {player.remaining_turns}" + "\n")
         
         # Input loop only breaks when valid input is returned
         while True:
