@@ -284,7 +284,8 @@ class Prompter:
             print(f"\tThe last player played an attack card on you.\n\tYou now have to complete 2 additional turns.")
         else: # No alerts
             print("\tNone")
-        
+            
+        self._spacer()
         self._continue()
     # End of alert_player_turn
     
@@ -344,6 +345,8 @@ class Prompter:
             # Check for show, print hand if so
             if input == 'show' or input == '4':
                 self._game(player.sprintf_hand())
+                self._spacer()
+                self._continue()
                 continue
             
             # Check for just a '?'
