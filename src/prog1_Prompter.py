@@ -215,7 +215,7 @@ class Prompter:
                 num_players = int(self._input())
             except ValueError:
                 # Input is not an integer
-                self._error("Please enter a integer that is 2 or greater.")
+                self._error("Please enter an integer that is between 2 and 5.")
                 continue
             # End of try/except
             
@@ -440,7 +440,8 @@ class Prompter:
                  If the user wants to quit, return -1.
         """
         self._spacer(3)
-        self._game(f"You drew an Exploding Kitten!\n{len(self.__GAME)*' '} Do you want to use your Defuse card (Y/n)?\n{len(self.__GAME)*' '} (If you don't use your Defuse card, you'll lose the game.)")
+        self._game(f"You drew an Exploding Kitten!\n{len(self.__GAME)*' '} Do you want to use your Defuse card (Y/n)?\n"
+                 + f"{len(self.__GAME)*' '} (If you don't use your Defuse card, you'll lose the game.)")
         
         # Play input loop
         while True:
