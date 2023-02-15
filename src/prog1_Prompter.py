@@ -330,7 +330,6 @@ class Prompter:
         while True:
             self._spacer()
             
-            
             # Print the prompt
             self._prompt(f"{player.name}, please enter one of the following:")
             print(f"{len(self.__PRMPT)*' '}   1) The name of the card from your hand to play")
