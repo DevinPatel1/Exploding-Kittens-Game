@@ -22,6 +22,6 @@ Version/Dependencies
 ------------------------
 
 Python: `v3.10.8`
+The program uses match case statements, so `Python 3.10` is required to run the program.  
 
 No extra dependencies were used in this program. Only the standard python libraries were used.  
-The program uses match case statements, so `Python 3.10` is required to run the program.
