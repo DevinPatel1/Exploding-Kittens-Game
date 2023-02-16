@@ -45,9 +45,12 @@
 #   + prompt_play_again(): Prompts the user to play again. If yes, prompt to play with the same players or different players.
 #
 # Action Card Methods:
+#   + alert_nope(current_player: Player, played_card: Card): Alerts the user that they played a Nope card.
 #   + prompt_for_nope(played_card: Card, current_player: Player, players: list[Player]): Prompts the user group to play a Nope card if they have one.
 #   + prompt_for_counter_nope(noper: Player, current_player: Player, players: list[Player]): Prompts the user group to counter play a Nope card if they have one.
-#   + prompt_play_defuse(max_index: int): Prompts the user to specify an index to place an Exploding Kitten card or set the index to -1 (i.e., they quit).
+#   + report_nope(current_player: Player, noper: Player, noped_card: Card): Reports that the user played a Nope card.
+#   + report_counter_nope(current_player:Player, noper: Player, counter_noper: Player): Reports that the user played a Counter Nope card.
+#   + prompt_play_defuse(player: Player, max_index: int): Prompts the user to specify an index to place an Exploding Kitten card or set the index to -1 (i.e., they quit).
 #   + prompt_play_favor(current_player: Player, players: list[Player]): Prompts the user to specify a player to target with a Favor card.
 #   + prompt_play_favor_target(target: Player, stealer: Player): Prompts the targeted player to specify a card to give to the current player.
 #   + report_attack(player: Player): Reports that the user played an Attack card.
@@ -446,7 +449,7 @@ class Prompter:
             player (Player): The player who lost.
         """
         self._spacer(5)
-        self._game(f"{player.name} has blown up. You can no longer play this round.")
+        self._game(f"{player.name} has blown up. They can no longer play this game.")
         self._continue()
     # End of player_lost
     
@@ -517,6 +520,20 @@ class Prompter:
     ###############################
     # Action Card Prompt Methods  
     ###############################
+    
+    def alert_nope(self, current_player: Player, played_card: Card) -> None:
+        """
+        Alerts the user group that an opportunity to Nope is available.
+
+        Args:
+            current_player (Player): The player who played the card.
+            played_card (Card): The card that was played.
+        """
+        self._spacer(40)
+        self._game(f"{current_player.name} played a/an {played_card.name()}.")
+        self._continue()
+    # End of alert_nope
+    
 
     def prompt_for_nope(self, played_card: Card, current_player: Player, players: list[Player]) -> Player:
         """
@@ -535,22 +552,25 @@ class Prompter:
         Returns:
             Player or False: Player if the card has been Nope'd, False if not.
         """
-        self._spacer(20)
-        self._game(f"{current_player.name} played a/an {played_card.name()}.")
-        self._continue()
-        
+        self._spacer(10)
+
         # Input loop to get a valid player name or "No"
         while True:
-            self._spacer()
+            self._spacer(2)
             
             # Prompt for anyone wanting to play Nope
-            self._prompt(f"Does anyone want to play a Nope card? Select a player or type \'No\'.")
-            print("".join(f"{len(self.__PRMPT)*' '}   {p.name}\n" for p in players if p.remaining_turns >= 0 or p.name != current_player.name))
+            self._prompt(f"Does anyone want to play a Nope card on {current_player.name}'s {played_card.name()}? Select a player or type \'No\'.")
+            print("".join(f"{len(self.__PRMPT)*' '}   -> {p.name}\n" for p in players if p.remaining_turns >= 0 and p.name != current_player.name))
 
             input = self._input().lower()
             
             # Check if no one wants to play a Nope
             if input == 'no': return False
+            
+            # Check if they typed the current player's name
+            if input == current_player.name.lower():
+                self._error(f"{current_player.name}, you can't Nope your own card.")
+                continue
             
             # Check if the input is a valid player name
             try:                
@@ -602,12 +622,17 @@ class Prompter:
             
             # Prompt for anyone wanting to play Nope
             self._prompt(f"Does anyone want to counter-play a Nope card? Select a player or type \'No\'.")
-            print("".join(f"{len(self.__PRMPT)*' '}   {p.name}\n" for p in players if p.remaining_turns >= 0 or p.name != noper.name))
+            print("".join(f"{len(self.__PRMPT)*' '}   {p.name}\n" for p in players if p.remaining_turns >= 0 and p.name != noper.name))
 
             input = self._input().lower()
             
             # Check if no one wants to play a Nope
             if input == 'no': return False
+            
+            # Check if they typed the current player's name
+            if input == noper.name.lower():
+                self._error(f"{noper.name}, you can't Nope your own Nope card.")
+                continue
             
             # Check if the input is a valid player name
             try:                
@@ -629,11 +654,38 @@ class Prompter:
                 
             self._error("Please enter a player's name or \'No\'.")
         # End of input loop
-        
     # End of prompt_for_counter_nope
     
     
-    def prompt_play_defuse(self, max_index: int) -> str:
+    def report_nope(self, current_player: Player, noper: Player, noped_card: Card):
+        """
+        Reports that a Nope card was played on a player.
+
+        Args:
+            current_player (Player): The player that got Nope'd.
+            noper (Player): The player that played the Nope card.
+        """
+        self._spacer(3)
+        self._game(f"{current_player.name} tried to play {noped_card.name()} but got Noped by {noper.name}.")
+        self._continue()
+    # End of report_nope
+    
+    def report_counter_nope(self, current_player:Player, noper: Player, counter_noper: Player):
+        """
+        Reports a counter Nope card was played on a player.
+
+        Args:
+            current_player (Player): The player that got Nope'd initially.
+            noper (Player): The player that played a Nope card on current_player.
+            counter_noper (Player): The player that counter played a Nope card on noper.
+        """
+        self._spacer(3)
+        self._game(f"{noper.name} tried to Nope {current_player.name} but got counter-Noped by {counter_noper.name}.")
+        self._continue()
+    # End of report_counter_nope
+    
+    
+    def prompt_play_defuse(self, player: Player, max_index: int) -> str:
         """
         Prompts the user to play a Defuse card if they have one.
         They can choose to play it or take the loss and quit playing.
@@ -648,7 +700,7 @@ class Prompter:
                  If the user wants to quit, return -1.
         """
         self._spacer(3)
-        self._game(f"You drew an Exploding Kitten!\n{len(self.__GAME)*' '} Do you want to use your Defuse card (Y/n)?\n"
+        self._game(f"{player.name}, you drew an Exploding Kitten!\n{len(self.__GAME)*' '} Do you want to use your Defuse card (Y/n)?\n"
                  + f"{len(self.__GAME)*' '} (If you don't use your Defuse card, you'll lose the game.)")
         
         # Play input loop

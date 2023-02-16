@@ -319,11 +319,13 @@ class Game:
             if pass_: break
             
             # Check if anyone wants to Nope this card
-            noped = self._nope_card(player, card)
+            noper = self._nope_card(player, card)
             
             # If the card was Nope'd, they don't get to play it
             # _nope_card() would have removed the Noped card from the player's hand
-            if noped: continue
+            if noper:
+                self._prompter.report_nope(player, noper, card)
+                continue
             else: skip_draw = self._play_card(card, player)
             
             # Break if skip_draw is True
@@ -438,17 +440,20 @@ class Game:
         # If the player has a Defuse card, play it.
         if player.has_card(Card.D):
             # Prompt the player to play the Defuse card
-            play_defuse = self._prompter.prompt_play_defuse(self._draw_pile.size-1)
+            play_defuse = self._prompter.prompt_play_defuse(player, self._draw_pile.size-1)
+            
+            # Check if the return value was -1
+            if play_defuse == '-1':
+                pass # Fall through to the player losing.
             
             # Check if play_defuse is a number
-            if play_defuse.isnumeric():
+            elif play_defuse.isnumeric():
                 int_play_defuse = int(play_defuse)
-                # int_play_defuse is negative if the player chooses not to play the Defuse card.
-                if not int_play_defuse < 0:
-                    player.remove_card(Card.D)
-                    self._draw_pile.place(Card.EK, index=int_play_defuse)
-                    self._prompter.report_prompt_play_defuse(player, play_defuse)
-                    return
+                
+                player.remove_card(Card.D)
+                self._draw_pile.place(Card.EK, index=int_play_defuse)
+                self._prompter.report_prompt_play_defuse(player, play_defuse)
+                return
                 # Else just fall through to the player losing.
                 
             else: # play_defuse is one of the location keywords
@@ -464,7 +469,7 @@ class Game:
         self._remaining_players -= 1
     
 
-    def _nope_card(self, player: Player, played_card: Card) -> bool:
+    def _nope_card(self, player: Player, played_card: Card) -> str:
         """
         Handles the Nope card actions.
         
@@ -479,8 +484,9 @@ class Game:
             played_card (Card): The card is going to be Nope'd.
 
         Returns:
-            bool: True if the final result was a Nope, False if the final result was not a Nope.
+            str or False: Noper's name if the final result was a Nope, False if the final result was not a Nope.
         """
+        self._prompter.alert_nope(player, played_card)
         
         # Nope loop
         while True:
@@ -493,16 +499,28 @@ class Game:
                 # Remove the nope cards from the players' hands. Current player still has an active card.
                 noper.remove_card(Card.N)
                 counter_noper.remove_card(Card.N)
+                self._prompter.report_counter_nope(player, noper, counter_noper)
                 
             # Card was noped but no one counter Nope'd
             else:
-                # Remove the noper's nope card and the player's played card
-                player.remove_card(played_card)
+                # If the noped card was a pair of cats, both must be removed from the player's hand.
+                if (played_card == Card.TCAT
+                or  played_card == Card.HPCAT
+                or  played_card == Card.CATM
+                or  played_card == Card.RRCAT
+                or  played_card == Card.BCAT):
+                    player.remove_card(played_card)
+                    player.remove_card(played_card)
+                
+                # Else remove just the one played card from the player's hand.
+                else: player.remove_card(played_card)
+                    
+                # Remove the noper's nope card
                 noper.remove_card(Card.N)
-                return True
+                return noper
             
             # Loop back and reprompt for another chance to nope the current player's card.
-        # End of Nope loop 
+        # End of Nope loop
     # End of _nope_card
     
     
