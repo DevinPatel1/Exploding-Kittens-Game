@@ -6,7 +6,6 @@
 ####################################################################################
 # Filename:     prog1_Player.py
 # Purpose:      To implement a base player class that contains a player's hand of cards.
-# @TODO               This class will be inherited by ComputerPlayer.
 ####################################################################################
 # Design Requirements
 #

@@ -40,21 +40,23 @@
 #   + alert_player_turn(player: Player): Alerts which user's turn it is so their hand can't be seen by other players.
 #   + prompt_play_or_pass(player: Player, cards_in_deck: int, num_EK: int): Prompts the user to play a card or pass.
 #   + alert_draw(player: Player, card: Card): Alerts the user that they drew a card.
-#   + prompt_play_defuse(max_index: int): Prompts the user to specify an index to place an Exploding Kitten card or set the index to -1 (i.e., they quit).
-#   + prompt_play_favor(current_player: Player, players: list[Player]): Prompts the user to specify a player to target with a Favor card.
-#   + prompt_play_favor_target(target: Player, stealer: Player): Prompts the targeted player to specify a card to give to the current player.
 #   + player_lost(player: Player): Alerts the user that they lost the game.
 #   + print_winner(winner: Player, players: list[Player]): Prints the winner of the game and the scoreboard of all players' wins.
 #   + prompt_play_again(): Prompts the user to play again. If yes, prompt to play with the same players or different players.
 #
-# Action Card Report Methods:
-#?  + report_nope(player: Player): Reports that the user played a Nope card.
-#  + report_attack(player: Player): Reports that the user played an Attack card.
-#  + report_skip(player: Player): Reports that the user played a Skip card.
-#  + report_favor(player: Player, target: Player, stolen_card: Card): Reports that the user played a Favor card and who they targeted.
-#  + report_shuffle(player: Player): Reports that the user played a Shuffle card.
-#  + report_see_the_future(player: Player, cards: list): Reports that the user played a See the Future card and shows the user the top 3 cards.
-#  + report_cat(player: Player, target: Player, used_card: Card, stolen_card: Card): Reports that the user played a pair of cat cards and who they targeted.
+# Action Card Methods:
+#   + prompt_for_nope(player: Player, players: list[Player]): Prompts the user to play a Nope card if they have one.
+#   + prompt_for_counter_nope(player: Player): Prompts the user to counter play a Nope card if they have one.
+#   + prompt_play_defuse(max_index: int): Prompts the user to specify an index to place an Exploding Kitten card or set the index to -1 (i.e., they quit).
+#   + prompt_play_favor(current_player: Player, players: list[Player]): Prompts the user to specify a player to target with a Favor card.
+#   + prompt_play_favor_target(target: Player, stealer: Player): Prompts the targeted player to specify a card to give to the current player.
+#   + report_nope(player: Player): Reports that the user played a Nope card.
+#   + report_attack(player: Player): Reports that the user played an Attack card.
+#   + report_skip(player: Player): Reports that the user played a Skip card.
+#   + report_favor(player: Player, target: Player, stolen_card: Card): Reports that the user played a Favor card and who they targeted.
+#   + report_shuffle(player: Player): Reports that the user played a Shuffle card.
+#   + report_see_the_future(player: Player, cards: list): Reports that the user played a See the Future card and shows the user the top 3 cards.
+#   + report_cat(player: Player, target: Player, used_card: Card, stolen_card: Card): Reports that the user played a pair of cat cards and who they targeted.
 #
 # Macros:
 #   - _input(prompt_symbol=">>"): Macro that creates the user input prompt and returns the string received from stdin.
@@ -296,7 +298,7 @@ class Prompter:
         Prompts the user to play a card or pass.
         Their hand will be printed to the terminal to show them what they can play.
         To play a card, the user must enter the name of the card.
-        The user cannot play a Defuse card here.
+        The user cannot play a Defuse or Nope card here.
         
         The following key words have functionality:
             1. pass    - Effectively ends their turn. They will draw a card.
@@ -381,8 +383,13 @@ class Prompter:
                     continue
             
             # Check for defuse card
-            if input == 'defuse':
+            if input == Card.D.name().lower():
                 self._error("You can't play your Defuse card now.")
+                continue
+            
+            # Check for nope card
+            if input == Card.N.name().lower():
+                self._error("You can't play your Nope card now.")
                 continue
             
             # Check if the player has that card. If they do, play it.
@@ -412,7 +419,6 @@ class Prompter:
             # Everything else is either unacceptable input or the player doesn't have the card
             self._error("Please enter \'pass\', \'show\', or a valid card name from your hand.")
         # End of Input loop
-        
     # End of prompt_play_or_pass
     
     
@@ -424,6 +430,125 @@ class Prompter:
         self._game(f"{player.name} drew a/an {card.name()}.")
         self._continue()
     # End of alert_draw
+    
+    
+    def player_lost(self, player: Player) -> None:
+        """
+        Prints a message to the terminal to let the user know that they lost.
+
+        Args:
+            player (Player): The player who lost.
+        """
+        self._spacer(5)
+        self._game(f"{player.name} has blown up. You can no longer play this round.")
+        self._continue()
+    # End of player_lost
+    
+    
+    def print_winner(self, winner: Player, players: list[Player]) -> None:
+        """
+        Reports to the user that the game is over.
+        Display the winner's name and the scoreboard of all the player's win counts.
+
+        Args:
+            winner (Player): Player who won
+            players (list[Player]): List of all the players in the game
+        """
+        self._spacer(5)
+        
+        self._game(f"{winner.name} has won the game!\n")
+        self._game("Here is the scoreboard:")
+
+        # Prints each player's name and win count in a table
+        print(f"{len(self.__GAME)*' '} \tName\tWins")
+        print("".join(f"{len(self.__GAME)*' '} \t{p.name}\t{p.wins}\n" for p in players))
+        
+        self._spacer()
+        self._continue()
+    # End of print_winner
+    
+    
+    def prompt_play_again(self) -> int:
+        """
+        Prompts the user if they would like to play again.
+        If yes, ask a follow-up prompt to determine if they want to play with the same players.
+        Return one of the following:
+            0: Quit
+            1: Play again with the same players
+            2: Play again with different players
+
+        Returns:
+            int: 0: Quit, 1: Play again with the same players, 2: Play again with different players
+        """
+        self._spacer(5)
+                
+        # Input loop to play again, reset the game, or quit.
+        while True:
+            self._prompt("Would you like to play again? (y/n)")
+            play_again = self._input().lower()
+            
+            if play_again == 'y': # If yes, prompt to keep the players or reset
+                self._prompt("Would you like to reset the players? (y/n): ")
+                play_reset = self._input().lower()
+                self._spacer(5)
+                
+                if play_reset == 'y': # If yes, reset game and start it.
+                    return 2
+                elif play_reset == 'n': # If no, start another game in the same instance
+                    return 1
+                else: # Invalid input
+                    print("Invalid input. Please enter a \'y\' or \'n\'.")
+                    
+            elif play_again == 'n': # If no, quit the program
+                print("\n\nQuitting...")
+                return 0
+            else: # Invalid input
+                print("Invalid input. Please enter \'y\' or \'n\'.")
+        # End of input loop
+    # End of prompt_play_again
+    
+    
+    ###############################
+    # Action Card Prompt Methods  
+    ###############################
+    # @TODO
+    def prompt_for_nope(self, current_player: Player, players: list[Player]) -> Player:
+        """
+        Prompts the user group if anyone wants to play a Nope card.
+        If one does, check that player's hand for a Nope card.
+            If they have one, return the player.
+            If they don't, print an error message and reprompt.
+        If they don't want to play a nope card, they must type "No" and return None.
+
+        Args:
+            current_player (Player): The player who is going to get Nope'd.
+
+        Returns:
+            bool: True if the player wants to play a Nope card, False otherwise.
+        """
+        self._spacer(3)
+        self._game(f"{player.name}, do you want to play a Nope card? (y/n)")
+        while True:
+            input = self._input().lower()
+            if input == 'y':
+                return True
+            elif input == 'n':
+                return False
+            else:
+                self._error("Please enter \'y\' or \'n\'.")
+    # End of prompt_for_nope
+    
+    # @TODO
+    def prompt_for_counter_nope(self, current_player: Player) -> bool:
+        """
+        Prompts the user to counter play a Nope card if they have been Nope'd.
+
+        Args:
+            current_player (Player): The player that got Nope'd.
+
+        Returns:
+            bool: True if the current player wants to play a Nope, False if not.
+        """
     
     
     def prompt_play_defuse(self, max_index: int) -> str:
@@ -653,87 +778,7 @@ class Prompter:
     # End of prompt_play_cat
     
     
-    def player_lost(self, player: Player) -> None:
-        """
-        Prints a message to the terminal to let the user know that they lost.
-
-        Args:
-            player (Player): The player who lost.
-        """
-        self._spacer(5)
-        self._game(f"{player.name} has blown up. You can no longer play this round.")
-        self._continue()
-    # End of player_lost
-    
-    
-    def print_winner(self, winner: Player, players: list[Player]) -> None:
-        """
-        Reports to the user that the game is over.
-        Display the winner's name and the scoreboard of all the player's win counts.
-
-        Args:
-            winner (Player): Player who won
-            players (list[Player]): List of all the players in the game
-        """
-        self._spacer(5)
-        
-        self._game(f"{winner.name} has won the game!\n")
-        self._game("Here is the scoreboard:")
-
-        # Prints each player's name and win count in a table
-        print(f"{len(self.__GAME)*' '} \tName\tWins")
-        print("".join(f"{len(self.__GAME)*' '} \t{p.name}\t{p.wins}\n" for p in players))
-        
-        self._spacer()
-        self._continue()
-    # End of print_winner
-    
-    
-    def prompt_play_again(self) -> int:
-        """
-        Prompts the user if they would like to play again.
-        If yes, ask a follow-up prompt to determine if they want to play with the same players.
-        Return one of the following:
-            0: Quit
-            1: Play again with the same players
-            2: Play again with different players
-
-        Returns:
-            int: 0: Quit, 1: Play again with the same players, 2: Play again with different players
-        """
-        self._spacer(5)
-                
-        # Input loop to play again, reset the game, or quit.
-        while True:
-            self._prompt("Would you like to play again? (y/n)")
-            play_again = self._input().lower()
-            
-            if play_again == 'y': # If yes, prompt to keep the players or reset
-                self._prompt("Would you like to reset the players? (y/n): ")
-                play_reset = self._input().lower()
-                self._spacer(5)
-                
-                if play_reset == 'y': # If yes, reset game and start it.
-                    return 2
-                elif play_reset == 'n': # If no, start another game in the same instance
-                    return 1
-                else: # Invalid input
-                    print("Invalid input. Please enter a \'y\' or \'n\'.")
-                    
-            elif play_again == 'n': # If no, quit the program
-                print("\n\nQuitting...")
-                return 0
-            else: # Invalid input
-                print("Invalid input. Please enter \'y\' or \'n\'.")
-        # End of input loop
-    # End of prompt_play_again
-    
-    
-    ###############################
-    # Action Card Prompt Methods  
-    ###############################
-    
-    def report_nope(self, player: Player) -> None: # @TODO might have to delete this
+    def report_nope(self, player: Player) -> None:
         """
         Reports to the user that a player played a Nope card.
 

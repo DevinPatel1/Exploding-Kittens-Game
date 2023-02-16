@@ -356,9 +356,6 @@ class Game:
         
         # Check each card type and apply the appropriate action
         match card:
-            case Card.N:                    # @TODO Nope
-                self._nope_card(player)
-                return not SKIP_DRAW
             case Card.A:                    # Attack
                 self._attack_card(player)
                 return SKIP_DRAW
