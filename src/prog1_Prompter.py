@@ -243,7 +243,7 @@ class Prompter:
             num_players (int): Number of names to prompt for.
         
         Returns:
-            list: List of all the players as Player objects.
+            list[Player]: List of all the players as Player objects.
         """
         self._spacer()
         list_of_players = []
@@ -265,8 +265,19 @@ class Prompter:
                 # Check if the name is empty or only digits
                 if len(name) == 0 or name.isnumeric():
                     self._error("Please enter a name with at least some letters.")
+                    
+                # Check if the name is one of the invalid names
                 elif name.lower() in LIST_OF_INVALID_NAMES:
                     self._error("You can't use that name.")
+                
+                # Check if the name is a duplicate
+                elif name in [p.name for p in list_of_players]:
+                    self._error("Someone already took that name.")
+                
+                # Check if there are any letters in the name
+                elif not name.isalnum():
+                    self._error("Only letters and numbers are allowed.")
+                
                 else:
                     # Valid input, append player then break
                     list_of_players.append(Player(name))
@@ -795,7 +806,7 @@ class Prompter:
             self._prompt(f"Which player do you want to steal a card from? (1-{len(players)})")
             
             # Loops to create the list of players to choose from
-            print("".join(f"{len(self.__PRMPT)*' '}   {i+1}) {p.name}\n" for i, p in enumerate(players) if p.remaining_turns >= 0))
+            print("".join(f"{len(self.__PRMPT)*' '}   {i+1}) {p.name}\n" for i, p in enumerate(players) if p.remaining_turns >= 0 and p != current_player))
                         
             # Now get and validate the input
             # Check if input is an integer
@@ -890,7 +901,7 @@ class Prompter:
             self._prompt(f"Which player do you want to steal a card from? (1-{len(players)})")
             
             # Loops to create the list of players to choose from
-            print("".join(f"{len(self.__PRMPT)*' '}   {i+1}) {p.name}\n" for i, p in enumerate(players) if p.remaining_turns >= 0)) # Print the player in an enumerated list            # End of for loop
+            print("".join(f"{len(self.__PRMPT)*' '}   {i+1}) {p.name}\n" for i, p in enumerate(players) if p.remaining_turns >= 0 and p != current_player)) # Print the player in an enumerated list            # End of for loop
                         
             # Now get and validate the input
             # Check if input is an integer
