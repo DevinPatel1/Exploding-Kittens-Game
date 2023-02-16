@@ -45,8 +45,8 @@
 #   + prompt_play_again(): Prompts the user to play again. If yes, prompt to play with the same players or different players.
 #
 # Action Card Methods:
-#   + prompt_for_nope(player: Player, players: list[Player]): Prompts the user to play a Nope card if they have one.
-#   + prompt_for_counter_nope(player: Player): Prompts the user to counter play a Nope card if they have one.
+#   + prompt_for_nope(played_card: Card, current_player: Player, players: list[Player]): Prompts the user group to play a Nope card if they have one.
+#   + prompt_for_counter_nope(noper: Player, current_player: Player, players: list[Player]): Prompts the user group to counter play a Nope card if they have one.
 #   + prompt_play_defuse(max_index: int): Prompts the user to specify an index to place an Exploding Kitten card or set the index to -1 (i.e., they quit).
 #   + prompt_play_favor(current_player: Player, players: list[Player]): Prompts the user to specify a player to target with a Favor card.
 #   + prompt_play_favor_target(target: Player, stealer: Player): Prompts the targeted player to specify a card to give to the current player.
@@ -517,15 +517,15 @@ class Prompter:
     ###############################
     # Action Card Prompt Methods  
     ###############################
-    # @TODO Nope
+
     def prompt_for_nope(self, played_card: Card, current_player: Player, players: list[Player]) -> Player:
-        # @TODO Update Docstring
         """
         Prompts the user group if anyone wants to play a Nope card.
+        
         If one does, check that player's hand for a Nope card.
             If they have one, return the player.
             If they don't, print an error message and reprompt.
-        If they don't want to play a nope card, they must type "No" and return None.
+        If they don't want to play a nope card, they must type "No".
 
         Args:
             played_card (Card): The card that is being Nope'd.
@@ -578,6 +578,11 @@ class Prompter:
     def prompt_for_counter_nope(self, noper: Player, current_player: Player, players: list[Player]) -> Player:
         """
         Prompts the user group to counter play a Nope card if a Nope card has been used.
+        
+        If one does, check that player's hand for a Nope card.
+            If they have one, return the player.
+            If they don't, print an error message and reprompt.
+        If they don't want to play a nope card, they must type "No".
 
         Args:
             noper (Player): The player that played the Nope card.

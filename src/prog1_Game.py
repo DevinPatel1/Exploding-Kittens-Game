@@ -67,7 +67,7 @@
 # 
 # Action Card Methods:
 #   - _defuse(player: Player): Facilitates the playing of a Defuse card.
-#   - _nope_card(self, player: Player, played_card: Card): Facilitates the playing of a Nope card.
+#   - _nope_card(player: Player, played_card: Card): Facilitates the playing of a Nope card.
 #   - _attack_card(player: Player): Facilitates the playing of an Attack card.
 #   - _skip_card(player: Player): Facilitates the playing of a Skip card.
 #   - _favor_card(player: Player): Facilitates the playing of a Favor card.
@@ -463,16 +463,16 @@ class Game:
         self._prompter.player_lost(player)
         self._remaining_players -= 1
     
-    # @TODO nope_card
+
     def _nope_card(self, player: Player, played_card: Card) -> bool:
         """
         Handles the Nope card actions.
         
         This card needs to accomplish the following:
             1. Go through a Nope loop that prompts the other players to play a Nope card.
-            2. If a player plays a Nope card, then the current player is prompted to play a Nope card if they have one.
-            3. Once the current player nopes, then the other players are prompted again to play a Nope card.
-            4. The loop ends when either the current player does not have a Nope card or no other players have Nope cards.
+            2. If a player plays a Nope card, then the rest of the players (including the current player) are prompted to counter-play a Nope card if they have one.
+            3. If the counter-play occurs, then both Nope cards are discarded and the current player's card is still active. Loop again and reprompt.
+            4. The loop ends when either no one counters a Nope or no one initiates a Nope.
         
         Args:
             player (Player): The player whose turn it is.
@@ -503,9 +503,6 @@ class Game:
             
             # Loop back and reprompt for another chance to nope the current player's card.
         # End of Nope loop 
-            
-        
-        
     # End of _nope_card
     
     
