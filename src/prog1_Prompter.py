@@ -368,7 +368,7 @@ class Prompter:
                 continue
             
             # Check for card description
-            if input[-1] == '?':
+            if len(input) > 0 and input[-1] == '?':
                 try:
                     for card in Card:
                         if card.name().lower() == input[:-1]: # Card found
@@ -678,7 +678,7 @@ class Prompter:
         self._spacer(5)
         
         self._game(f"{winner.name} has won the game!\n")
-        self._game("Here is the final scoreboard:")
+        self._game("Here is the scoreboard:")
 
         # Prints each player's name and win count in a table
         print(f"{len(self.__GAME)*' '} \tName\tWins")

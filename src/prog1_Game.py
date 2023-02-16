@@ -406,6 +406,7 @@ class Game:
         
         # Check if the card is an Exploding Kitten
         if draw == Card.EK:
+            self._prompter.alert_draw(player, draw)
             self._defuse(player)
         
         # Else add it to the player's hand
