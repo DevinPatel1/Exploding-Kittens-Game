@@ -637,6 +637,12 @@ class Game:
         """
         Handles the Cat cards actions.
         
+        This card needs to accomplish the following:
+            1. Remove the second cat card from the player's hand.
+            2. Prompt the current player to select a player to target.
+            3. Randomly choose a card from the target player's hand to give to the current player.
+            4. Report the transaction before continuing the current player's turn.
+        
         Args:
             card (Card): The cat card that was played
             player (Player): The player whose turn it is.

@@ -73,8 +73,8 @@ class Player:
         """
         Adds a card to the player's hand.
         To keep identical cards grouped together, a search for the added card is done first.
-        If a identical card is found, the new card is inserted after the identical card.
-        If a identical card is not found, the new card is appended to the end of the list.
+        If an identical card is found, the new card is inserted after the identical card.
+        If an identical card is not found, the new card is appended to the end of the list.
         
         Args:
             card (Card): Card to add to the player's hand
