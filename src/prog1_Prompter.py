@@ -50,7 +50,6 @@
 #   + prompt_play_defuse(max_index: int): Prompts the user to specify an index to place an Exploding Kitten card or set the index to -1 (i.e., they quit).
 #   + prompt_play_favor(current_player: Player, players: list[Player]): Prompts the user to specify a player to target with a Favor card.
 #   + prompt_play_favor_target(target: Player, stealer: Player): Prompts the targeted player to specify a card to give to the current player.
-#   + report_nope(player: Player): Reports that the user played a Nope card.
 #   + report_attack(player: Player): Reports that the user played an Attack card.
 #   + report_skip(player: Player): Reports that the user played a Skip card.
 #   + report_favor(player: Player, target: Player, stolen_card: Card): Reports that the user played a Favor card and who they targeted.
@@ -246,6 +245,11 @@ class Prompter:
         self._spacer()
         list_of_players = []
         
+        # Some prompts require a keyword to be used, so we need to ensure no Players are named them
+        LIST_OF_INVALID_NAMES = list([card.name().lower() for card in Card] # All the card names
+                              + [card.name().lower()+'?' for card in Card]  # All the card names with a question mark
+                              + ["show", "pass", "?", "no", "n", "yes", "y", "top", "bottom", "middle", "random"])
+        
         for i in range(num_players):
             # Input loop
             while True:
@@ -258,6 +262,8 @@ class Prompter:
                 # Check if the name is empty or only digits
                 if len(name) == 0 or name.isnumeric():
                     self._error("Please enter a name with at least some letters.")
+                elif name.lower() in LIST_OF_INVALID_NAMES:
+                    self._error("You can't use that name.")
                 else:
                     # Valid input, append player then break
                     list_of_players.append(Player(name))
@@ -511,8 +517,9 @@ class Prompter:
     ###############################
     # Action Card Prompt Methods  
     ###############################
-    # @TODO
-    def prompt_for_nope(self, current_player: Player, players: list[Player]) -> Player:
+    # @TODO Nope
+    def prompt_for_nope(self, played_card: Card, current_player: Player, players: list[Player]) -> Player:
+        # @TODO Update Docstring
         """
         Prompts the user group if anyone wants to play a Nope card.
         If one does, check that player's hand for a Nope card.
@@ -521,34 +528,104 @@ class Prompter:
         If they don't want to play a nope card, they must type "No" and return None.
 
         Args:
+            played_card (Card): The card that is being Nope'd.
             current_player (Player): The player who is going to get Nope'd.
+            players (list[Player]): List of all the players in the game.
 
         Returns:
-            bool: True if the player wants to play a Nope card, False otherwise.
+            Player or False: Player if the card has been Nope'd, False if not.
         """
-        self._spacer(3)
-        self._game(f"{player.name}, do you want to play a Nope card? (y/n)")
+        self._spacer(20)
+        self._game(f"{current_player.name} played a/an {played_card.name()}.")
+        self._continue()
+        
+        # Input loop to get a valid player name or "No"
         while True:
+            self._spacer()
+            
+            # Prompt for anyone wanting to play Nope
+            self._prompt(f"Does anyone want to play a Nope card? Select a player or type \'No\'.")
+            print("".join(f"{len(self.__PRMPT)*' '}   {p.name}\n" for p in players if p.remaining_turns >= 0 or p.name != current_player.name))
+
             input = self._input().lower()
-            if input == 'y':
-                return True
-            elif input == 'n':
-                return False
-            else:
-                self._error("Please enter \'y\' or \'n\'.")
+            
+            # Check if no one wants to play a Nope
+            if input == 'no': return False
+            
+            # Check if the input is a valid player name
+            try:                
+                for player in players:
+                    if player == current_player: continue # Skip the current player
+                    if player.remaining_turns < 0 and input == player.name.lower(): # Can't choose a player that is out of the game
+                        self._error(f"{player.name} is out of the game.")
+                        raise Exception("Dummy Exception")
+                    
+                    # If the input is a valid player name, check if they have a Nope card
+                    if player.name.lower() == input:
+                        if player.has_card(Card.N):
+                            return player   # This player is playing a Nope card.
+                        else:
+                            self._error(f"{player.name} does not have a Nope card.")
+                            raise Exception("Dummy Exception")
+                        
+            except Exception: continue  # Gets called if the input is invalid
+                
+            self._error("Please enter a player's name or \'No\'.")
+        # End of input loop
     # End of prompt_for_nope
     
-    # @TODO
-    def prompt_for_counter_nope(self, current_player: Player) -> bool:
+
+    def prompt_for_counter_nope(self, noper: Player, current_player: Player, players: list[Player]) -> Player:
         """
-        Prompts the user to counter play a Nope card if they have been Nope'd.
+        Prompts the user group to counter play a Nope card if a Nope card has been used.
 
         Args:
+            noper (Player): The player that played the Nope card.
             current_player (Player): The player that got Nope'd.
+            players (list[Player]): List of all the players in the game.
 
         Returns:
-            bool: True if the current player wants to play a Nope, False if not.
+            Player or False: Player if anyone plays a counter nope, False if not.
         """
+        self._spacer(10)
+        self._game(f"{noper.name} played a {Card.N.name()} card on {current_player.name}.")
+        self._continue()
+        
+        # Input loop to get a valid player name or "No"
+        while True:
+            self._spacer()
+            
+            # Prompt for anyone wanting to play Nope
+            self._prompt(f"Does anyone want to counter-play a Nope card? Select a player or type \'No\'.")
+            print("".join(f"{len(self.__PRMPT)*' '}   {p.name}\n" for p in players if p.remaining_turns >= 0 or p.name != noper.name))
+
+            input = self._input().lower()
+            
+            # Check if no one wants to play a Nope
+            if input == 'no': return False
+            
+            # Check if the input is a valid player name
+            try:                
+                for player in players:
+                    if player == noper: continue # Skip the player that played the Nope card
+                    if player.remaining_turns < 0 and input == player.name.lower(): # Can't choose a player that is out of the game
+                        self._error(f"{player.name} is out of the game.")
+                        raise Exception("Dummy Exception")     
+                                   
+                    # If the input is a valid player name, check if they have a Nope card
+                    if player.name.lower() == input:
+                        if player.has_card(Card.N):
+                            return player   # This player is counter playing a Nope card.
+                        else:
+                            self._error(f"{player.name} does not have a Nope card.")
+                            raise Exception("Dummy Exception")
+                        
+            except Exception: continue  # Gets called if the input is invalid
+                
+            self._error("Please enter a player's name or \'No\'.")
+        # End of input loop
+        
+    # End of prompt_for_counter_nope
     
     
     def prompt_play_defuse(self, max_index: int) -> str:
@@ -661,7 +738,7 @@ class Prompter:
             self._prompt(f"Which player do you want to steal a card from? (1-{len(players)})")
             
             # Loops to create the list of players to choose from
-            print("".join(f"{len(self.__PRMPT)*' '}   {i+1}) {p.name}\n" for i, p in enumerate(players))) # Print the player in an enumerated list            # End of for loop
+            print("".join(f"{len(self.__PRMPT)*' '}   {i+1}) {p.name}\n" for i, p in enumerate(players) if p.remaining_turns >= 0))
                         
             # Now get and validate the input
             # Check if input is an integer
@@ -680,6 +757,11 @@ class Prompter:
             chosen_player = players[index]
             if chosen_player == current_player:  # The references should be the same since both references came from the same list. This isn't a true equality check.
                 self._error("You cannot choose yourself.")
+                continue
+            
+            # Check if the chosen player is someone who is out of the game
+            if chosen_player.remaining_turns < 0:
+                self._error(f"{chosen_player.name} is out of the game.")
                 continue
 
             # Checks passed, return the chosen player
@@ -751,7 +833,7 @@ class Prompter:
             self._prompt(f"Which player do you want to steal a card from? (1-{len(players)})")
             
             # Loops to create the list of players to choose from
-            print("".join(f"{len(self.__PRMPT)*' '}   {i+1}) {p.name}\n" for i, p in enumerate(players))) # Print the player in an enumerated list            # End of for loop
+            print("".join(f"{len(self.__PRMPT)*' '}   {i+1}) {p.name}\n" for i, p in enumerate(players) if p.remaining_turns >= 0)) # Print the player in an enumerated list            # End of for loop
                         
             # Now get and validate the input
             # Check if input is an integer
@@ -771,24 +853,16 @@ class Prompter:
             if chosen_player == current_player:  # The references should be the same since both references came from the same list. This isn't a true equality check.
                 self._error("You cannot choose yourself.")
                 continue
+            
+            # Check if the chosen player is someone who is out of the game
+            if chosen_player.remaining_turns < 0:
+                self._error(f"{chosen_player.name} is out of the game.")
+                continue
 
             # Checks passed, return the chosen player
             else: return chosen_player
         # End of input loop
     # End of prompt_play_cat
-    
-    
-    def report_nope(self, player: Player) -> None:
-        """
-        Reports to the user that a player played a Nope card.
-
-        Args:
-            player (Player): The player who played the Nope card.
-        """
-        self._spacer(3)
-        self._game(f"{player.name} played a {Card.N.name()} card.")
-        self._continue()
-    # End of report_Nope
     
     
     def report_attack(self, player: Player) -> None:

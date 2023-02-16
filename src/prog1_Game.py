@@ -67,11 +67,11 @@
 # 
 # Action Card Methods:
 #   - _defuse(player: Player): Facilitates the playing of a Defuse card.
-#   - _nope(player: Player): Facilitates the playing of a Nope card.
-#   - _attack(player: Player): Facilitates the playing of an Attack card.
-#   - _skip(player: Player): Facilitates the playing of a Skip card.
-#   - _favor(player: Player): Facilitates the playing of a Favor card.
-#   - _shuffle(player: Player): Facilitates the playing of a Shuffle card.
+#   - _nope_card(self, player: Player, played_card: Card): Facilitates the playing of a Nope card.
+#   - _attack_card(player: Player): Facilitates the playing of an Attack card.
+#   - _skip_card(player: Player): Facilitates the playing of a Skip card.
+#   - _favor_card(player: Player): Facilitates the playing of a Favor card.
+#   - _shuffle_card(player: Player): Facilitates the playing of a Shuffle card.
 #   - _see_the_future_card(player: Player): Facilitates the playing of a See the Future card.
 #   - _cat_cards(player: Player, card: Card): Facilitates the playing of a Cat card.
 ####################################################################################
@@ -318,8 +318,13 @@ class Game:
             # If the player chooses to pass, end their turn and return to the game loop
             if pass_: break
             
-            # If player plays a card, apply the rules of the card.
-            skip_draw = self._play_card(card, player)
+            # Check if anyone wants to Nope this card
+            noped = self._nope_card(player, card)
+            
+            # If the card was Nope'd, they don't get to play it
+            # _nope_card() would have removed the Noped card from the player's hand
+            if noped: continue
+            else: skip_draw = self._play_card(card, player)
             
             # Break if skip_draw is True
             if skip_draw: break
@@ -458,16 +463,49 @@ class Game:
         self._prompter.player_lost(player)
         self._remaining_players -= 1
     
-    
-    def _nope_card(self, player: Player) -> None:
+    # @TODO nope_card
+    def _nope_card(self, player: Player, played_card: Card) -> bool:
         """
         Handles the Nope card actions.
         
+        This card needs to accomplish the following:
+            1. Go through a Nope loop that prompts the other players to play a Nope card.
+            2. If a player plays a Nope card, then the current player is prompted to play a Nope card if they have one.
+            3. Once the current player nopes, then the other players are prompted again to play a Nope card.
+            4. The loop ends when either the current player does not have a Nope card or no other players have Nope cards.
+        
         Args:
             player (Player): The player whose turn it is.
+            played_card (Card): The card is going to be Nope'd.
+
+        Returns:
+            bool: True if the final result was a Nope, False if the final result was not a Nope.
         """
-        # @TODO Implement Nope
-        self._prompter.report_nope(player)
+        
+        # Nope loop
+        while True:
+            noper = self._prompter.prompt_for_nope(played_card, player, self._players)
+            if noper: counter_noper = self._prompter.prompt_for_counter_nope(noper, player, self._players)
+            else: return False  # No one played a Nope card.
+            
+            # Card was noped and someone played a counter nope:
+            if counter_noper:
+                # Remove the nope cards from the players' hands. Current player still has an active card.
+                noper.remove_card(Card.N)
+                counter_noper.remove_card(Card.N)
+                
+            # Card was noped but no one counter Nope'd
+            else:
+                # Remove the noper's nope card and the player's played card
+                player.remove_card(played_card)
+                noper.remove_card(Card.N)
+                return True
+            
+            # Loop back and reprompt for another chance to nope the current player's card.
+        # End of Nope loop 
+            
+        
+        
     # End of _nope_card
     
     
