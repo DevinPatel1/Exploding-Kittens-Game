@@ -633,7 +633,7 @@ class Prompter:
             
             # Prompt for anyone wanting to play Nope
             self._prompt(f"Does anyone want to counter-play a Nope card? Select a player or type \'No\'.")
-            print("".join(f"{len(self.__PRMPT)*' '}   {p.name}\n" for p in players if p.remaining_turns >= 0 and p.name != noper.name))
+            print("".join(f"{len(self.__PRMPT)*' '}   -> {p.name}\n" for p in players if p.remaining_turns >= 0 and p.name != noper.name))
 
             input = self._input().lower()
             
