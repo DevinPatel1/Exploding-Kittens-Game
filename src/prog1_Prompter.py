@@ -796,17 +796,17 @@ class Prompter:
             Player: The target player selected by the current player.
         """
         self._spacer(3)
-        self._game("You played a Favor card.")
+        self._game(f"{current_player.name}, you played a Favor card.")
         
         # Input loop to get the target player
         while True:
             self._spacer()
             
             # Prompts user to enter a number to select the player
-            self._prompt(f"Which player do you want to steal a card from? (1-{len(players)})")
+            self._prompt(f"Which player do you want to steal a card from? (Type a number)")
             
             # Loops to create the list of players to choose from
-            print("".join(f"{len(self.__PRMPT)*' '}   {i+1}) {p.name}\n" for i, p in enumerate(players) if p.remaining_turns >= 0 and p != current_player))
+            print("".join(f"{len(self.__PRMPT)*' '}   {i}) {p.name}\n" for i, p in enumerate(players, start=1) if p.remaining_turns >= 0 and p != current_player))
                         
             # Now get and validate the input
             # Check if input is an integer
@@ -818,7 +818,7 @@ class Prompter:
             
             # Check if integer is in range
             if index < 0 or index > len(players)-1:
-                self._error(f"Please enter a number in the range 1-{len(players)}.")
+                self._error("Please enter the number that corresponds to one of the listed players.")
                 continue
             
             # Check if the player chosen is the current player
@@ -859,8 +859,8 @@ class Prompter:
             self._spacer()
             
             # Prompt the target player to choose a card from their hand.
-            self._prompt(f"Which card do you want to give to {stealer.name}? (1-{len(target.hand)})")
-            print("".join(f"{len(self.__PRMPT)*' '}   {i+1}) {c.name()}\n" for i, c in enumerate(target.hand)))
+            self._prompt(f"Which card do you want to give to {stealer.name}? (Type a number)")
+            print("".join(f"{len(self.__PRMPT)*' '}   {i}) {c.name()}\n" for i, c in enumerate(target.hand, start=1)))
 
             try:
                 index = int(self._input())-1
@@ -870,7 +870,7 @@ class Prompter:
             
             # Check if integer is in range
             if index < 0 or index > len(target.hand)-1:
-                self._error(f"Please enter a number in the range 1-{len(target.hand)}.")
+                self._error("Please enter the number that corresponds to one of the listed cards.")
                 continue
             
             # Checks passed, return the chosen card
@@ -891,17 +891,17 @@ class Prompter:
             Player: The target player selected by the current player.
         """
         self._spacer(3)
-        self._game(f"You played a pair of {played_card.name()}s.")
+        self._game(f"{current_player.name}, you played a pair of {played_card.name()}s.")
         
         # Input loop to get the target player
         while True:
             self._spacer()
             
             # Prompts user to enter a number to select the player
-            self._prompt(f"Which player do you want to steal a card from? (1-{len(players)})")
+            self._prompt(f"Which player do you want to steal a card from? (Type a number)")
             
             # Loops to create the list of players to choose from
-            print("".join(f"{len(self.__PRMPT)*' '}   {i+1}) {p.name}\n" for i, p in enumerate(players) if p.remaining_turns >= 0 and p != current_player)) # Print the player in an enumerated list            # End of for loop
+            print("".join(f"{len(self.__PRMPT)*' '}   {i}) {p.name}\n" for i, p in enumerate(players, start=1) if p.remaining_turns >= 0 and p != current_player)) # Print the player in an enumerated list            # End of for loop
                         
             # Now get and validate the input
             # Check if input is an integer
@@ -913,7 +913,7 @@ class Prompter:
             
             # Check if integer is in range
             if index < 0 or index > len(players)-1:
-                self._error(f"Please enter a number in the range 1-{len(players)}.")
+                self._error("Please enter the number that corresponds to one of the listed players.")
                 continue
             
             # Check if the player chosen is the current player
@@ -971,6 +971,8 @@ class Prompter:
         self._spacer(3)
         self._game(f"{player.name} used a {Card.F.name()} card to steal a/an {stolen_card.name()} from {target.name}.")
         self._continue()
+        
+        self.alert_player_turn(player)
     # End of report_Favor
     
     
@@ -997,7 +999,7 @@ class Prompter:
         """
         self._spacer(3)
         self._game(f"{player.name} played a {Card.STF.name()} card.\n{len(self.__GAME)*' '} The next three cards from the top of the deck are:")
-        for i, card in enumerate(cards): print(f"{len(self.__GAME)*' '} \t{i+1}) {card.name()}")
+        for i, card in enumerate(cards, start=1): print(f"{len(self.__GAME)*' '} \t{i}) {card.name()}")
         self._continue()
     # End of report_see_the_future
     
