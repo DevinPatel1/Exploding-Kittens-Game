@@ -45,6 +45,7 @@
 #   + prompt_play_favor_target(target: Player, stealer: Player): Prompts the targeted player to specify a card to give to the current player.
 #   + player_lost(player: Player): Alerts the user that they lost the game.
 #   + print_winner(winner: Player, players: list[Player]): Prints the winner of the game and the scoreboard of all players' wins.
+#   + prompt_play_again(): Prompts the user to play again. If yes, prompt to play with the same players or different players.
 #
 # Action Card Report Methods:
 #?  + report_nope(player: Player): Reports that the user played a Nope card.
@@ -675,8 +676,47 @@ class Prompter:
         
         self._spacer()
         self._continue()
-        self._spacer(5)
     # End of print_winner
+    
+    
+    def prompt_play_again(self) -> int:
+        """
+        Prompts the user if they would like to play again.
+        If yes, ask a follow-up prompt to determine if they want to play with the same players.
+        Return one of the following:
+            0: Quit
+            1: Play again with the same players
+            2: Play again with different players
+
+        Returns:
+            int: 0: Quit, 1: Play again with the same players, 2: Play again with different players
+        """
+        self._spacer(5)
+                
+        # Input loop to play again, reset the game, or quit.
+        while True:
+            self._prompt("Would you like to play again? (y/n)")
+            play_again = self._input().lower()
+            
+            if play_again == 'y': # If yes, prompt to keep the players or reset
+                self._prompt("Would you like to reset the players? (y/n): ")
+                play_reset = self._input().lower()
+                self._spacer(5)
+                
+                if play_reset == 'y': # If yes, reset game and start it.
+                    return 2
+                elif play_reset == 'n': # If no, start another game in the same instance
+                    return 1
+                else: # Invalid input
+                    print("Invalid input. Please enter a \'y\' or \'n\'.")
+                    
+            elif play_again == 'n': # If no, quit the program
+                print("\n\nQuitting...")
+                return 0
+            else: # Invalid input
+                print("Invalid input. Please enter \'y\' or \'n\'.")
+        # End of input loop
+    # End of prompt_play_again
     
     
     ###############################

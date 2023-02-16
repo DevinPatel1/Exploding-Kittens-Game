@@ -51,7 +51,7 @@
 #
 # Setup Methods:
 #   + __init__(): Initializes the game object
-#   + start(): Starts the game by initializing the attributes and entering the game loop
+#   + setup(): Starts the game by initializing the attributes and entering the game loop
 #   + reset(): Resets the game attributes to their default values
 #   - _deal(): Deals cards to the players
 #
@@ -103,6 +103,13 @@ class Game:
         
         # Prints welcome message
         self._prompter.print_welcome()
+        
+        # Performs setup
+        self.setup()
+        
+        # Setup complete, enter game loop
+        self._game_loop()
+        
     # End of __init__
     
     
@@ -110,7 +117,7 @@ class Game:
     # Setup Methods
     ##############################
     
-    def start(self) -> None:
+    def setup(self) -> None:
         """
         Starts the game by initializing the attributes and completing setup.
         Ends with entering the game loop.
@@ -138,9 +145,6 @@ class Game:
         
         # Deal cards to players
         self._deal()
-        
-        # Setup complete, enter game loop
-        self._game_loop()
     # End of start
     
     
@@ -207,48 +211,65 @@ class Game:
         Game loop that cycles through the players' turns until everyone loses to an Exploding Kitten.
         All card rules are applied here.
         """
-        # Game loop
+        # Program loop
         while True:
-            current_player = self._players[self._current_player_index]
-            
-            # If there is only one player left, then they are the winner.
-            if self._remaining_players == 1:
-                break
-            
-            # If the player lost, skip them. Losing players have negative remaining turns.
-            if current_player.remaining_turns < 0:
+            # Game Loop
+            while True:
+                current_player = self._players[self._current_player_index]
+                
+                # If there is only one player left, then they are the winner.
+                if self._remaining_players == 1:
+                    break
+                
+                # If the player lost, skip them. Losing players have negative remaining turns.
+                if current_player.remaining_turns < 0:
+                    self._increment_next_player()
+                    continue
+                
+                # If the player has no remaining turns, give them one turn.
+                if current_player.remaining_turns == 0:
+                    current_player.remaining_turns += 1
+                
+                # Alert the player it is their turn
+                self._prompter.alert_player_turn(current_player)
+                
+                # Loops until player uses all their turns
+                while current_player.remaining_turns > 0:
+                    self._player_turn(current_player)
+                
+                # Player's turn is done, move to next player
                 self._increment_next_player()
-                continue
-            
-            # If the player has no remaining turns, give them one turn.
-            if current_player.remaining_turns == 0:
-                current_player.remaining_turns += 1
-            
-            # Alert the player it is their turn
-            self._prompter.alert_player_turn(current_player)
-            
-            # Loops until player uses all their turns
-            while current_player.remaining_turns > 0:
-                self._player_turn(current_player)
-            
-            # Player's turn is done, move to next player
-            self._increment_next_player()
-        # End of game loop
+            # End of game loop
         
-        # Game is over. Get the winning player.
-        winner: Player = None
+            # Game is over. Get the winning player.
+            winner: Player = None
 
-        for player in self._players:
-            if player.remaining_turns >= 0:
-                winner = player
-                break
+            for player in self._players:
+                if player.remaining_turns >= 0:
+                    winner = player
+                    break
 
-        # Increment the winner's win count
-        winner.wins += 1
+            # Increment the winner's win count
+            winner.wins += 1
 
-        # Now display the winner and the wins scoreboard and return to main()
-        # to prompt the user to play again.
-        self._prompter.print_winner(winner, self._players)
+            # Now display the winner and the wins scoreboard
+            self._prompter.print_winner(winner, self._players)
+            
+            # Prompt to start a new game or quit
+            play_again = self._prompter.prompt_play_again()
+            
+            # Depending on what the user wants to do, either
+            # quit, start a new game, or start a new game with new players
+            match play_again:
+                case 0: return          # Quit game
+                case 1: self.setup()    # Start new game with same players
+                case 2:                 # Start new game with new players
+                    self.reset()
+                    self.setup()
+            # End of match
+                
+        # End of program loop
+            
     # End of _game_loop
     
     
