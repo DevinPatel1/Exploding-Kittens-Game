@@ -300,13 +300,6 @@ class Prompter:
         """
         self._spacer(50)
         self._game(f"It is {player.name}'s turn.\n")
-        
-        # Alerts go here
-        self._game(f"Alerts:")
-        if player.remaining_turns > 1:
-            print(f"\tThe last player played an attack card on you.\n\tYou now have to complete 2 additional turns.")
-        else: # No alerts
-            print("\tNone")
             
         self._spacer()
         self._continue()
