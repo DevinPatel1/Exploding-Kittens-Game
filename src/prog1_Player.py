@@ -33,7 +33,7 @@
 #                            This value is negative if the player lost and is no longer playing.
 #
 # Methods:
-#   + __init__(name: str): Initiales an empty hand and sets the name of the player
+#   + __init__(name: str): Initializes an empty hand and sets the name of the player
 #   + add_card(card: Card): Adds a card to the player's hand
 #   + remove_card(card: Card): Removes a card from the player's hand
 #   + has_card(card: Card): Returns True if the player has the card in their hand

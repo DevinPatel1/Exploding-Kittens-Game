@@ -216,7 +216,7 @@ class Prompter:
                 num_players = int(self._input())
             except ValueError:
                 # Input is not an integer
-                self._error("Please enter a integer that is 2 or greater.")
+                self._error("Please enter an integer that is between 2 and 5.")
                 continue
             # End of try/except
             
@@ -319,23 +319,24 @@ class Prompter:
         self._spacer(3)
         self._game(player.sprintf_hand()) # Print the player's hand
         
+        
+        # Print information
+        self._game("Stats:" + "\n"
+                 + f"\tWins: {player.wins}" + "\n"
+                 + f"\tCards in deck: {cards_in_deck}" + "\n"
+                 + f"\tExploding Kittens: {num_EK}" + "\n"
+                 + f"\tRemaining turns: {player.remaining_turns}" + "\n")
+        
         # Input loop only breaks when valid input is returned
         while True:
             self._spacer()
-            
-            # Print information
-            self._game("Stats:")
-            print(f"\tWins: {player.wins}")
-            print(f"\tCards in deck: {cards_in_deck}")
-            print(f"\tExploding Kittens: {num_EK}")
-            print(f"\tRemaining turns: {player.remaining_turns}\n")
             
             # Print the prompt
             self._prompt(f"{player.name}, please enter one of the following:")
             print(f"{len(self.__PRMPT)*' '}   1) The name of the card from your hand to play")
             print(f"{len(self.__PRMPT)*' '}   2) The name of any card followed by \'?\' to see its description")
             print(f"{len(self.__PRMPT)*' '}   3) Just a \'?\' to see all card descriptions")
-            print(f"{len(self.__PRMPT)*' '}   4) 'show' to see your hand")
+            print(f"{len(self.__PRMPT)*' '}   4) 'show' to see your hand and stats")
             print(f"{len(self.__PRMPT)*' '}   5) 'pass' to end your turn and draw a card")
             
             input = self._input().lower()
@@ -347,6 +348,13 @@ class Prompter:
             if input == 'show' or input == '4':
                 self._game(player.sprintf_hand())
                 self._spacer()
+                self._continue()
+                # Print information
+                self._game("Stats:" + "\n"
+                         + f"\tWins: {player.wins}" + "\n"
+                         + f"\tCards in deck: {cards_in_deck}" + "\n"
+                         + f"\tExploding Kittens: {num_EK}" + "\n"
+                         + f"\tRemaining turns: {player.remaining_turns}" + "\n")
                 self._continue()
                 continue
             
@@ -360,16 +368,17 @@ class Prompter:
                 continue
             
             # Check for card description
-            try:
-                for card in Card:
-                    if card.name().lower() == input[:-1]: # Card found
-                        self._spacer(2)
-                        self._game(f"{card}\n")             # Print the card's description
-                        self._continue()                    # Wait for user to continue
-                        raise Exception("Dummy Exception")  # Break out of the for loop so the input loop can continue
-            except Exception:
-                self._spacer()
-                continue
+            if input[-1] == '?':
+                try:
+                    for card in Card:
+                        if card.name().lower() == input[:-1]: # Card found
+                            self._spacer(2)
+                            self._game(f"{card}\n")             # Print the card's description
+                            self._continue()                    # Wait for user to continue
+                            raise Exception("Dummy Exception")  # Break out of the for loop so the input loop can continue
+                except Exception:
+                    self._spacer()
+                    continue
             
             # Check for defuse card
             if input == 'defuse':
@@ -432,7 +441,8 @@ class Prompter:
                  If the user wants to quit, return -1.
         """
         self._spacer(3)
-        self._game(f"You drew an Exploding Kitten!\n{len(self.__GAME)*' '} Do you want to use your Defuse card (Y/n)?\n{len(self.__GAME)*' '} (If you don't use your Defuse card, you'll lose the game.)")
+        self._game(f"You drew an Exploding Kitten!\n{len(self.__GAME)*' '} Do you want to use your Defuse card (Y/n)?\n"
+                 + f"{len(self.__GAME)*' '} (If you don't use your Defuse card, you'll lose the game.)")
         
         # Play input loop
         while True:
