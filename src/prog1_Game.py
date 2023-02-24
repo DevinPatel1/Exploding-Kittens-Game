@@ -51,7 +51,7 @@
 #
 # Setup Methods:
 #   + __init__(): Initializes the game object
-#   + setup(): Starts the game by initializing the attributes and entering the game loop
+#   + setup(): Sets up the game by initializing the attributes
 #   + reset(): Resets the game attributes to their default values
 #   - _deal(): Deals cards to the players
 #
@@ -90,7 +90,7 @@ class Game:
     def __init__(self) -> None:
         """
         Declares the game class attributes.
-        The start method will properly initialize the game attributes.
+        The setup method will properly initialize the game attributes.
         """
         # Attributes are initialized here instead of in the class definition
         # to avoid the attributes being shared between all instances of the class.
@@ -119,7 +119,7 @@ class Game:
     
     def setup(self) -> None:
         """
-        Starts the game by initializing the attributes and completing setup.
+        Sets up the game by initializing the attributes.
         Ends with entering the game loop.
         """
         print("A new game of Exploding Kittens has started!")
@@ -145,7 +145,7 @@ class Game:
         
         # Deal cards to players
         self._deal()
-    # End of start
+    # End of setup
     
     
     def _deal(self) -> None:
@@ -192,8 +192,8 @@ class Game:
         # 1) The draw pile needs to be set to None so that it can be reinstantiated with a different player count.
         # 2) Clear the players list.
         # 3) Set the number of players to -1 so that the number of players can be prompted for.
-        # 4) The remaining players will be set in start(), so it does not need to be reset here.
-        # 5) Current player index will be set in start(), so it does not need to be reset here.
+        # 4) The remaining players will be set in setup(), so it does not need to be reset here.
+        # 5) Current player index will be set in setup(), so it does not need to be reset here.
         
         self._draw_pile = None
         self._players.clear()
