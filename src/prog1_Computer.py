@@ -26,18 +26,13 @@
 #   4. Any constants will be all caps.
 #
 #
-# This class is a subclass of the Player class.
-#
+# This class is a subclass of the Player class, and it inherits all of the attributes and methods from the Player class.
 #
 # Instance Attributes:
-#   + name (str): Name of the player
-#   + wins (int): Number of wins the player has
-#   + hand (list[Card]): List of cards the player has
-#   + remaining_turns (int): Number of turns the player has left
-#                            This value is negative if the player lost and is no longer playing.
+#   None
 #
 # Methods:
-#   + __init__(name: str): Initializes an empty hand and sets the name of the player
+#   None
 #   
 ####################################################################################
 
@@ -55,18 +50,18 @@ class Computer(Player):
     def __init__(self, name: str) -> None:
         """
         Constructor for the Computer class.
-        Initializes an empty hand and sets the name of the Computer.
+        Initializes an empty hand and sets the name of the Computer
+        using the Player class's constructor.
         
         Args:
-            name (str): Name of the player
+            name (str): Name of the computer player
         """
-        # Attributes are initialized here instead of in the class definition
-        # to avoid the attributes being shared between all instances of the class.
-        self.hand: list[Card] = []
-        self.name = name
-        self.wins = 0
-        self.remaining_turns = 0
+        # Attributes are initialized using the parent class's constructor,
+        # since all the attributes are the same
+        super().__init__(name)
     # End of __init__
+    
+    
     
     
 # End of Player
