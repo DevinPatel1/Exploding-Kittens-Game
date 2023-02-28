@@ -51,8 +51,8 @@
 #
 # Setup Methods:
 #   + __init__(): Initializes the game object
-#   + setup(): Sets up the game by initializing the attributes
-#   + reset(): Resets the game attributes to their default values
+#   + _setup(): Sets up the game by initializing the attributes
+#   + _reset(): Resets the game attributes to their default values
 #   - _deal(): Deals cards to the players
 #
 # Game Loop Method:
@@ -105,7 +105,7 @@ class Game:
         self._prompter.print_welcome()
         
         # Performs setup
-        self.setup()
+        self._setup()
         
         # Setup complete, enter game loop
         self._game_loop()
@@ -117,7 +117,7 @@ class Game:
     # Setup Methods
     ##############################
     
-    def setup(self) -> None:
+    def _setup(self) -> None:
         """
         Sets up the game by initializing the attributes.
         Ends with entering the game loop.
@@ -145,7 +145,7 @@ class Game:
         
         # Deal cards to players
         self._deal()
-    # End of setup
+    # End of _setup
     
     
     def _deal(self) -> None:
@@ -185,7 +185,7 @@ class Game:
     # End of _deal
     
     
-    def reset(self) -> None:
+    def _reset(self) -> None:
         """
         Resets the game attributes such that a game with new players can be started.
         """
@@ -262,10 +262,10 @@ class Game:
             # quit, start a new game, or start a new game with new players
             match play_again:
                 case 0: return          # Quit game
-                case 1: self.setup()    # Start new game with same players
+                case 1: self._setup()    # Start new game with same players
                 case 2:                 # Start new game with new players
-                    self.reset()
-                    self.setup()
+                    self._reset()
+                    self._setup()
             # End of match
                 
         # End of program loop
