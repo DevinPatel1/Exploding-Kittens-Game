@@ -262,11 +262,11 @@ class Game:
             # quit, start a new game, or start a new game with new players
             match play_again:
                 case 0: return          # Quit game
-                case 1: self._setup()    # Start new game with same players
+                case 1: self._setup()   # Start new game with same players
                 case 2:                 # Start new game with new players
                     self._reset()
                     self._setup()
-            # End of match
+            # End of match statement
                 
         # End of program loop
             
@@ -285,7 +285,7 @@ class Game:
         self._current_player_index += 1
         # Wrap around if current player was the last player
         if self._current_player_index >= self._num_players: self._current_player_index = 0
-    # End of increment_next_player
+    # End of _increment_next_player
     
     
     def _player_turn(self, player: Player) -> None:
@@ -307,7 +307,7 @@ class Game:
         """
         # skip_draw is a boolean control flag that is set to True if the player has
         # to immediately end their turn without drawing.
-        skip_draw: bool = None
+        skip_draw: bool = False
         
         # Play-or-pass loop that breaks when the player chooses to pass or a skip card is played.
         while True:
@@ -349,7 +349,7 @@ class Game:
             player (Player): The player that played the card
         
         Returns:
-            bool: False if the player should draw a card, True otherwise.
+            bool: True if the player should NOT draw a card, False otherwise.
         
         Raises:
             ValueError: If an invalid card is played.
@@ -392,7 +392,7 @@ class Game:
             case Card.BCAT:                 # Bearded Cat
                 self._cat_cards(player, Card.BCAT)
                 return not SKIP_DRAW
-            case _:                         # Invalid card
+            case _:                         # Invalid card. This shouldn't happen, so throw an error if it does.
                 raise ValueError(f"Invalid card played: {card.name()}")
     # End of _play_card
 
