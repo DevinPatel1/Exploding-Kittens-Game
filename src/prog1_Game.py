@@ -285,7 +285,7 @@ class Game:
         self._current_player_index += 1
         # Wrap around if current player was the last player
         if self._current_player_index >= self._num_players: self._current_player_index = 0
-    # End of increment_next_player
+    # End of _increment_next_player
     
     
     def _player_turn(self, player: Player) -> None:
@@ -349,7 +349,7 @@ class Game:
             player (Player): The player that played the card
         
         Returns:
-            bool: False if the player should draw a card, True otherwise.
+            bool: True if the player should NOT draw a card, False otherwise.
         
         Raises:
             ValueError: If an invalid card is played.
@@ -392,7 +392,7 @@ class Game:
             case Card.BCAT:                 # Bearded Cat
                 self._cat_cards(player, Card.BCAT)
                 return not SKIP_DRAW
-            case _:                         # Invalid card
+            case _:                         # Invalid card. This isn't supposed to happen, so raise an error if it does.
                 raise ValueError(f"Invalid card played: {card.name()}")
     # End of _play_card
 
