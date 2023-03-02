@@ -149,6 +149,7 @@ class Player:
             pass
         
         return False # No pairs found
+    # End of has_pair
     
     
     def lose(self) -> None:
@@ -156,6 +157,7 @@ class Player:
         Sets the player's remaining turns to a negative value to indicate they lost.
         """
         self.remaining_turns = -1
+    # End of lose
     
     def reset(self) -> None:
         """
