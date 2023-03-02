@@ -43,7 +43,7 @@
 #
 #
 # Instance Attributes:
-#   + size (int):                   The number of cards in the deck.
+#   - _size (int):                  The number of cards in the deck.
 #   - _deck (list[Card]):           A list of Card types.
 #   - _num_players (int):           The number of players in the game.
 #
@@ -85,7 +85,7 @@ class Deck:
         # to avoid the attributes being shared between all instances of the class.
         self._deck: list[Card] = []
         self._num_players = num_players
-        self.size = 0
+        self._size = 0
         
         # Seeds the RNG with the current time
         random.seed(time.time())
@@ -113,7 +113,7 @@ class Deck:
             Card: The card that was popped from the end of the list.
         """
         card = self._deck.pop()
-        self.size -= 1
+        self._size -= 1
         
         return card
     # End of draw
@@ -121,7 +121,7 @@ class Deck:
     def place(self, card: Card, location="NoNe", index=-1) -> int:
         """
         Places a card at a specified location in the deck and returns the exact index where it was placed.
-        If location is not specified, the card will be placed at the index parameter.
+        If location is not specified, the card will be placed <index> cards below the top (i.e., <index> cards from the last element of the list).
         If index is not specified, the card will be placed at the location parameter.
         If both or neither are specified, a ValueError will be raised.
         
@@ -152,16 +152,16 @@ class Deck:
         # If location was specified, place the card at that location
         if index == -1:
             if location == 'top':
-                placed_index = self.size - 1
+                placed_index = self._size - 1
                 self._deck.append(card)
             elif location == 'bottom':
                 placed_index = 0
                 self._deck.insert(placed_index, card)
             elif location == 'middle':
-                placed_index = self.size // 2
+                placed_index = self._size // 2
                 self._deck.insert(placed_index, card)
             elif location == 'random':
-                placed_index = random.randint(0, self.size-1)
+                placed_index = random.randint(0, self._size-1)
                 self._deck.insert(placed_index, card)
         
             # Raises a ValueError if the place is invalid
@@ -169,14 +169,14 @@ class Deck:
         
         # Else if index was specified, place the card at that index
         elif location == "NoNe":
-            placed_index = self.size - index
+            placed_index = self._size - index  # Index is from the bottom of the list
             self._deck.insert(placed_index, card)
         
         # Else raise a ValueError
         else: raise ValueError("Invalid parameters.")
         
         # Once completed, increment the size of the deck
-        self.size += 1
+        self._size += 1
         
         # Return the index where the card was placed
         return placed_index
@@ -196,12 +196,14 @@ class Deck:
         # Add the Defuse cards. This has special rules.
         # Each player gets one Defuse card in their hand, and the rest are put in the deck.
         # However, if there are 2 or 3 players, only 2 Defuse cards get added to the deck.
-        # Thus, one of two generator expressions are used.
+        # Thus, one of two for loops are used.
         # The first adds 6-number_of_players Defuse cards to the deck if there are more than 3 players.
-        if self._num_players > 3: [self._deck.append(Card.D) for _ in range(6-self._num_players)]
+        if self._num_players > 3: 
+            for _ in range(6-self._num_players): self._deck.append(Card.D)
         
         # The second adds 2 Defuse cards to the deck if there are 2 or 3 players.
-        elif self._num_players <= 3: [self._deck.append(Card.D) for _ in range(2)]
+        elif self._num_players <= 3:
+            for _ in range(2): self._deck.append(Card.D)
         
         # Add the Nope cards
         for _ in range(5): self._deck.append(Card.N)
@@ -240,7 +242,7 @@ class Deck:
         self.shuffle()
         
         # Set the size
-        self.size = len(self._deck)
+        self._size = len(self._deck)
     # End of reset
     
     
@@ -252,12 +254,13 @@ class Deck:
             list[Card]: The top three cards in the deck.
         """
         return self._deck[-1:-4:-1]
+    # End of peek_top_three
     
     
     def get_num_EK(self) -> int:
         """
         Counts and returns the number of Exploding Kittens in the deck.
-        This method is partially meant for debugging, but its implementation
+        This method was meant for debugging, but its implementation
         is still functional for the game. As such, it will be included.
 
         Returns:
@@ -276,7 +279,7 @@ class Deck:
         # Print size
         s = ""
         
-        s += f"Deck size: {self.size}\n"
+        s += f"Deck size: {self._size}\n"
         s += f"Number of Exploding Kittens: {self._num_players-1}\n"
         s += "Deck:\n["
         
@@ -304,7 +307,7 @@ class Deck:
         
         Returns (int): The size of the deck.
         """
-        return self.size
+        return self._size
     # End of __len__
 
 # End of Deck

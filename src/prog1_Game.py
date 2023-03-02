@@ -313,7 +313,7 @@ class Game:
         while True:
         
             # Prompt for card to play
-            card, pass_ = self._prompter.prompt_play_or_pass(player, self._draw_pile.size, self._draw_pile.get_num_EK())
+            card, pass_ = self._prompter.prompt_play_or_pass(player, len(self._draw_pile), self._draw_pile.get_num_EK())
             
             # If the player chooses to pass, end their turn and return to the game loop
             if pass_: break
@@ -440,7 +440,7 @@ class Game:
         # If the player has a Defuse card, play it.
         if player.has_card(Card.D):
             # Prompt the player to play the Defuse card
-            play_defuse = self._prompter.prompt_play_defuse(player, self._draw_pile.size-1)
+            play_defuse = self._prompter.prompt_play_defuse(player, len(self._draw_pile)-1)
             
             # Check if the return value was -1
             if play_defuse == '-1':
@@ -459,7 +459,7 @@ class Game:
             else: # play_defuse is one of the location keywords
                 player.remove_card(Card.D)
                 placed_index = self._draw_pile.place(Card.EK, location=play_defuse)
-                if play_defuse == 'random': self._prompter.report_prompt_play_defuse(player, str(self._draw_pile.size-1 - placed_index))
+                if play_defuse == 'random': self._prompter.report_prompt_play_defuse(player, str(len(self._draw_pile)-1 - placed_index))
                 else: self._prompter.report_prompt_play_defuse(player, play_defuse)
                 return
         # End of if player.has_card(Card.D)
@@ -665,7 +665,6 @@ class Game:
         
         # Swap complete, report what happened and return
         self._prompter.report_cat(player, target, cat_card, target_card)
-        
     # End of _cat_cards
     
     

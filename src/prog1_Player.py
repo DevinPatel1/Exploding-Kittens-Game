@@ -104,7 +104,7 @@ class Player:
         Raises:
             ValueError: If the card is not in the player's hand
         """
-        return self.hand.pop(self.hand.index(card))
+        self.hand.pop(self.hand.index(card))
     # End of remove_card
     
     
@@ -116,7 +116,7 @@ class Player:
             a_card (Card): Card to search for.
 
         Returns:
-            bool: Returns True if the card is in the player's hand. False if otherwise.
+            bool: Returns True if the card is in the player's hand. False if not.
         """
         return a_card in self.hand
     # End of has_card
